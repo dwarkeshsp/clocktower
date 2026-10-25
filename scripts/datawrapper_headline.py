@@ -39,7 +39,7 @@ call('PATCH', f'/charts/{chart}', {
         'annotate': {'notes': f'Line: least-squares trend, +{slope} Elo/year (90% CI {lo}–{hi}, bootstrap). '
                               f'Model ratings are ±60–110 Elo (90% CI). '
                               f'A 400-point gap means the stronger model wins about 10 games to 1.'},
-        'axes': {'x': 'Released', 'y': 'Elo rating', 'color': 'Lab', 'labels': 'Label'},
+        'axes': {'x': 'Released', 'y': 'Elo rating', 'color': 'Lab', 'labels': 'Model'},
         'visualize': {
             'x-grid-lines': 'off', 'y-grid-lines': 'on',
             'y-axis': {'log': False, 'range': ['1100', '1950'], 'ticks': []}, 'y-format': '0',
@@ -49,10 +49,11 @@ call('PATCH', f'/charts/{chart}', {
                                'categoryOrder': ['OpenAI', 'Anthropic'], 'palette': [], 'categoryLabels': {}},
             'fixed-size': 10, 'opacity': 1, 'outlines': True,
             'auto-labels': False, 'highlight-labeled': False,
-            'add-labels': [r['Label'] for r in rows],
+            'add-labels': [r['Model'] for r in rows],
             'plotHeightMode': 'fixed', 'plotHeightFixed': 460,
-            'tooltip': {'body': '{{ lab }}. 90% CI {{ _90_ci_low }}–{{ _90_ci_high }}, {{ games }} games',
-                        'title': '{{ label }}', 'sticky': False, 'enabled': True},
+            'tooltip': {'body': '#{{ rank }} of 11 · {{ elo_rating }} Elo<br>Detection (good): {{ detection }}<br>'
+                                'Deception (evil): {{ deception }}<br>{{ games }} games',
+                        'title': '{{ model }} ({{ lab }})', 'sticky': False, 'enabled': True},
         },
     }})
 try:
