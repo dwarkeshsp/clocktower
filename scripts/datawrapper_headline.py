@@ -3,7 +3,7 @@
 python scripts/datawrapper_headline.py [CHART_ID]   # needs DATAWRAPPER_API_TOKEN
 Creates a chart (or updates CHART_ID), publishes it and saves a PNG next to the CSV.
 """
-import json, os, sys, urllib.request
+import json, os, sys, urllib.error, urllib.request
 
 API = 'https://api.datawrapper.de/v3'
 HERE = 'docs/charts/datawrapper'
@@ -18,6 +18,8 @@ def call(method, path, body=None, ctype='application/json', raw=False):
     return out if raw else (json.loads(out) if out else None)
 
 
+import csv
+rows = list(csv.DictReader(open(f'{HERE}/headline.csv')))
 ratings = json.load(open('docs/plans/f2-ratings.json'))
 slope, (lo, hi) = ratings['trend_per_year']['c']
 chart = sys.argv[1] if len(sys.argv) > 1 else call('POST', '/charts', {'type': 'd3-scatter-plot', 'title': 'x'})['id']
@@ -37,23 +39,27 @@ call('PATCH', f'/charts/{chart}', {
         'annotate': {'notes': f'Line: least-squares trend, +{slope} Elo/year (90% CI {lo}–{hi}, bootstrap). '
                               f'Model ratings are ±60–110 Elo (90% CI). '
                               f'A 400-point gap means the stronger model wins about 10 games to 1.'},
-        'axes': {'x': 'Released', 'y': 'Elo rating', 'color': 'Lab', 'labels': 'Model'},
+        'axes': {'x': 'Released', 'y': 'Elo rating', 'color': 'Lab', 'labels': 'Label'},
         'visualize': {
-            'x-grid': 'off', 'y-grid': 'on',
-            'y-range': ['1100', '1950'], 'y-grid-format': '0',
-            'x-range': ['', ''],
+            'x-grid-lines': 'off', 'y-grid-lines': 'on',
+            'y-axis': {'log': False, 'range': ['1100', '1950'], 'ticks': []}, 'y-format': '0',
             'regression': True, 'regression-method': 'linear',
-            'show-color-key': True,
-            'color-category': {'map': {'Anthropic': '#d97757', 'OpenAI': '#3c6e9f'}},
-            'fixed-size': 9, 'opacity': 1, 'outlines': True,
-            'auto-labels': False, 'show-labels': True,
-            'add-labels': [],
-            'tooltip': {'body': '{{ Model }}: {{ elo_rating }} (90% CI {{ _90_ci_low }}–{{ _90_ci_high }}), {{ games }} games',
-                        'title': '{{ Model }}', 'sticky': False, 'enabled': True},
+            'color-by-column': True, 'show-color-key': True,
+            'color-category': {'map': {'Anthropic': '#d97757', 'OpenAI': '#10a37f'},
+                               'categoryOrder': ['OpenAI', 'Anthropic'], 'palette': [], 'categoryLabels': {}},
+            'fixed-size': 10, 'opacity': 1, 'outlines': True,
+            'auto-labels': False, 'highlight-labeled': False,
+            'add-labels': [r['Label'] for r in rows],
+            'plotHeightMode': 'fixed', 'plotHeightFixed': 460,
+            'tooltip': {'body': '{{ lab }}. 90% CI {{ _90_ci_low }}–{{ _90_ci_high }}, {{ games }} games',
+                        'title': '{{ label }}', 'sticky': False, 'enabled': True},
         },
     }})
-call('POST', f'/charts/{chart}/publish')
-png = call('GET', f'/charts/{chart}/export/png?unit=px&width=720&plain=false&scale=2&borderWidth=20', raw=True)
-open(f'{HERE}/headline.png', 'wb').write(png)
+try:
+    call('POST', f'/charts/{chart}/publish')
+    png = call('GET', f'/charts/{chart}/export/png?unit=px&width=720&plain=false&scale=2&borderWidth=20', raw=True)
+    open(f'{HERE}/headline.png', 'wb').write(png)
+except urllib.error.HTTPError as e:  # token without publish/export scope
+    print('publish/export skipped:', e)
 info = call('GET', f'/charts/{chart}')
 print(chart, info.get('publicUrl'))
