@@ -444,7 +444,6 @@ details.think .body { margin-top: 4px; padding: 9px 12px; background: var(--surf
 .feature-card { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--rule); padding: 16px 18px; color: var(--text); }
 .feature-card:hover { border-color: var(--gold); text-decoration: none; color: var(--text); }
 .feature-card b { color: var(--gold); font-size: 1.05rem; }
-.feature-card .muted { font-size: .9rem; color: var(--text-2); }
 .fc-kicker { font: 600 .72rem/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
 .feature-card:not([href]) { opacity: .6; }
 .feature-card:not([href]):hover { border-color: var(--rule); }
@@ -457,6 +456,5 @@ details.think .body { margin-top: 4px; padding: 9px 12px; background: var(--surf
   .hero .wrap { padding-top: 32px; padding-bottom: 28px; }
   .feature-links, .feature-grid.has-video .feature-links { gap: 8px; }
   .feature-card { padding: 11px 14px; flex-direction: row; align-items: baseline; gap: 10px; }
-  .feature-card .muted { display: none; }
   .fc-kicker { min-width: 4.2em; }
 }
