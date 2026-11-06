@@ -75,6 +75,7 @@ and pages are served with a strict Content-Security-Policy (scripts from the ser
 | `PLAY_DATA_DIR` | yes | persistent directory (Docker image: `/data`) |
 | `PLAY_PUBLIC_URL` | yes | `https://play.clocktowerbench.com`: invite links, and the origin allowed to post |
 | `PLAY_PROXY_HOPS` | yes behind a proxy | `1` on Render and Fly (client IP = last `X-Forwarded-For` hop); `0` = socket address |
+| `PLAY_IP_HEADER` | yes on Fly | `Fly-Client-IP`: read the client IP from this header the proxy sets, ahead of `X-Forwarded-For` (Fly's edge can add its own address there, so every visitor behind one edge would share a rate limit) |
 | `PLAY_ALLOWED_ORIGINS` | no | extra origins allowed to post (comma-separated) |
 | `PLAY_FREE_MODELS` | no | default `gpt-6.1-sol`; only models with verified request cost bounds can use the house key (currently GPT-6.1 Sol) |
 | `PLAY_DAILY_BUDGET` | no | USD per budget day for free games, default 30 |

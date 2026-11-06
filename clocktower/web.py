@@ -119,7 +119,8 @@ class Settings:
     tables_per_hour: int = 6                  # new tables per IP per hour
     idle_minutes: float = 30.0                # a lobby or game nobody has looked at for this long closes
     keep_days: float = 14.0                   # finished tables (and their logs) are kept this long; 0 = forever
-    proxy_hops: int = 0                       # trusted proxies in front (Render, Fly: 1) for client IPs
+    proxy_hops: int = 0                       # trusted proxies in front (Render: 1) for client IPs
+    ip_header: str | None = None              # header the proxy sets to the client IP (Fly: Fly-Client-IP); wins over hops
     public_url: str | None = None             # e.g. https://play.clocktowerbench.com (links, allowed origin)
     allowed_origins: tuple = ()               # extra origins allowed to POST
     probes: bool = True                       # ask AI seats for their beliefs (shown at the reveal)
@@ -144,6 +145,7 @@ class Settings:
                    tables_per_hour=env_num(env, 'PLAY_TABLES_PER_HOUR', 6, int),
                    idle_minutes=env_num(env, 'PLAY_IDLE_MINUTES', 30.0), keep_days=env_num(env, 'PLAY_KEEP_DAYS', 14.0),
                    proxy_hops=env_num(env, 'PLAY_PROXY_HOPS', 0, int), public_url=url,
+                   ip_header=(env.get('PLAY_IP_HEADER') or '').strip() or None,
                    allowed_origins=tuple(o.strip().rstrip('/') for o in env.get('PLAY_ALLOWED_ORIGINS', '').split(',') if o.strip()),
                    probes=env.get('PLAY_PROBES', '1') not in ('0', 'false', 'no'))
 
@@ -1146,6 +1148,10 @@ def serve(hub: Hub, host='0.0.0.0', port=8765, sweep_every=60):
             pass
 
         def ip(self):
+            # Fly's edge can append its own address to X-Forwarded-For, so counting hops there lumps
+            # everyone behind one edge together; Fly-Client-IP is set (and overwritten) by Fly itself.
+            if s.ip_header and (h := (self.headers.get(s.ip_header) or '').strip()):
+                return h
             fwd = [x.strip() for x in (self.headers.get('X-Forwarded-For') or '').split(',') if x.strip()]
             if s.proxy_hops and len(fwd) >= s.proxy_hops:
                 return fwd[-s.proxy_hops]
