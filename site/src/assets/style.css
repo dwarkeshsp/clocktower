@@ -441,20 +441,20 @@ details.think .body { margin-top: 4px; padding: 9px 12px; background: var(--surf
 .feature-grid.has-video { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: stretch; }
 .feature-links { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .feature-grid.has-video .feature-links { grid-template-columns: 1fr; }
-.feature-card { display: flex; flex-direction: column; gap: 4px; background: var(--surface); border: 1px solid var(--rule); padding: 16px 18px; color: var(--text); }
+.feature-card { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 64px;
+  background: var(--surface); border: 1px solid var(--rule); padding: 16px 18px; color: var(--text); }
 .feature-card:hover { border-color: var(--gold); text-decoration: none; color: var(--text); }
-.feature-card b { color: var(--gold); font-size: 1.05rem; }
-.fc-kicker { font: 600 .72rem/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.feature-card b { color: var(--gold); font-size: 1.1rem; line-height: 1.3; }
 .feature-card:not([href]) { opacity: .6; }
 .feature-card:not([href]):hover { border-color: var(--rule); }
 @media (max-width: 900px) {
   .feature-grid.has-video { grid-template-columns: 1fr; }
-  .feature-links, .feature-grid.has-video .feature-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .feature-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .feature-grid.has-video .feature-links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-@media (max-width: 480px) { .feature-links, .feature-grid.has-video .feature-links { grid-template-columns: 1fr; } }
 @media (max-width: 600px) {
   .hero .wrap { padding-top: 32px; padding-bottom: 28px; }
-  .feature-links, .feature-grid.has-video .feature-links { gap: 8px; }
-  .feature-card { padding: 11px 14px; flex-direction: row; align-items: baseline; gap: 10px; }
-  .fc-kicker { min-width: 4.2em; }
+  .feature-links, .feature-grid.has-video .feature-links { grid-template-columns: 1fr; gap: 8px; }
+  .feature-card { min-height: 0; padding: 14px 16px; }
+  .feature-card b { font-size: 1.05rem; }
 }

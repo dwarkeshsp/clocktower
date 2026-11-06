@@ -15,7 +15,7 @@
     const url = C[a.dataset.configHref];
     if (url) { a.href = url; if (/^https?:/.test(url)) { a.target = '_blank'; a.rel = 'noopener'; } }
     else if (a.classList.contains('btn')) { a.setAttribute('aria-disabled', 'true'); a.removeAttribute('href'); a.title = 'Coming soon'; const s = document.createElement('span'); s.className = 'small muted'; s.textContent = ' (soon)'; a.append(s); }
-    else if (a.classList.contains('feature-card')) { a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); a.title = 'Coming soon'; const k = a.querySelector('.fc-kicker'); if (k) k.textContent += ' · soon'; }
+    else if (a.classList.contains('feature-card')) { a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true'); a.title = 'Coming soon'; const b = a.querySelector('b'); if (b) b.textContent += ' (soon)'; }
     else a.remove();
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireLinks); else wireLinks();
