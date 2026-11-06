@@ -14,9 +14,10 @@ primary_region = "iad"
   PLAY_IP_HEADER = "Fly-Client-IP"
   PLAY_FREE_MODELS = "gpt-6.1-sol"
   PLAY_DAILY_BUDGET = "2000"
-  PLAY_BUDGET_TIMEZONE = "Asia/Singapore"
+  PLAY_BUDGET_TIMEZONE = "UTC"
+  PLAY_BUDGET_PERIOD = "month"   # matches the OpenAI key's monthly limit
   PLAY_GAME_BUDGET = "5"
-  PLAY_MAX_GAMES = "20"
+  PLAY_MAX_GAMES = "100"
 
 [[mounts]]
   source = "clocktower_data"

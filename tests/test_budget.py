@@ -82,6 +82,24 @@ class BudgetTest(unittest.TestCase):
             self.ledger(store).reserve(.1, 'seat')
             self.assertAlmostEqual(store.spent(today('Asia/Singapore'), 'house'), .1)
 
+    def test_monthly_period_counts_since_the_first(self):
+        first = datetime(2026, 11, 1, tzinfo=timezone.utc).timestamp()
+        store = Store()
+        with mock.patch('clocktower.web.time.time', return_value=first - 1):
+            store.add_spend('oct', 'oct', 50, 'house')
+        with mock.patch('clocktower.web.time.time', return_value=first + 4 * 86400):
+            store.add_spend('nov', 'nov', 7, 'house')
+        with mock.patch('clocktower.web.time.time', return_value=first + 9 * 86400):
+            self.assertEqual(today('UTC', 'month'), first)
+            self.assertEqual(store.spent(today('UTC', 'month'), 'house'), 7)
+            self.assertEqual(store.spent(today('UTC'), 'house'), 0)
+            with self.assertRaises(BudgetExceeded):
+                store.reserve('t', 'g', 4, 10, None, 'UTC', 'seat', 'month')
+            store.reserve('t', 'g', 3, 10, None, 'UTC', 'seat', 'month')
+        self.assertEqual(Settings.from_env({'PLAY_BUDGET_PERIOD': 'Month'}).budget_period, 'month')
+        with self.assertRaises(ValueError):
+            Settings(budget_period='week')
+
     def test_send_reconciles_to_actual_cost_once(self):
         store = Store()
         conv = self.conversation(self.ledger(store))

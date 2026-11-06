@@ -111,6 +111,7 @@ class Settings:
     data_dir: Path | None = None              # SQLite file and game logs; None = memory only (tests)
     daily_cap: float = 30.0                   # USD per UTC day the house pays for free games
     budget_timezone: str = 'UTC'              # midnight in this timezone resets the daily cap
+    budget_period: str = 'day'                # 'day' or 'month': how often daily_cap resets (the 1st, for a month)
     game_cap: float = 5.0                     # USD one free game may spend
     byo_game_cap: float = 50.0                # USD one game on a player's own key may spend
     free_models: tuple = ('gpt-6.1-sol',)     # models the house pays for; ('all',) = every model with a key
@@ -127,6 +128,8 @@ class Settings:
 
     def __post_init__(self):
         ZoneInfo(self.budget_timezone)
+        if self.budget_period not in ('day', 'month'):
+            raise ValueError("budget_period must be 'day' or 'month'")
         for name in ('daily_cap', 'game_cap', 'byo_game_cap'):
             if not math.isfinite(getattr(self, name)) or getattr(self, name) < 0:
                 raise ValueError(f'{name} must be a finite nonnegative amount')
@@ -139,6 +142,7 @@ class Settings:
         return cls(data_dir=Path(d) if d else None,
                    daily_cap=env_num(env, 'PLAY_DAILY_BUDGET', 30.0), game_cap=env_num(env, 'PLAY_GAME_BUDGET', 5.0),
                    budget_timezone=env.get('PLAY_BUDGET_TIMEZONE', 'UTC'),
+                   budget_period=env.get('PLAY_BUDGET_PERIOD', 'day').strip().lower(),
                    byo_game_cap=env_num(env, 'PLAY_BYO_GAME_BUDGET', 50.0),
                    free_models=tuple(m.strip() for m in env.get('PLAY_FREE_MODELS', 'gpt-6.1-sol').split(',') if m.strip()),
                    max_games=env_num(env, 'PLAY_MAX_GAMES', 20, int), max_tables=env_num(env, 'PLAY_MAX_TABLES', 300, int),
@@ -202,7 +206,7 @@ class Store:
         with self.lock:
             return self.db.execute(q, args).fetchone()[0]
 
-    def reserve(self, table, game, amount, daily_cap, game_cap, timezone, label):
+    def reserve(self, table, game, amount, daily_cap, game_cap, timezone, label, period='day'):
         """Charge the upper bound durably before sending; SQLite serializes competing games/processes.
         Uncertain requests remain pending across midnight/restarts until explicitly reconciled."""
         if not math.isfinite(amount) or amount <= 0:
@@ -211,11 +215,11 @@ class Store:
             self.db.execute('BEGIN IMMEDIATE')
             try:
                 daily = self.db.execute("SELECT COALESCE(SUM(cost), 0) FROM spend WHERE paid_by = 'house' "
-                                        'AND (time >= ? OR pending = 1)', (today(timezone),)).fetchone()[0]
+                                        'AND (time >= ? OR pending = 1)', (today(timezone, period),)).fetchone()[0]
                 game_spent = self.db.execute('SELECT COALESCE(SUM(cost), 0) FROM spend WHERE game = ?',
                                              (game,)).fetchone()[0]
                 if daily + amount > daily_cap:
-                    raise BudgetExceeded('The daily AI budget has no room for this request and calls in progress.')
+                    raise BudgetExceeded(f'The {period}ly AI budget has no room for this request and calls in progress.')
                 if game_cap is not None and game_spent + amount > game_cap:
                     raise BudgetExceeded('The game AI budget has no room for this request and calls in progress.')
                 cur = self.db.execute('INSERT INTO spend (time, table_id, game, cost, paid_by, label, pending) '
@@ -236,26 +240,27 @@ class Store:
                             (amount, time.time(), reservation))
 
 
-def today(timezone='UTC'):
-    """Epoch seconds at midnight in the configured budget timezone."""
-    return datetime.fromtimestamp(time.time(), ZoneInfo(timezone)).replace(
-        hour=0, minute=0, second=0, microsecond=0).timestamp()
+def today(timezone='UTC', period='day'):
+    """Epoch seconds at the start of the current budget period (today, or the 1st of this month) at midnight
+    in the configured budget timezone."""
+    start = datetime.fromtimestamp(time.time(), ZoneInfo(timezone)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return (start.replace(day=1) if period == 'month' else start).timestamp()
 
 
 class PlayLedger(Ledger):
     """Per-game accounting, with durable per-request reservations for house-paid OpenAI calls."""
 
-    def __init__(self, table, game, paid_by, cap, store, daily_cap=None, timezone='UTC'):
+    def __init__(self, table, game, paid_by, cap, store, daily_cap=None, timezone='UTC', period='day'):
         self.table, self.game, self.paid_by, self.cap, self.store = table, game, paid_by, cap, store
         self.path = None
         self.spent = store.spent(game=game) if store else 0.0  # a resumed game counts what it spent before
-        self.daily_cap, self.timezone = daily_cap, timezone
+        self.daily_cap, self.timezone, self.period = daily_cap, timezone, period
         self.hard_budget = paid_by == 'house' and daily_cap is not None
         if self.hard_budget and store is None:
             raise ValueError('A house budget requires persistent accounting')
 
     def reserve(self, amount, label):
-        return self.store.reserve(self.table, self.game, amount, self.daily_cap, self.cap, self.timezone, label)
+        return self.store.reserve(self.table, self.game, amount, self.daily_cap, self.cap, self.timezone, label, self.period)
 
     def check(self):
         if self.cap is not None and self.spent >= self.cap:
@@ -696,7 +701,8 @@ class Table:
         if not self.hub:
             cap = getattr(self.args, 'cap', None)
         return PlayLedger(self.id, self.game_id, self.paid_by or 'none', cap, self.hub.store if self.hub else None,
-                          self.settings.daily_cap if self.hub else None, self.settings.budget_timezone)
+                          self.settings.daily_cap if self.hub else None, self.settings.budget_timezone,
+                          self.settings.budget_period)
 
     def _run(self, cfg):
         try:
@@ -1035,7 +1041,7 @@ class Hub:
         return [t for t in self.tables.values() if t.status in ('playing',)]
 
     def spent_today(self):
-        return self.store.spent(today(self.settings.budget_timezone), 'house')
+        return self.store.spent(today(self.settings.budget_timezone, self.settings.budget_period), 'house')
 
     def admit(self, table, paid_by):
         """Whether one more game can start: the cap on games at once, and for free games the daily budget,
@@ -1049,7 +1055,9 @@ class Hub:
                 return
             spent = self.spent_today()
             if spent >= s.daily_cap:
-                raise ValueError(f"Today's free AI budget (${s.daily_cap:g}) is used up; it resets at midnight {s.budget_timezone}. "
+                when = 'on the 1st of next month' if s.budget_period == 'month' else 'at midnight'
+                period = 'This month' if s.budget_period == 'month' else 'Today'
+                raise ValueError(f"{period}'s free AI budget (${s.daily_cap:g}) is used up; it resets {when} {s.budget_timezone}. "
                                  'You can still play against practice bots, or with your own API key.')
             reserved = sum(max(0.0, s.game_cap - t.ledger_spent()) for t in others if t.paid_by == 'house')
             if spent + reserved + s.game_cap > s.daily_cap:
@@ -1062,7 +1070,7 @@ class Hub:
         spent = self.spent_today()
         return {'games': len(self.running()), 'max_games': s.max_games, 'home': HOME,
                 'free': {'models': [names.get(m, m) for m in s.free_models if s.free(m)], 'daily_cap': s.daily_cap,
-                         'budget_timezone': s.budget_timezone,
+                         'budget_timezone': s.budget_timezone, 'budget_period': s.budget_period,
                          'game_cap': s.game_cap, 'left_today': round(max(0.0, s.daily_cap - spent), 2),
                          'open': spent < s.daily_cap and any(s.free(m) for m in s.free_models)}}
 

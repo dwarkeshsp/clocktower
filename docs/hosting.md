@@ -35,7 +35,8 @@ Everything lives under `PLAY_DATA_DIR` (mount a persistent volume there):
   pricing currently supports GPT-6.1 Sol only, using Standard service tier; other models require own keys.
   With the defaults ($30, $5) at most 6 free games
   run at once. When the day is used up, the page says so and offers practice bots or the player's own key.
-  The day resets at midnight in `PLAY_BUDGET_TIMEZONE` (UTC by default; Asia/Singapore in `fly.toml`).
+  The budget resets at midnight in `PLAY_BUDGET_TIMEZONE` every day, or on the 1st of each month with
+  `PLAY_BUDGET_PERIOD=month` (`fly.toml`: $2,000 a month, UTC, matching the house key's monthly limit at OpenAI).
   An uncertain network outcome or crash keeps its maximum-cost reservation, including on later days, until
   an operator reconciles it with provider usage. This can stop games early but cannot silently free money
   that may already have been spent. Keep the dedicated house key server-side and use it only in this app:
@@ -53,7 +54,7 @@ Everything lives under `PLAY_DATA_DIR` (mount a persistent volume there):
 
 | Limit | Default | Env |
 |---|---|---|
-| Games at once | 20 | `PLAY_MAX_GAMES` |
+| Games at once | 20 (`fly.toml`: 100) | `PLAY_MAX_GAMES` |
 | Open tables (lobbies + games) | 300 | `PLAY_MAX_TABLES` |
 | New tables per IP per hour | 6 | `PLAY_TABLES_PER_HOUR` |
 | API requests per IP | 40/s reads (burst 80), 15/s writes (burst 30) | code (`Hub.gets`, `Hub.posts`) |
@@ -78,8 +79,9 @@ and pages are served with a strict Content-Security-Policy (scripts from the ser
 | `PLAY_IP_HEADER` | yes on Fly | `Fly-Client-IP`: read the client IP from this header the proxy sets, ahead of `X-Forwarded-For` (Fly's edge can add its own address there, so every visitor behind one edge would share a rate limit) |
 | `PLAY_ALLOWED_ORIGINS` | no | extra origins allowed to post (comma-separated) |
 | `PLAY_FREE_MODELS` | no | default `gpt-6.1-sol`; only models with verified request cost bounds can use the house key (currently GPT-6.1 Sol) |
-| `PLAY_DAILY_BUDGET` | no | USD per budget day for free games, default 30 |
-| `PLAY_BUDGET_TIMEZONE` | no | IANA timezone for midnight reset, default UTC; Fly uses Asia/Singapore |
+| `PLAY_DAILY_BUDGET` | no | USD per budget period for free games, default 30 |
+| `PLAY_BUDGET_PERIOD` | no | `day` (default) or `month` (resets on the 1st); Fly uses `month` |
+| `PLAY_BUDGET_TIMEZONE` | no | IANA timezone for midnight reset, default UTC |
 | `PLAY_GAME_BUDGET` | no | USD per free game, default 5 |
 | `PLAY_BYO_GAME_BUDGET` | no | USD per own-key game, default 50 |
 | `PLAY_MAX_GAMES`, `PLAY_MAX_TABLES`, `PLAY_TABLES_PER_HOUR`, `PLAY_IDLE_MINUTES` | no | limits above |
