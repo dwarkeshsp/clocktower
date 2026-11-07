@@ -1329,7 +1329,7 @@ def main(args):
         print(f'\n  Clocktower table is open.\n'
               f'  You (the host):  {local}#host={t.host_key}\n'
               f'  Friends:         {hub.links["friends"]}/t/{t.id}   (same Wi-Fi; or share a tunnel URL, see README)\n'
-              f'  Free AI models:  {", ".join(m for m in settings.free_models)} (PLAY_FREE_MODELS=all for every model with a key)\n',
+              '  Choose AI models in the lobby dropdowns.\n',
               flush=True)
     try:
         server.serve_forever()

@@ -303,7 +303,7 @@ def main(argv=None):
     rv.add_argument('--view', default='omniscient', help='a player name, public, or omniscient')
     rv.add_argument('--thinking', action='store_true', help='include thinking (omniscient or that player)')
     helps = {'run': 'play one game or a batch with AI seats (the eval)',
-             'play': 'host a table in the browser: you and friends vs AI seats',
+             'play': 'host a table in the browser; choose AI models in the lobby',
              'sim': 'random players, no API calls (an engine check)'}
     for name in ('run', 'play', 'sim'):
         p = sub.add_parser(name, help=helps[name])
@@ -322,15 +322,16 @@ def main(argv=None):
         if name in ('run', 'sim'):
             p.add_argument('--games', type=int, default=1)
         if name != 'sim':
-            p.add_argument('--model', default=MODEL, help='player model')
-            p.add_argument('--good-model', help='model for the good team (default --model)')
-            p.add_argument('--evil-model', help='model for the evil team (default --model)')
+            if name == 'run':
+                p.add_argument('--model', default=MODEL, help='player model')
+                p.add_argument('--good-model', help='model for the good team (default --model)')
+                p.add_argument('--evil-model', help='model for the evil team (default --model)')
+                p.add_argument('--seat-model', action='append', metavar='SPEC',
+                               help='per-seat override, repeatable: good:MODEL[:N], evil:MODEL[:N] (N seats of that '
+                                    'team, picked by seed) or CHARACTER:MODEL (e.g. Imp:gpt-6-astra); MODEL@effort ok')
             p.add_argument('--effort', default='high', help='player reasoning effort (same for every model)')
             p.add_argument('--good-effort', help='reasoning effort for the good team (default --effort)')
             p.add_argument('--evil-effort', help='reasoning effort for the evil team (default --effort)')
-            p.add_argument('--seat-model', action='append', metavar='SPEC',
-                           help='per-seat override, repeatable: good:MODEL[:N], evil:MODEL[:N] (N seats of that '
-                                'team, picked by seed) or CHARACTER:MODEL (e.g. Imp:gpt-6-astra); MODEL@effort ok')
             p.add_argument('--max-output', type=int, default=8000,
                            help='per-turn output ceiling, thinking included, identical for every model')
             p.add_argument('--budget', type=float, default=1000.0, help='cap on total spend in games/ledger.jsonl')

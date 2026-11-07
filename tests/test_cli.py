@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from clocktower import cli
 
@@ -17,6 +18,26 @@ def quiet(fn, *args):
 
 
 class CommandLineTests(unittest.TestCase):
+    def test_play_uses_browser_model_selection(self):
+        with mock.patch('clocktower.web.main') as play:
+            cli.main(['play', '--host', '127.0.0.1', '--port', '8765'])
+        args = play.call_args.args[0]
+        for name in ('model', 'good_model', 'evil_model', 'seat_model'):
+            self.assertIsNone(getattr(args, name, None))
+        from clocktower.web import Table
+        with mock.patch('clocktower.web.server_key', return_value=False):
+            table = Table(args)
+            host = table.join('Host', 'any')
+            table.set_config(host, {'good_model': 'random', 'evil_model': 'random'})
+            lobby = table.lobby(host)
+        for side in ('good_model', 'evil_model'):
+            self.assertIn(lobby['config'][side], {m['id'] for m in lobby['models'] if m['ready']})
+        for flag in ('--model', '--good-model', '--evil-model', '--seat-model'):
+            with self.subTest(flag=flag), contextlib.redirect_stderr(io.StringIO()), \
+                    self.assertRaises(SystemExit) as rejected:
+                cli.main(['play', flag, 'random'])
+            self.assertEqual(rejected.exception.code, 2)
+
     def test_a_random_bot_game_runs_end_to_end_and_writes_its_logs(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / 'game'

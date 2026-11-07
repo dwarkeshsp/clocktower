@@ -20,6 +20,14 @@ the dataset are sections of About (`about.html#run-your-own`, `#data`); `run.htm
 
 ## Build
 
+For local development, install the project (`pip install -e .`) and run `python -m clocktower.export --serve`.
+Open <http://localhost:8000>; use `--port 8080` to change the port and Ctrl+C to stop. Re-run after editing
+`site/src/` to rebuild. This serves only on `127.0.0.1`, uses local replay files and points Play at
+<http://localhost:8765>. Start the table separately with
+`python -m clocktower play --host 127.0.0.1 --port 8765`, then choose models in the lobby dropdowns
+(practice bots need no API key). No Docker or deployment is required.
+Without downloaded game logs, the leaderboard works and Games/Highlights are empty.
+
 The game logs must be on disk (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/b1-* v17/b2-*`, or
 point `--games` at a checkout that has them):
 
