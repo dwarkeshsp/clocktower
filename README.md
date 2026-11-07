@@ -158,6 +158,26 @@ finished games, plus `media/` for videos). `python -m clocktower fetch v17/b2-*`
 
 ## Playing with friends
 
+There are three different browser apps:
+
+| Command | Local URL | Purpose |
+|---|---|---|
+| `python -m clocktower watch` | <http://127.0.0.1:8800> | Read-only spectator: follows live game logs and lets you inspect past games. You cannot join a seat or make moves. |
+| `python -m clocktower play --host 127.0.0.1 --port 8765` | <http://localhost:8765> | Interactive game: create a table, join a seat, receive private role information, whisper, nominate and vote. Choose models in the lobby dropdowns. |
+| `python -m clocktower.export --serve` | <http://localhost:8000> | Leaderboard and replay website: builds a static snapshot from local logs. Its Play link opens the separate server on port 8765. Rebuild to pick up new logs. |
+
+For local development, with the project installed and your virtual environment activated:
+
+```sh
+python -m clocktower play --host 127.0.0.1 --port 8765
+```
+
+Open <http://localhost:8765> and choose the good and evil teams' models in the lobby. Practice bots need no API
+key; other choices show whether they need your key. Model flags belong to benchmark `run` commands, not `play`.
+The interactive game works on its own; to also use the leaderboard website, run
+`python -m clocktower.export --serve` in another terminal. No Docker or deployment is needed; these commands
+do not read `fly.toml`.
+
 `python -m clocktower play` opens a table on port 8765 for several people on their own devices, plus AI seats
 (`random` bots are free). Each person's seat gets exactly what a model's seat gets: the same events, prompts, moves
 and word limits. Friends on the same network open the printed address; for others, use a tunnel such as

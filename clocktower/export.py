@@ -26,6 +26,8 @@ import os
 import re
 import shutil
 from collections import defaultdict
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from . import characters
@@ -388,9 +390,11 @@ def stamp_assets(html, out):
 
 
 def build(games_root=ROOT / 'games', out=SITE / 'dist', src=SITE / 'src', content=SITE / 'content',
-          limit=None, with_games=True, media=None, pages_only=False):
+          limit=None, with_games=True, media=None, pages_only=False, local=False):
     games_root, out, src, content = Path(games_root), Path(out), Path(src), Path(content)
     config = json.loads((src / 'config.json').read_text()) if (src / 'config.json').exists() else {}
+    if local:
+        config.update(playUrl='http://localhost:8765', gameDataBase='data/games/')
     if pages_only:  # re-render pages, assets and config over an existing build, keeping its data
         shutil.rmtree(out / 'assets', ignore_errors=True)
         shutil.copytree(src / 'assets', out / 'assets')
@@ -487,8 +491,18 @@ def main(argv=None):
     ap.add_argument('--no-games', action='store_true', help='skip per-game files (except highlights)')
     ap.add_argument('--media', help='a local copy of explainer-three-tricks.mp4 to publish with the site')
     ap.add_argument('--pages-only', action='store_true', help='re-render pages and assets over an existing build (fast)')
+    ap.add_argument('--serve', action='store_true', help='build and preview on localhost (no deployment)')
+    ap.add_argument('--port', type=int, default=8000, help='local preview port (default: 8000)')
     a = ap.parse_args(argv)
-    build(a.games, a.out, limit=a.limit, with_games=not a.no_games, media=a.media, pages_only=a.pages_only)
+    build(a.games, a.out, limit=a.limit, with_games=not a.no_games, media=a.media, pages_only=a.pages_only, local=a.serve)
+    if a.serve:
+        handler = partial(SimpleHTTPRequestHandler, directory=str(Path(a.out).resolve()))
+        with ThreadingHTTPServer(('127.0.0.1', a.port), handler) as server:
+            print(f'Local preview: http://localhost:{server.server_address[1]} (Ctrl+C to stop)', flush=True)
+            try:
+                server.serve_forever()
+            except KeyboardInterrupt:
+                pass
 
 
 if __name__ == '__main__':
