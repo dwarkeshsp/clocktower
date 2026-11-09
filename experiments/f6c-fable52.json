@@ -1,0 +1,63 @@
+{
+ "note": "Fable 5.2, second tranche: two more side-swapped pairs against each of the six f6 opponents (six pairs each in all) and one pair against each of Opus 4.6, Opus 4.7 and GPT-5.4, launched while f6 and f6b were still playing. Minions are balanced within this plan.",
+ "out": "games/v17/f6c",
+ "seed": 192000,
+ "players": "10-12",
+ "budget": 3000,
+ "matchups": [
+  {
+   "name": "fable52-v-sol61",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-6.1-sol",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-gpt56sol",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-5.6-sol",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-opus55",
+   "good": "claude-fable-5-2",
+   "evil": "claude-opus-5-5",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-fable51",
+   "good": "claude-fable-5-2",
+   "evil": "claude-fable-5-1",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-astra",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-6-astra",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-gpt55",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-5.5",
+   "pairs": 2
+  },
+  {
+   "name": "fable52-v-opus46",
+   "good": "claude-fable-5-2",
+   "evil": "claude-opus-4-6",
+   "pairs": 1
+  },
+  {
+   "name": "fable52-v-opus47",
+   "good": "claude-fable-5-2",
+   "evil": "claude-opus-4-7",
+   "pairs": 1
+  },
+  {
+   "name": "fable52-v-gpt54",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-5.4",
+   "pairs": 1
+  }
+ ]
+}
