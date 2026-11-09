@@ -1,0 +1,60 @@
+{
+  "winner": "evil",
+  "reason": "Only two players remain alive.",
+  "stopped": null,
+  "days": 5,
+  "seed": 191502,
+  "starting": {
+    "Alex": "Saint",
+    "Blair": "Baron",
+    "Casey": "Fortune Teller",
+    "Drew": "Soldier",
+    "Ellis": "Imp",
+    "Frankie": "Monk",
+    "Gray": "Librarian",
+    "Harper": "Recluse",
+    "Indigo": "Poisoner",
+    "Jules": "Slayer"
+  },
+  "final": {
+    "Alex": "Saint",
+    "Blair": "Baron",
+    "Casey": "Fortune Teller",
+    "Drew": "Soldier",
+    "Ellis": "Imp",
+    "Frankie": "Monk",
+    "Gray": "Librarian",
+    "Harper": "Recluse",
+    "Indigo": "Poisoner",
+    "Jules": "Slayer"
+  },
+  "bluffs": [
+    "Undertaker",
+    "Mayor",
+    "Virgin"
+  ],
+  "red_herring": "Gray",
+  "drunk_as": null,
+  "cost": 26.5625,
+  "calls": 688,
+  "tokens": {
+    "input": 882677,
+    "cache_read": 19927379,
+    "cache_write": 273475,
+    "output": 361736
+  },
+  "seconds": 3683.7,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-5.5",
+    "Blair": "claude-fable-5-2",
+    "Casey": "gpt-5.5",
+    "Drew": "gpt-5.5",
+    "Ellis": "claude-fable-5-2",
+    "Frankie": "gpt-5.5",
+    "Gray": "gpt-5.5",
+    "Harper": "gpt-5.5",
+    "Indigo": "claude-fable-5-2",
+    "Jules": "gpt-5.5"
+  }
+}
