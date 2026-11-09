@@ -1,0 +1,63 @@
+{
+  "winner": "evil",
+  "reason": "Only two players remain alive.",
+  "stopped": null,
+  "days": 5,
+  "seed": 191401,
+  "starting": {
+    "Alex": "Virgin",
+    "Blair": "Washerwoman",
+    "Casey": "Scarlet Woman",
+    "Drew": "Slayer",
+    "Ellis": "Butler",
+    "Frankie": "Ravenkeeper",
+    "Gray": "Soldier",
+    "Harper": "Empath",
+    "Indigo": "Poisoner",
+    "Jules": "Monk",
+    "Kit": "Imp"
+  },
+  "final": {
+    "Alex": "Virgin",
+    "Blair": "Washerwoman",
+    "Casey": "Scarlet Woman",
+    "Drew": "Slayer",
+    "Ellis": "Butler",
+    "Frankie": "Ravenkeeper",
+    "Gray": "Soldier",
+    "Harper": "Empath",
+    "Indigo": "Poisoner",
+    "Jules": "Monk",
+    "Kit": "Imp"
+  },
+  "bluffs": [
+    "Chef",
+    "Librarian",
+    "Fortune Teller"
+  ],
+  "red_herring": null,
+  "drunk_as": null,
+  "cost": 44.9107,
+  "calls": 808,
+  "tokens": {
+    "input": 3002,
+    "cache_read": 22511202,
+    "cache_write": 1773680,
+    "output": 444166
+  },
+  "seconds": 4812.7,
+  "errors": [],
+  "models": {
+    "Alex": "claude-fable-5-2",
+    "Blair": "claude-fable-5-2",
+    "Casey": "gpt-6-astra",
+    "Drew": "claude-fable-5-2",
+    "Ellis": "claude-fable-5-2",
+    "Frankie": "claude-fable-5-2",
+    "Gray": "claude-fable-5-2",
+    "Harper": "claude-fable-5-2",
+    "Indigo": "gpt-6-astra",
+    "Jules": "claude-fable-5-2",
+    "Kit": "gpt-6-astra"
+  }
+}

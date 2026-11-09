@@ -1,0 +1,63 @@
+{
+  "winner": "evil",
+  "reason": "Jules was the Saint, and the Saint was executed.",
+  "stopped": null,
+  "days": 5,
+  "seed": 191500,
+  "starting": {
+    "Alex": "Investigator",
+    "Blair": "Drunk",
+    "Casey": "Butler",
+    "Drew": "Slayer",
+    "Ellis": "Poisoner",
+    "Frankie": "Librarian",
+    "Gray": "Imp",
+    "Harper": "Undertaker",
+    "Indigo": "Chef",
+    "Jules": "Saint",
+    "Kit": "Baron"
+  },
+  "final": {
+    "Alex": "Investigator",
+    "Blair": "Drunk",
+    "Casey": "Butler",
+    "Drew": "Slayer",
+    "Ellis": "Poisoner",
+    "Frankie": "Librarian",
+    "Gray": "Imp",
+    "Harper": "Undertaker",
+    "Indigo": "Chef",
+    "Jules": "Saint",
+    "Kit": "Baron"
+  },
+  "bluffs": [
+    "Washerwoman",
+    "Recluse",
+    "Fortune Teller"
+  ],
+  "red_herring": null,
+  "drunk_as": "Empath",
+  "cost": 41.3431,
+  "calls": 911,
+  "tokens": {
+    "input": 1036314,
+    "cache_read": 33060035,
+    "cache_write": 551859,
+    "output": 543683
+  },
+  "seconds": 4901.2,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-5.5",
+    "Blair": "gpt-5.5",
+    "Casey": "gpt-5.5",
+    "Drew": "gpt-5.5",
+    "Ellis": "claude-fable-5-2",
+    "Frankie": "gpt-5.5",
+    "Gray": "claude-fable-5-2",
+    "Harper": "gpt-5.5",
+    "Indigo": "gpt-5.5",
+    "Jules": "gpt-5.5",
+    "Kit": "claude-fable-5-2"
+  }
+}
