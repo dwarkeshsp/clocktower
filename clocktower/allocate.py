@@ -7,6 +7,9 @@
    the target, per dollar, until every model's 90% half-width is within `target` Elo (or the money runs out). Never add to
    a matchup that already has `cap` pairs, or whose opponent is already `share` of either model's games.
 
+`--only MODEL` rates a model added later: only matchups that include it are considered, and only its own
+half-width counts toward the target (the floor then applies to none: pass `--floor 0`).
+
 Each new pair's guaranteed Minion is the one its two models have been dealt least (written as the matchup's
 `minions`, which `tournament` uses). Half-widths are the
 analytic (Fisher) ones for the combined rating, scaled per model to match the bootstrap in the ratings file.
@@ -51,13 +54,14 @@ def seat_costs(games, names):
     return {n: max(float(c[i]), 0.05) for n, i in idx.items()}
 
 
-def plan(models, ratings, games, target=100, floor=1, cap=4, share=0.25, z=2.5, max_spend=None):
+def plan(models, ratings, games, target=100, floor=1, cap=4, share=0.25, z=2.5, max_spend=None, only=None):
     names = [m['id'] for m in models]; N = len(names); idx = {n: i for i, n in enumerate(names)}
     R = {m['id']: m for m in ratings['models']}
     r = np.array([(R[n]['combined'] - 1500) / K for n in names]); h = ratings['good_advantage'] / K
     boot = np.array([(R[n]['c90'][1] - R[n]['c90'][0]) / 2 for n in names])
     seat = seat_costs(games, names)
-    pairs = list(itertools.combinations(names, 2))
+    pairs = [p for p in itertools.combinations(names, 2) if not only or only in p]
+    focus = np.array([not only or n == only for n in names])  # the models whose half-width the target is about
     pair_cost = {p: (GOOD_SEATS + EVIL_SEATS) * (seat[p[0]] + seat[p[1]]) for p in pairs}
 
     def game_info(g, e):
@@ -100,8 +104,8 @@ def plan(models, ratings, games, target=100, floor=1, cap=4, share=0.25, z=2.5, 
         if var[p] and abs(obs[p] - exp[p]) / math.sqrt(var[p]) > z:
             take(p, f'clash (observed {obs[p]} vs {exp[p]:.1f} expected)')
     log.append(f'after floor and clashes: {sum(add.values())} pairs, ${spent:.0f}, worst ±{hw(I).max():.0f}')
-    while hw(I).max() > target:  # 3. precision per dollar
-        over = lambda J: (np.maximum(hw(J) - target, 0) ** 2).sum()  # only models still above the target count
+    while hw(I)[focus].max() > target:  # 3. precision per dollar
+        over = lambda J: (np.maximum(hw(J)[focus] - target, 0) ** 2).sum()  # only models still above the target count
         cur = over(I); best = None
         for p in pairs:
             if played[p] + add[p] >= cap or (max_spend and spent + pair_cost[p] > max_spend):
@@ -136,12 +140,13 @@ def main(argv=None):
     ap.add_argument('--target', type=float, default=100); ap.add_argument('--floor', type=int, default=1)
     ap.add_argument('--cap', type=int, default=4); ap.add_argument('--share', type=float, default=0.25)
     ap.add_argument('--z', type=float, default=2.5); ap.add_argument('--max-spend', type=float)
+    ap.add_argument('--only', help='a model id: add games only to its matchups, until its own rating meets the target')
     ap.add_argument('--seed', type=int, required=True); ap.add_argument('--out', required=True)
     ap.add_argument('--budget', type=float, required=True, help='cap on the all-time ledger for the plan')
     a = ap.parse_args(argv)
     models = json.load(open(a.models)); short = {m['id']: m.get('short', m['id']) for m in models}
     alloc, log = plan(models, json.load(open(a.ratings)), load(a.games, a.exclude), a.target, a.floor, a.cap,
-                      a.share, a.z, a.max_spend)
+                      a.share, a.z, a.max_spend, a.only)
     for line in log:
         print(line, file=sys.stderr)
     matchups = []
