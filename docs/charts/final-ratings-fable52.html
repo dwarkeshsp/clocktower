@@ -24,8 +24,8 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const NS='http://www.w3.org/2000/svg',svg=document.getElementById('c');
 const el=(t,a,x)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;svg.appendChild(e);return e};
 // plot area: release date across, Elo up; the right margin holds the labels of the last models
-const W=1096,H=620,L=100,R=150,T=24,B=44,lo=1000,hi=2100;
-const day=s=>Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10)),t0=Date.UTC(2026,0,20),t1=Date.UTC(2026,10,20);
+const W=1096,H=620,L=100,R=128,T=24,B=44,lo=1000,hi=2100;
+const day=s=>Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10)),t0=Date.UTC(2026,0,20),t1=Date.UTC(2026,10,10);
 const x=s=>L+(day(s)-t0)/(t1-t0)*(W-L-R), y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
 svg.setAttribute('width',W);svg.setAttribute('height',H);
 for(let v=lo;v<=hi;v+=100){el('line',{x1:L,x2:W,y1:y(v),y2:y(v),stroke:v===lo?'#cfd4db':'#eceef1'});
