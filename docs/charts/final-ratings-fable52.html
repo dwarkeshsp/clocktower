@@ -1,0 +1,45 @@
+<!doctype html><meta charset="utf-8"><title>Clocktower ratings with Fable 5.2</title>
+<style>
+/* Static chart for the blog (rendered to PNG): each model's Elo at its release date, labelled to the right. */
+html,body{margin:0;background:#fcfcfb}
+body{width:1200px;font-family:Inter,system-ui,sans-serif;color:#141a22}
+.wrap{padding:44px 52px 30px}
+h1{font:700 34px/1.15 "Inter Display",Inter,sans-serif;margin:0 0 14px;letter-spacing:-.01em}
+.sub{font-size:16px;color:#4b5563;margin:0 0 16px}
+.legend b{display:inline-block;width:24px;border-top:2.5px dashed currentColor;margin:0 8px 0 4px;vertical-align:4px}
+.legend{display:flex;gap:26px;font-size:16px;color:#4b5563;align-items:center}
+.legend i{display:inline-block;width:13px;height:13px;margin-right:8px;vertical-align:-1px}
+svg text{font-family:Inter,sans-serif}
+</style>
+<div class="wrap">
+  <h1>Blood on the Clocktower eval</h1>
+  <div class="legend"><span><i style="background:#0A7FA0;border-radius:2px"></i>OpenAI</span><span><i style="background:#C2562E;border-radius:50%"></i>Anthropic</span><span>Bars: 90% intervals</span></div>
+  <svg id="c"></svg>
+</div>
+<script>
+const D=__DATA__;
+const N={'claude-opus-4-6':'Opus 4.6','gpt-5.4':'GPT-5.4','claude-opus-4-7':'Opus 4.7','gpt-5.5':'GPT-5.5','claude-opus-4-8':'Opus 4.8','claude-fable-5':'Fable 5','gpt-5.6-sol':'GPT-5.6 Sol','claude-fable-5-1':'Fable 5.1','gpt-6-astra':'GPT-6 Astra','claude-opus-5-5':'Opus 5.5','gpt-6.1-sol':'GPT-6.1 Sol','claude-fable-5-2':'Fable 5.2'};
+const LEFT={'gpt-6.1-sol':1},TOP={'claude-fable-5-1':1};  // labels drawn left of the mark, or above its bar, where the right is taken
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const NS='http://www.w3.org/2000/svg',svg=document.getElementById('c');
+const el=(t,a,x)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;svg.appendChild(e);return e};
+// plot area: release date across, Elo up; the right margin holds the labels of the last models
+const W=1096,H=620,L=100,R=150,T=24,B=44,lo=1000,hi=2100;
+const day=s=>Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10)),t0=Date.UTC(2026,0,20),t1=Date.UTC(2026,10,20);
+const x=s=>L+(day(s)-t0)/(t1-t0)*(W-L-R), y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+svg.setAttribute('width',W);svg.setAttribute('height',H);
+for(let v=lo;v<=hi;v+=100){el('line',{x1:L,x2:W,y1:y(v),y2:y(v),stroke:v===lo?'#cfd4db':'#eceef1'});
+  el('text',{x:L-14,y:y(v)+5,'text-anchor':'end','font-size':15,fill:'#7b8494'},v.toLocaleString('en-US'))}
+for(let m=1;m<=10;m++){const s=`2026-${String(m+1).padStart(2,'0')}-01`;
+  el('text',{x:x(s),y:H-B+30,'text-anchor':'middle','font-size':15,fill:'#7b8494'},MON[m])}
+el('text',{x:12,y:(T+H-B)/2,'text-anchor':'middle','font-size':16,'font-weight':600,fill:'#4b5563',transform:`rotate(-90 12 ${(T+H-B)/2})`},'Elo');
+for(const m of D.models){const c=m.lab==='Anthropic'?'#C2562E':'#0A7FA0';
+  const bx=x(m.date),st={stroke:c,'stroke-width':3,'stroke-linecap':'round','stroke-opacity':.35};
+  el('line',{x1:bx,x2:bx,y1:y(m.c90[0]),y2:y(m.c90[1]),...st});
+  for(const v of m.c90)el('line',{x1:bx-7,x2:bx+7,y1:y(v),y2:y(v),...st})}
+for(const m of D.models){const c=m.lab==='Anthropic'?'#C2562E':'#0A7FA0',cx=x(m.date),cy=y(m.combined);
+  if(m.lab==='Anthropic')el('circle',{cx,cy,r:9,fill:c});
+  else el('rect',{x:cx-8.5,y:cy-8.5,width:17,height:17,rx:2.5,fill:c});
+  el('text',{x:TOP[m.id]?cx:LEFT[m.id]?cx-16:cx+16,y:TOP[m.id]?y(m.c90[1])-12:cy+6,'text-anchor':TOP[m.id]?'middle':LEFT[m.id]?'end':'start','font-size':17,'font-weight':600,fill:'#141a22',stroke:'#fcfcfb','stroke-width':7,'stroke-linejoin':'round','paint-order':'stroke'},N[m.id]);
+}
+</script>
