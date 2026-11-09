@@ -3,7 +3,7 @@
  "out": "games/v17/f6b",
  "seed": 191000,
  "players": "10-12",
- "budget": 1000,
+ "budget": 3000,
  "matchups": [
   {
    "name": "fable52-v-sol61",
