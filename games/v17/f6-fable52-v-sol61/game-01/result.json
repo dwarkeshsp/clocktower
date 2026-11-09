@@ -1,0 +1,63 @@
+{
+  "winner": null,
+  "reason": "budget: spend $2420.48 has reached the cap $1000.00",
+  "stopped": "budget: spend $2420.48 has reached the cap $1000.00",
+  "days": 5,
+  "seed": 190000,
+  "starting": {
+    "Alex": "Poisoner",
+    "Blair": "Imp",
+    "Casey": "Mayor",
+    "Drew": "Scarlet Woman",
+    "Ellis": "Undertaker",
+    "Frankie": "Librarian",
+    "Gray": "Ravenkeeper",
+    "Harper": "Fortune Teller",
+    "Indigo": "Drunk",
+    "Jules": "Investigator",
+    "Kit": "Washerwoman"
+  },
+  "final": {
+    "Alex": "Poisoner",
+    "Blair": "Imp",
+    "Casey": "Mayor",
+    "Drew": "Scarlet Woman",
+    "Ellis": "Undertaker",
+    "Frankie": "Librarian",
+    "Gray": "Ravenkeeper",
+    "Harper": "Fortune Teller",
+    "Indigo": "Drunk",
+    "Jules": "Investigator",
+    "Kit": "Washerwoman"
+  },
+  "bluffs": [
+    "Chef",
+    "Butler",
+    "Virgin"
+  ],
+  "red_herring": "Frankie",
+  "drunk_as": "Empath",
+  "cost": 34.4342,
+  "calls": 706,
+  "tokens": {
+    "input": 2620,
+    "cache_read": 18765551,
+    "cache_write": 1782956,
+    "output": 415393
+  },
+  "seconds": 4401.2,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "gpt-6.1-sol",
+    "Casey": "claude-fable-5-2",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "claude-fable-5-2",
+    "Frankie": "claude-fable-5-2",
+    "Gray": "claude-fable-5-2",
+    "Harper": "claude-fable-5-2",
+    "Indigo": "claude-fable-5-2",
+    "Jules": "claude-fable-5-2",
+    "Kit": "claude-fable-5-2"
+  }
+}
