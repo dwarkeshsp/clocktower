@@ -3,7 +3,9 @@
 P(good wins) = logistic(r[good] - r[evil] + h + setup), setup = which Minions were in play (vs a Poisoner
 game) and the table size (vs 10 players). One combined rating per model, plus a detection (good) /
 deception (evil) split; 90% intervals from a bootstrap over side-swapped pairs (both games of a pair
-resampled together). Ratings are centred on 1500 = the mean of the models in `experiments/models-2026.json`.
+resampled together). Ratings are centred on 1500 = the mean of the models in `experiments/models-2026.json`,
+except those marked `"centre": false` (models added after the 2026 study: the scale stays where it was, so
+later models show how far ratings have risen).
 
     python -m clocktower ratings                    # fit -> docs/plans/f2-ratings.json and f2-ratings.html
     python -m clocktower ratings --lab-trends       # also per-lab gains -> docs/charts/lab-trends.json and .html
@@ -26,7 +28,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 K = 400 / math.log(10)  # logits -> Elo points
 MINIONS = ['Spy', 'Scarlet Woman', 'Baron']  # setup terms, each vs a Poisoner game
-BATCHES = ['v16/f2-*', 'v17/f3*-*', 'v17/f4-*', 'v17/f5-*']  # the 2026 study
+BATCHES = ['v16/f2-*', 'v17/f3*-*', 'v17/f4-*', 'v17/f5-*',  # the 2026 study
+           'v17/f6*-*']  # Fable 5.2 (Nov 2026)
 DROPPED = ('/v16/', 'claude-opus-4-8')  # Opus 4.8's 20 v16 games (bugged retries; replayed under v17)
 
 
@@ -51,10 +54,12 @@ def load(games_root=ROOT / 'games', batches=BATCHES):
     return games
 
 
-def fit(games, names, split=False, prior=1.5, iters=40):
+def fit(games, names, split=False, prior=1.5, iters=40, centre=None):
     """Newton's method on the penalised log-likelihood (Gaussian prior: sd 1.5 logits on ratings, 3 on setup
-    terms, flat on h). Returns (combined or detection, None or deception, setup terms + h in Elo)."""
+    terms, flat on h). Returns (combined or detection, None or deception, setup terms + h in Elo).
+    `centre`: the models whose mean is 1500 (default: all of `names`)."""
     N = len(names); idx = {n: i for i, n in enumerate(names)}
+    c = [idx[n] for n in (centre or names)]
     P = (2 * N if split else N) + len(MINIONS) + 2 + 1
     X = np.zeros((len(games), P)); y = np.array([g['won'] for g in games], float)
     for k, g in enumerate(games):
@@ -71,9 +76,9 @@ def fit(games, names, split=False, prior=1.5, iters=40):
         p = 1 / (1 + np.exp(-X @ w)); H = (X.T * (p * (1 - p))) @ X + np.diag(pr)
         w += np.linalg.solve(H, X.T @ (y - p) - pr * w)
     if split:
-        d = w[:N] - w[:N].mean(); v = w[N:2 * N] - w[N:2 * N].mean()
+        d = w[:N] - w[:N][c].mean(); v = w[N:2 * N] - w[N:2 * N][c].mean()
         return {n: 1500 + K * d[i] for n, i in idx.items()}, {n: 1500 + K * v[i] for n, i in idx.items()}, w[-6:] * K
-    r = w[:N] - w[:N].mean()
+    r = w[:N] - w[:N][c].mean()
     return {n: 1500 + K * r[i] for n, i in idx.items()}, None, w[-6:] * K
 
 
@@ -95,12 +100,13 @@ def q90(xs):
 def ratings(games, models, boot=500, seed=0):
     """The ratings JSON (docs/plans/f2-ratings.json)."""
     ms = models; names = [m['id'] for m in ms]; yrs = years(ms)
-    comb, _, extra = fit(games, names); det, dec, _ = fit(games, names, split=True)
+    centre = [m['id'] for m in ms if m.get('centre', True)]
+    comb, _, extra = fit(games, names, centre=centre); det, dec, _ = fit(games, names, split=True, centre=centre)
     pairs = by_pair(games)
     keys = list(pairs); rng = random.Random(seed); B = collections.defaultdict(list)
     for _ in range(boot):
         s = [g for k in (rng.choice(keys) for _ in keys) for g in pairs[k]]
-        c, _, _ = fit(s, names); d, v, _ = fit(s, names, split=True)
+        c, _, _ = fit(s, names, centre=centre); d, v, _ = fit(s, names, split=True, centre=centre)
         for n in names:
             B['c' + n].append(c[n]); B['d' + n].append(d[n]); B['v' + n].append(v[n])
         for key, rr in (('slope_c', c), ('slope_d', d), ('slope_v', v)):

@@ -48,6 +48,7 @@ def _openai(inp, out, explicit_cache=True):
 PRICES = {  # USD per million tokens, list prices as of Sept 2026; Flex is half price
     'claude-opus-5-5': _price(4, 20, read=0.20),
     'claude-opus-5': _price(5, 25),
+    'claude-fable-5-2': _price(8, 40, read=0.20),  # checked 2026-11-09
     'claude-fable-5-1': _price(10, 50, read=0.25),
     'claude-fable-5': _price(10, 50),
     'claude-opus-4-8': _price(5, 25),
@@ -84,6 +85,7 @@ PRICES = {  # USD per million tokens, list prices as of Sept 2026; Flex is half 
 # ceiling then runs at low effort instead; a model found to reject it at run time is marked here too).
 MODELS = {
     'claude-opus-5-5': {'can_disable_thinking': False},
+    'claude-fable-5-2': {'can_disable_thinking': False},
     'claude-fable-5-1': {'can_disable_thinking': False},
     'claude-fable-5': {'can_disable_thinking': False},
     'claude-sonnet-5-5': {'can_disable_thinking': False},
