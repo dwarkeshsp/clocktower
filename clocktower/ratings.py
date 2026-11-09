@@ -10,6 +10,7 @@ later models show how far ratings have risen).
     python -m clocktower ratings                    # fit -> docs/plans/f2-ratings.json and f2-ratings.html
     python -m clocktower ratings --lab-trends       # also per-lab gains -> docs/charts/lab-trends.json and .html
     python -m clocktower ratings --games /path/to/games --boot 100 --out /tmp/r.json --no-page
+    python -m clocktower ratings --models experiments/models-2026-fable52.json --out docs/plans/f6-ratings.json --no-page
 
 Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-*`).
 """
@@ -175,8 +176,9 @@ def lab_trends_page(data, trends, template=ROOT / 'docs/charts/lab-trends.templa
 
 
 def main(games_root=None, out=None, models=None, boot=500, page=True, trends=False, trends_out=None):
-    games = load(games_root or ROOT / 'games')
     ms = json.loads(Path(models or ROOT / 'experiments/models-2026.json').read_text())
+    ids = {m['id'] for m in ms}  # games of models outside the list are left out (so the 2026 list still gives the 2026 fit)
+    games = [g for g in load(games_root or ROOT / 'games') if g['good'] in ids and g['evil'] in ids]
     data = ratings(games, ms, boot)
     out = Path(out or ROOT / 'docs/plans/f2-ratings.json')
     out.write_text(json.dumps(data, indent=1))
