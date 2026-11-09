@@ -1,0 +1,75 @@
+{
+ "note": "Fable 5.2, the rest of the $1,000: three more side-swapped pairs against each of the pilot's six opponents, launched alongside the pilot (not after a refit) to get a rating the day the model came out. Four pairs per matchup is the allocate cap; each matchup gets every Minion once across f6 and f6b.",
+ "out": "games/v17/f6b",
+ "seed": 191000,
+ "players": "10-12",
+ "budget": 1000,
+ "matchups": [
+  {
+   "name": "fable52-v-sol61",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-6.1-sol",
+   "pairs": 3,
+   "minions": [
+    "Spy",
+    "Scarlet Woman",
+    "Baron"
+   ]
+  },
+  {
+   "name": "fable52-v-gpt56sol",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-5.6-sol",
+   "pairs": 3,
+   "minions": [
+    "Poisoner",
+    "Scarlet Woman",
+    "Baron"
+   ]
+  },
+  {
+   "name": "fable52-v-opus55",
+   "good": "claude-fable-5-2",
+   "evil": "claude-opus-5-5",
+   "pairs": 3,
+   "minions": [
+    "Poisoner",
+    "Spy",
+    "Baron"
+   ]
+  },
+  {
+   "name": "fable52-v-fable51",
+   "good": "claude-fable-5-2",
+   "evil": "claude-fable-5-1",
+   "pairs": 3,
+   "minions": [
+    "Poisoner",
+    "Spy",
+    "Scarlet Woman"
+   ]
+  },
+  {
+   "name": "fable52-v-astra",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-6-astra",
+   "pairs": 3,
+   "minions": [
+    "Spy",
+    "Scarlet Woman",
+    "Baron"
+   ]
+  },
+  {
+   "name": "fable52-v-gpt55",
+   "good": "claude-fable-5-2",
+   "evil": "gpt-5.5",
+   "pairs": 3,
+   "minions": [
+    "Poisoner",
+    "Scarlet Woman",
+    "Baron"
+   ]
+  }
+ ]
+}
