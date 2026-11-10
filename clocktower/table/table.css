@@ -249,7 +249,6 @@ details summary em { font: italic 400 14px var(--serif); color: var(--faint); }
 .seat.filtered .name { color: var(--text); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--faint); }
 .seat.picked .token { box-shadow: 0 0 0 1.5px var(--outline), 0 0 0 5px var(--gold); transform: translateY(-3px); }
 .seat.picked .name { background: var(--gold); color: #1a1206; font-weight: 600; }
-.seat.dim { opacity: .38; }
 .badge { position: absolute; min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border-radius: 10px; font: 600 12px/1 var(--sans); box-shadow: 0 0 0 2px var(--bg); }
 .badge.wh { right: -4px; bottom: -2px; background: var(--surface-2); color: var(--text); }
 .badge.hand { left: -5px; top: -4px; background: var(--gold); color: #1a1206; padding: 0 3px; }
@@ -277,6 +276,7 @@ details summary em { font: italic 400 14px var(--serif); color: var(--faint); }
 .chip:hover { color: var(--text); border-color: var(--faint); }
 .chip.on { background: var(--surface-2); color: var(--text); border-color: var(--text-2); }
 .chip.who { color: var(--gold); border-color: rgba(224,176,82,.5); }
+.chip-hint { flex: none; align-self: center; padding: 0 4px; color: var(--faint); font: italic 400 14.5px/1 var(--serif); white-space: nowrap; }
 #feed { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 14px 22px; overscroll-behavior: contain; }
 #jump { position: absolute; right: 16px; bottom: calc(var(--dock-h) + 12px); z-index: 4; min-height: 40px; padding: 0 14px; background: var(--surface-2); color: var(--text); border: 1px solid var(--rule-2); border-radius: 20px; font: 600 14px/1 var(--sans); box-shadow: 0 4px 14px rgba(0,0,0,.5); }
 .ev { margin: 0 0 12px; }
@@ -391,6 +391,21 @@ details summary em { font: italic 400 14px var(--serif); color: var(--faint); }
 .prompt.open { display: block; -webkit-line-clamp: unset; }
 .timer { flex: none; font: 600 16px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--text-2); padding: 7px 9px; border: 1px solid var(--rule-2); border-radius: 6px; }
 .timer.low { color: #1a1206; background: var(--gold); border-color: var(--gold); }
+/* who the table is waiting on: counts, a pip per seat, and why nothing new arrives meanwhile */
+.tally { margin: 10px 0 0; padding: 9px 12px 10px; border: 1px solid var(--rule-2); border-radius: 6px; background: var(--bg); }
+.tally-line { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin: 0; font: 500 14.5px/1.3 var(--sans); color: var(--text-2); }
+.tally-line b { font-weight: 600; color: var(--text); }
+#dock.turn .tally-line b { color: var(--gold-2); }
+.tally-n { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-size: 13.5px; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pips { display: inline-flex; gap: 3px; }
+.pips i { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); }
+.pips i.done { background: var(--faint); }
+.pips i.now { background: var(--gold); }
+.tally-why { margin: 5px 0 0; font-size: 13.5px; line-height: 1.45; color: var(--faint); }
+#dock.idle .tally { margin: 6px 0 2px; }
+.pick-label { margin: 12px 0 0; font: 600 13px/1 var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--text-2); }
+.pick-label em { font: italic 400 14.5px/1 var(--serif); letter-spacing: 0; text-transform: none; }
+.pick-label + .picks { margin-top: 8px; }
 .picks { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 10px; }
 .pick { min-height: 44px; min-width: 44px; padding: 0 14px; background: var(--bg); border: 1px solid var(--rule-2); border-radius: 22px; color: var(--text); font: 500 15px/1 var(--sans); transition: transform .06s, background .12s; }
 .pick:hover { border-color: var(--faint); }

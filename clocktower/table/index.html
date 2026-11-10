@@ -39,7 +39,7 @@
           <li><b>Each day</b>: six rounds of private whispers, three rounds in the town square, then nominations and votes.
             Each night the Storyteller wakes characters with abilities.</li>
           <li><b>Good wins</b> by executing the Demon; <b>evil wins</b> when only two players are left alive.</li>
-          <li>At the end the Grimoire opens: every character, every AI's model, and what the AIs believed about you.</li>
+          <li>At the end the Grimoire opens: every character, every AI's model, and each AI's private reasoning.</li>
         </ol>
       </div>
     </section>
@@ -86,7 +86,10 @@
           <label class="field"><span class="label"><i class="dot good"></i>Good AI players</span><select id="good-model"></select></label>
           <label class="field"><span class="label"><i class="dot evil"></i>Evil AI players</span><select id="evil-model"></select></label>
         </div>
-        <label class="field"><span class="label">Turn timer <em>a human turn passes when it runs out</em></span><select id="timer"></select></label>
+        <div class="grid2">
+          <label class="field"><span class="label">AI thinking <em>how long the AIs take</em></span><select id="effort"></select></label>
+          <label class="field"><span class="label">Turn timer <em>a human turn passes at zero</em></span><select id="timer"></select></label>
+        </div>
         <p class="fine" id="estimate"></p>
         <div id="byo" hidden>
           <details id="byo-box">

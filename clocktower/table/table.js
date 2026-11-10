@@ -38,6 +38,10 @@ const SETUPS = { 5: [3, 0, 1], 6: [3, 1, 1], 7: [5, 0, 1], 8: [5, 1, 1], 9: [5, 
 const TEAM_TEXT = {
   good: ['Good', 'Find the Demon'], evil: ['Evil', 'Deceive the town'], any: ['Either', 'Let fate decide'],
 };
+const EFFORT_TEXT = {
+  low: 'Quick: the fastest turns', medium: 'Balanced: slower turns',
+  high: 'Full, as in the benchmark: slow (a day can take an hour)',
+};
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
 
 const TID = (location.pathname.match(/^\/t\/([\w-]+)/) || [])[1] || null;  // this table (none: the home page)
@@ -162,13 +166,20 @@ function renderLobby(L) {
     tm.innerHTML = L.timers.map((t) => `<option value="${t}">${t ? (t < 120 ? `${t} seconds` : `${t / 60} minutes`) : 'No limit'}</option>`).join('');
     tm.value = c.timer; tm.dataset.v = String(c.timer);
   }
+  const ef = $('effort');
+  ef.disabled = !L.me.host;
+  const efforts = L.efforts || [];
+  if (ef.dataset.v !== c.effort + efforts.join() || !ef.options.length) {
+    ef.innerHTML = efforts.map((e) => `<option value="${esc(e)}">${esc(EFFORT_TEXT[e] || e)}</option>`).join('');
+    ef.value = c.effort; ef.dataset.v = c.effort + efforts.join();
+  }
   const cost = (id) => (L.models.find((m) => m.id === id) || {}).seat_cost;
   const evilSeats = mn + 1, goodSeats = n - evilSeats, ai = Math.max(0, n - humans) / n;
   const cg = cost(c.good_model), ce = cost(c.evil_model);
   const est = cg == null || ce == null ? null : Math.max(0, (goodSeats * cg + evilSeats * ce) * ai);
   $('estimate').innerHTML = est == null ? '' : (L.paid_by === 'house' ? `<b>Free</b>: the AI players are on Clocktower Bench (up to $${L.caps.game} a game). `
     : L.paid_by === 'player' ? `On your key: roughly <b>$${est.toFixed(2)}</b> of API calls per game, from past games. ` : '')
-    + 'Ratings are the 2026 study\'s Elo.';
+    + 'Ratings are the 2026 study\'s Elo, measured at full thinking.';
   $('byo').hidden = !L.me.host;
   $('byo-cap').textContent = `$${L.caps.byo_game}`;
   $('byo-have').textContent = L.keys.length ? `Using your ${L.keys.map((k) => (k === 'openai' ? 'OpenAI' : 'Anthropic')).join(' and ')} key for this table.` : '';
@@ -206,6 +217,7 @@ function wireLobby() {
   $('good-model').onchange = (e) => set({ good_model: e.target.value });
   $('evil-model').onchange = (e) => set({ evil_model: e.target.value });
   $('timer').onchange = (e) => set({ timer: +e.target.value });
+  $('effort').onchange = (e) => set({ effort: e.target.value });
   copyButton('share-copy', 'share-url');
   copyButton('mine-copy', 'mine-url');
   $('claim-go').onclick = () => api('host', {}).then(pollLobby).catch(() => {});
@@ -271,6 +283,7 @@ function resetTable(game) {
     game, since: 0, players: [], me: null, pending: null, sent: null, over: false, reveal: null, revealShown: false,
     filter: 'all', who: null, head: '', day: 0, stage: '', nominee: null, yes: new Set(), block: null, tie: false,
     speaking: null, wh: {}, ballot: null, form: null, deadline: null, alertedTurn: null, did: '', needed: null,
+    progress: null, townSig: '',
   });
   $('feed').innerHTML = '';
   $('reveal').hidden = true;
@@ -306,6 +319,7 @@ async function pollState() {
   T.run = S.run;
   T.since = S.next;
   T.players = S.players; T.me = S.me; T.over = S.over; T.reveal = S.reveal; T.spent = S.spent; T.host = S.host;
+  T.progress = S.progress || null;
   const feed = $('feed'), stick = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 160;
   const first = !asked;
   S.events.forEach((ev) => addEvent(ev, first));
@@ -319,6 +333,7 @@ async function pollState() {
   if ((S.pending && S.pending.turn) !== prevTurn) { T.form = null; renderDock(); }
   else if (!S.pending && waitSig() !== T.waitSig) renderDock();   // idle: keep the waiting line in step with the phase
   else tickDock();
+  paintTally();
   if (S.pending && T.sent !== S.pending.turn && T.alertedTurn !== S.pending.turn) { T.alertedTurn = S.pending.turn; alertTurn(); }
   if (!S.pending || T.sent === S.pending.turn) document.title = 'Clocktower';
   renderBar(); renderPhase(); renderTown(); renderBanner();
@@ -414,22 +429,27 @@ function seatEl(p) {
   if (T.block && T.block.name === p.name) { badges += `<span class="badge blk" title="On the block">${T.block.votes}</span>`; label += `, on the block with ${T.block.votes}`; }
   if (!p.alive) label += ', dead';
   el.innerHTML = `<span class="token${ring}">${face}${p.alive ? '' : '<span class="shroud"></span>'}${badges}</span><span class="name">${esc(isMe ? 'You' : p.name)}</span>`;
-  el.setAttribute('aria-label', label);
   if (T.speaking && T.speaking.name === p.name && Date.now() - T.speaking.at < 4000) el.classList.add('speaking');
   if (T.nominee === p.name) el.classList.add('nominee');
-  if (T.who === p.name) { el.classList.add('filtered'); el.setAttribute('aria-pressed', 'true'); }
+  // A seat is always the chronicle's filter, your turn or not (who to whisper to, nominate or choose is picked
+  // in the dock). The seats you have picked there are ringed in gold here, so the choice shows on the circle.
+  const on = T.who === p.name;
+  if (on) el.classList.add('filtered');
+  el.setAttribute('aria-pressed', on);
   const f = T.pending && T.sent !== T.pending.turn ? T.form : null;
-  if (f && (f.picks.includes(p.name) || f.shot === p.name)) el.classList.add('picked', ...(f.mode === 'whisper' ? [] : ['target']));
-  if (f && f.pickable && !f.pickable.includes(p.name) && !isMe) el.classList.add('dim');
+  if (f && (f.picks.includes(p.name) || f.shot === p.name)) { el.classList.add('picked'); label += ', chosen for your move'; }
+  const what = on ? 'Showing only what involves them: press to show everything' : isMe ? 'Show only what involves you' : `Show only what involves ${p.name}`;
+  el.setAttribute('aria-label', `${label}. ${what}`);
+  el.title = on ? 'Show everything again' : isMe ? 'Show only what involves you' : `Show only what involves ${p.name}`;
   el.onclick = () => seatClicked(p.name);
   return el;
 }
 
 function seatClicked(name) {
-  const f = T.pending && T.sent !== T.pending.turn ? T.form : null;
-  if (f && f.pickable && f.pickable.includes(name)) { togglePick(name); return; }
   T.who = T.who === name ? null : name;
   renderFilters(); applyFilter(); renderTown();
+  const feed = $('feed');
+  feed.scrollTop = feed.scrollHeight; $('jump').hidden = true;   // the latest of what is now shown
 }
 
 function dial() {
@@ -476,14 +496,23 @@ function renderCircle(box) {
 }
 
 function renderTown() {
-  if (getComputedStyle($('town')).display !== 'none') renderCircle($('circle'));
-  const strip = $('strip');
-  if (getComputedStyle(strip).display !== 'none') {
+  const wide = getComputedStyle($('town')).display !== 'none', strip = $('strip');
+  const narrow = getComputedStyle(strip).display !== 'none', sheet = !$('sheet').hidden && $('sheet').dataset.kind === 'town';
+  const f = T.pending && T.sent !== T.pending.turn ? T.form : null;
+  const sig = JSON.stringify([T.players, T.me, T.who, f && [f.picks, f.shot], T.nominee, [...T.yes], T.block, T.tie, T.wh, T.head, T.stage, T.over,
+    T.speaking && Date.now() - T.speaking.at < 4000 && T.speaking.name, wide, narrow, sheet, wide && $('circle').clientWidth]);
+  if (sig === T.townSig) return;
+  T.townSig = sig;
+  // keep the keyboard's place: the seats are rebuilt, so focus goes back to the same player's seat
+  const at = document.activeElement, name = at && at.classList.contains('seat') ? at.dataset.name : null, home = name && at.parentElement;
+  if (wide) renderCircle($('circle'));
+  if (narrow) {
     const n = T.players.length;
     strip.style.setProperty('--cols', n <= 6 ? n : Math.ceil(n / 2));
     strip.innerHTML = ''; T.players.forEach((p) => strip.appendChild(seatEl(p)));
   }
-  if (!$('sheet').hidden && $('sheet').dataset.kind === 'town') renderCircle($('sheet-body').querySelector('.circle'));
+  if (sheet) renderCircle($('sheet-body').querySelector('.circle'));
+  if (name && home && document.contains(home)) home.querySelector(`.seat[data-name="${CSS.escape(name)}"]`)?.focus({ preventScroll: true });
 }
 
 function renderBar() {
@@ -518,7 +547,8 @@ const CATS = [['all', 'All'], ['town', 'Town square'], ['whisper', 'Whispers'], 
 function renderFilters() {
   const f = $('filters');
   f.innerHTML = CATS.map(([k, label]) => `<button class="chip${T.filter === k ? ' on' : ''}" data-f="${k}" aria-pressed="${T.filter === k}">${label}</button>`).join('') +
-    (T.who ? `<button class="chip who" data-who="1" aria-label="Stop showing only ${esc(T.who)}">${esc(T.who)} &times;</button>` : '');
+    (T.who ? `<button class="chip who" data-who="1" aria-label="Showing only what involves ${esc(T.who)}. Show everyone again">Only ${esc(T.who === (T.me && T.me.seat) ? 'you' : T.who)} &times;</button>`
+      : '<span class="chip-hint">Tap a player to see only them</span>');
   f.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { T.filter = b.dataset.f; renderFilters(); applyFilter(); });
   const w = f.querySelector('[data-who]');
   if (w) w.onclick = () => { T.who = null; renderFilters(); applyFilter(); renderTown(); };
@@ -675,7 +705,6 @@ function newForm(p) {
 function togglePick(name) {
   const f = T.form;
   if (!f) return;
-  if (f.shotPicking) { f.shot = f.shot === name ? null : name; renderDock(); renderTown(); return; }
   const i = f.picks.indexOf(name);
   if (i >= 0) f.picks.splice(i, 1);
   else { f.picks.push(name); if (f.picks.length > f.max) f.picks.shift(); }
@@ -702,7 +731,7 @@ function headline(p, f) {
   if (need) T.needed = +need;
   switch (p.kind === 'comment' ? 'comment' : f.mode) {
     case 'night': return p.kind === 'ravenkeeper' ? 'You died tonight. Choose a player to learn their character.' : `Choose ${f.max === 2 ? 'two players' : 'a player'}.`;
-    case 'whisper': return 'Whisper to one or two players. Only they will see it.';
+    case 'whisper': return 'Whisper to one or two players. Only they will see it.';  // who: the "Whisper to" buttons below
     case 'speak': return 'Speak to the whole town, or stay quiet.';
     case 'comment': return `Say something before the vote on ${esc(nominee)}, or stay quiet.`;
     case 'nominate': return 'Nominate a player for execution, or pass.';
@@ -723,6 +752,45 @@ function announce(text) { const a = $('announce'); if (a) { a.textContent = ''; 
 
 const waitSig = () => [T.stage, T.nominee, T.over, T.me && T.me.alive].join('|');
 
+// ---------------------------------------------------------------- who the table is waiting on
+// Turns are simultaneous within a group: the engine asks a few seats at once and shows what they said only
+// when all of them have answered, then asks the next group. So while it is your turn nothing new can arrive,
+// which looks like a frozen chat unless the page says so. The server sends counts only (never which seats).
+const people = (n) => `${n} ${n === 1 ? 'player' : 'players'}`;
+
+function tallyHTML() {
+  const g = T.progress, ts = turnState();
+  if (ts === 'over') return '';
+  const mine = ts === 'yours', priv = T.pending && T.pending.mode === 'private';
+  if (!g) return mine ? '<p class="tally-line"><b>The table is waiting for you.</b></p>' : '';
+  // right after you send, the server may still count you for one poll
+  const others = Math.max(0, g.waiting - (g.you ? 1 : 0));
+  const pips = g.of > 1 ? `<span class="pips" aria-hidden="true">${Array.from({ length: g.of }, (_, i) => `<i class="${i < g.done ? 'done' : i < g.done + g.waiting ? 'now' : ''}"></i>`).join('')}</span>` : '';
+  const count = g.of > 1 ? `<span class="tally-n">${pips}<span>${g.done} of ${g.of} ${g.kind === 'nominate' ? 'have answered' : 'have had their turn'}</span></span>` : '';
+  let who, why = '';
+  if (mine) {
+    who = `Waiting on you${others ? ` and ${others} other${others === 1 ? '' : 's'}` : ''}.`;
+    if (g.groups) why = `Turns are taken a few players at a time. What your group ${priv ? 'whispers is delivered' : 'says is shown'} only once all of you have acted, so nothing new will arrive until you ${priv ? 'whisper or stay silent' : 'speak or stay quiet'}.`;
+    else if (g.kind === 'nominate') why = 'Everyone is asked at once, and the answers are shown together: nothing new will arrive until you nominate or pass.';
+    else if (g.kind === 'vote') why = 'Votes go one at a time, clockwise: the next player votes after you.';
+  } else {
+    if (!others) return '';
+    who = `Waiting on ${people(others)}.`;
+    if (g.groups) why = `What they ${T.stage === 'private' ? 'whisper is delivered' : 'say is shown'} together, once ${others === 1 ? 'they have' : 'all of them have'} acted.`;
+    else if (g.kind === 'nominate') why = 'The answers are shown together once everyone has answered.';
+    else if (g.kind === 'vote') why = 'Votes go one at a time, clockwise.';
+  }
+  return `<p class="tally-line"><b>${who}</b>${count}</p>${why ? `<p class="tally-why">${why}</p>` : ''}`;
+}
+
+function paintTally() {
+  const el = $('tally');
+  if (!el) return;
+  const h = tallyHTML();
+  if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; setDockHeight(); }
+}
+const tally = () => { const h = tallyHTML(); return `<div class="tally" id="tally" role="status" data-h="${esc(h)}"${h ? '' : ' hidden'}>${h}</div>`; };
+
 function renderDock() {
   const dock = $('dock'), p = T.pending;
   dock.className = '';
@@ -733,22 +801,22 @@ function renderDock() {
     $('see-reveal').onclick = renderReveal;
     return setDockHeight();
   }
-  if (!p) { dock.className = 'idle'; dock.innerHTML = `<div class="wait">${ICON.glass}<span>${waitingText()}</span></div>`; return setDockHeight(); }
+  if (!p) { dock.className = 'idle'; dock.innerHTML = `<div class="wait">${ICON.glass}<span>${waitingText()}</span></div>${tally()}`; return setDockHeight(); }
   if (T.sent === p.turn) {
     dock.className = 'idle sealed';
-    dock.innerHTML = `<div class="wait">${ICON.seal}<span><b>${esc(T.did || 'Sent')}.</b> Waiting for the others…</span></div>`;
+    dock.innerHTML = `<div class="wait">${ICON.seal}<span><b>${esc(T.did || 'Sent')}.</b> Waiting for the others…</span></div>${tally()}`;
     return setDockHeight();
   }
   const f = T.form || (T.form = newForm(p));
   const kindLabel = p.kind === 'comment' ? KIND.comment : p.kind === 'ravenkeeper' ? KIND.ravenkeeper : KIND[f.mode];
   dock.className = 'turn ' + (f.mode === 'whisper' ? 'private' : f.mode === 'night' ? 'night' : f.mode === 'vote' || f.mode === 'nominate' || f.mode === 'defense' ? 'blood' : 'public');
   let h = `<div class="ask"><div class="what"><div class="kind"><span class="yt">Your turn</span>${kindLabel}</div>
-    <div class="head">${headline(p, f)}</div><div class="prompt" role="button" tabindex="0" aria-expanded="${!!f.promptOpen}">${esc(stripPrompt(p.prompt))}</div></div>${timerHTML()}</div>`;
+    <div class="head">${headline(p, f)}</div><div class="prompt" role="button" tabindex="0" aria-expanded="${!!f.promptOpen}">${esc(stripPrompt(p.prompt))}</div></div>${timerHTML()}</div>${tally()}`;
   let foot = '';  // the action buttons: rendered outside the scrolling body so they are always in view
-  const picks = (list, cls = '') => `<div class="picks" role="group" aria-label="Players">${list.map((n) => {
+  const picks = (list, label, note = '') => `<div class="pick-label" id="pick-label">${label}${note ? ` <em>${note}</em>` : ''}</div><div class="picks" role="group" aria-labelledby="pick-label">${list.map((n) => {
     const dead = !T.players.find((x) => x.name === n)?.alive;
     const on = f.picks.includes(n);
-    return `<button type="button" class="pick${on ? ' on' : ''}${dead ? ' dead' : ''}${cls}" data-pick="${esc(n)}" aria-pressed="${on}">${esc(n === T.me.seat ? 'yourself' : n)}</button>`;
+    return `<button type="button" class="pick${on ? ' on' : ''}${dead ? ' dead' : ''}" data-pick="${esc(n)}" aria-pressed="${on}">${esc(n === T.me.seat ? 'yourself' : n)}</button>`;
   }).join('')}</div>`;
   const textarea = (ph, limit, rows = 3) => `<div class="compose"><textarea id="say" rows="${rows}" placeholder="${ph}" aria-label="${ph}">${esc(f.text)}</textarea><span class="count" id="count">${words(f.text)}/${limit}</span></div>`;
   const slayer = () => {
@@ -759,14 +827,14 @@ function renderDock() {
       <button class="linkish" id="shot-close">Never mind</button></div>`;
   };
   if (f.mode === 'night') {
-    h += picks(p.options);
+    h += picks(p.options, f.max === 2 ? 'Choose two' : 'Choose');
     foot = `<div class="actions"><button class="primary" id="go" ${f.picks.length === f.max ? '' : 'disabled'}>Choose ${f.max === 2 ? (f.picks.length === 2 ? esc(f.picks.join(' and ')) : 'two') : f.picks[0] ? esc(f.picks[0] === T.me.seat ? 'yourself' : f.picks[0]) : ''}</button></div>`;
   } else if (f.mode === 'whisper') {
-    h += picks(f.pickable);
+    h += picks(f.pickable, 'Whisper to', 'one or two players');
     h += textarea(f.picks.length ? `Only ${f.picks.join(' and ')} will see this` : 'Pick one or two players, then whisper…', p.whisper_words, 2);
     foot = `<div class="actions"><button class="primary violet" id="go" ${f.picks.length && words(f.text) ? '' : 'disabled'}>${f.picks.length ? `Whisper to ${esc(f.picks.join(' & '))}` : 'Whisper'}</button><button class="ghost" id="pass">Stay silent</button></div>`;
   } else if (f.mode === 'nominate') {
-    h += picks(p.options);
+    h += picks(p.options, 'Nominate');
     h += textarea(f.picks[0] ? `Why ${f.picks[0]}? (your accusation)` : 'Pick a player to nominate, or pass', p.words, 2);
     foot = `<div class="actions"><button class="primary blood" id="go" ${f.picks.length ? '' : 'disabled'}>${f.picks[0] ? 'Nominate ' + esc(f.picks[0] === T.me.seat ? 'yourself' : f.picks[0]) : 'Nominate'}</button><button class="ghost" id="pass">Pass</button></div>`;
     h += slayer();
@@ -853,6 +921,7 @@ async function submit(pass, vote) {
   renderDock(); renderTown(); renderPhase();
   try {
     await api('act', { turn: p.turn, action: a });
+    pollState();  // what the move set in motion, without waiting out the poll interval
   } catch (e) {
     if (T.pending && T.pending.turn === p.turn) { T.sent = null; f.err = e.message; renderDock(); renderPhase(); }
   }
@@ -890,8 +959,8 @@ async function openSheet(kind) {
   document.querySelectorAll('.tools .icon').forEach((b) => b.classList.toggle('on', b.dataset.sheet === kind));
   if (kind === 'town') {
     $('sheet-title').textContent = 'The town';
-    body.innerHTML = '<div class="circle"></div><p class="fine center">Clockwise from the top. Tap a player to see only what involves them.</p>';
-    renderCircle(body.querySelector('.circle'));
+    body.innerHTML = '<div class="circle"></div><p class="fine center">Clockwise from the top. Tap a player to see only what involves them, at any time, your turn included; tap them again to see everything.</p>';
+    T.townSig = ''; renderTown();
   } else if (kind === 'me') {
     $('sheet-title').textContent = 'Your character';
     const names = T.players.map((p) => p.name), i = names.indexOf(me.seat), n = names.length;
@@ -924,7 +993,7 @@ async function openSheet(kind) {
     rules = rules || await api('rules');
     const parts = rules.text.split(/\n(?=[A-Z][A-Z ]+\n)/);
     const keep = parts.filter((s) => !/^(CHARACTERS|YOUR RESPONSE)\n/.test(s));
-    body.innerHTML = `<div class="rules"><p class="note">This is, word for word, what every AI player at this table was told (its system prompt), minus the characters (see the book) and the reply format. You have the same moves: one whisper per private-time turn, speech in the town square, nominations, votes and night choices, under the same word limits. Like the AIs, you can't see who is waiting on whom.</p>`
+    body.innerHTML = `<div class="rules"><p class="note">This is, word for word, what every AI player at this table was told (its system prompt), minus the characters (see the book) and the reply format. You have the same moves: one whisper per private-time turn, speech in the town square, nominations, votes and night choices, under the same word limits. Turns are taken a few players at a time, and a group's words are shown together once all of it has acted. The page tells you how many players the table is waiting on, never which ones.</p>`
       + keep.map((s) => { const [hd, ...rest] = s.split('\n'); return /^[A-Z ]+$/.test(hd) ? `<h4>${esc(hd.toLowerCase())}</h4><p>${esc(rest.join('\n'))}</p>` : `<p>${esc(s)}</p>`; }).join('')
       + '<p class="fine">How the AI models rank, and their games against each other: <a href="https://clocktowerbench.com" target="_blank" rel="noopener">clocktowerbench.com</a>.</p></div>';
   } else if (kind === 'notes') {
@@ -1016,7 +1085,7 @@ function boot() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('sheet').hidden) closeSheet(); else if (!$('reveal').hidden) $('rv-close')?.click(); } });
   $('jump').onclick = () => { const f = $('feed'); f.scrollTop = f.scrollHeight; $('jump').hidden = true; };
   $('feed').addEventListener('scroll', () => { const f = $('feed'); if (f.scrollHeight - f.scrollTop - f.clientHeight < 60) $('jump').hidden = true; });
-  window.addEventListener('resize', () => { if (!$('table').hidden) renderTown(); setDockHeight(); });
+  window.addEventListener('resize', () => { if (!$('table').hidden) { T.townSig = ''; renderTown(); } setDockHeight(); });
   resetTable(null);
   renderFilters();
   if (!TID) return home();

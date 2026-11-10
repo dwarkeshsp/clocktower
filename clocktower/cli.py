@@ -354,7 +354,9 @@ def main(argv=None):
         if name == 'play':
             p.add_argument('--port', type=int, default=int(os.environ.get('PORT', 8765)))
             p.add_argument('--host', default='0.0.0.0', help='address to listen on (127.0.0.1: this computer only)')
-            p.set_defaults(budget=100.0)  # for play: spend allowed this session, on top of the ledger
+            # for play: spend allowed this session, on top of the ledger; and no effort unless one is given,
+            # so a table's AI seats use the play server's own default (web.Settings.effort; PLAY_EFFORT)
+            p.set_defaults(budget=100.0, effort=None)
     args = ap.parse_args(argv)
     if args.command == 'report':
         from .report import main as report

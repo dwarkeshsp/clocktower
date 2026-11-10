@@ -74,6 +74,13 @@ TEAMS = ('good', 'evil', 'any')
 SIZES = (10, 11, 12)          # the eval's table sizes (two Minions)
 MAX_PEOPLE = 12
 TIMERS = (0, 60, 120, 300, 600)  # seconds per turn; 0 = wait as long as it takes
+# How hard the AI seats think at a table (the labs' reasoning effort). The benchmark plays at 'high'; a table
+# with people at it defaults to 'low' (Settings.effort), because a day is some 75 waits in a row (27 groups of
+# turns, then nominations and one vote at a time), each as long as its slowest AI seat.
+EFFORTS = ('low', 'medium', 'high')
+# Turns whose progress (how many seats the table is waiting on) a seat may see: everything the town does in
+# the open. Never the night: how many players are woken would tell which characters are in play.
+OPEN_KINDS = ('beat', 'comment', 'nominate', 'defense', 'vote')
 AWAY = 120  # a player whose page hasn't checked in for this long passes their turns
 NAME_LEN, TEXT_LEN, KEY_LEN, BODY_LEN = 24, 2000, 300, 32_000
 
@@ -124,7 +131,8 @@ class Settings:
     ip_header: str | None = None              # header the proxy sets to the client IP (Fly: Fly-Client-IP); wins over hops
     public_url: str | None = None             # e.g. https://play.clocktowerbench.com (links, allowed origin)
     allowed_origins: tuple = ()               # extra origins allowed to POST
-    probes: bool = True                       # ask AI seats for their beliefs (shown at the reveal)
+    probes: bool = False                      # ask AI seats the eval's belief survey (shown at the reveal): extra calls
+    effort: str = 'low'                       # AI seats' reasoning effort unless the host picks another (EFFORTS)
 
     def __post_init__(self):
         ZoneInfo(self.budget_timezone)
@@ -151,7 +159,8 @@ class Settings:
                    proxy_hops=env_num(env, 'PLAY_PROXY_HOPS', 0, int), public_url=url,
                    ip_header=(env.get('PLAY_IP_HEADER') or '').strip() or None,
                    allowed_origins=tuple(o.strip().rstrip('/') for o in env.get('PLAY_ALLOWED_ORIGINS', '').split(',') if o.strip()),
-                   probes=env.get('PLAY_PROBES', '1') not in ('0', 'false', 'no'))
+                   probes=env.get('PLAY_PROBES', '0').strip().lower() in ('1', 'true', 'yes'),
+                   effort=e if (e := (env.get('PLAY_EFFORT') or '').strip().lower()) in (*EFFORTS, 'max') else 'low')
 
     def free(self, model):
         """Whether the house pays for this model (it must also hold the key)."""
@@ -429,7 +438,8 @@ class Table:
         pick = lambda m: m if m == 'random' or (m and self.settings.free(m)) else (free[0] if free else 'random')
         model = getattr(args, 'model', None)
         self.config = {'players': 10, 'good_model': pick(getattr(args, 'good_model', None) or model),
-                       'evil_model': pick(getattr(args, 'evil_model', None) or model), 'timer': 300 if hub else 0}
+                       'evil_model': pick(getattr(args, 'evil_model', None) or model), 'timer': 300 if hub else 0,
+                       'effort': self.default_effort()}
         self.status, self.error, self.game, self.result = 'lobby', None, None, None
         self.seats = {}        # seat name -> HumanSeat (current game)
         self.seat_map = {}     # seat name -> token (current game; kept, so a resumed game seats people again)
@@ -446,6 +456,11 @@ class Table:
         self.finished = None
         self.keep = False      # never closed for idleness (the table a local server opens at start)
         self._scan = (None, 0, set(), set())
+        self.asks = {'key': None, 'asked': [], 'open': set()}  # the round of turns being taken now (track)
+
+    def default_effort(self):
+        """`python -m clocktower play --effort X` if given, else the server's setting (PLAY_EFFORT)."""
+        return getattr(self.args, 'effort', None) or self.settings.effort
 
     # ---- persistence ---------------------------------------------------------------------------------
     FIELDS = ('id', 'host_key', 'people', 'config', 'status', 'error', 'game_id', 'run', 'seed', 'out', 'paid_by',
@@ -466,6 +481,7 @@ class Table:
             if k in data:
                 setattr(t, k, data[k])
         t.dealt = set(data.get('dealt') or [])
+        t.config.setdefault('effort', t.default_effort())  # tables saved before the host could choose it
         now = time.time()
         t.seen = {tok: now for tok in t.people}  # everyone gets the usual grace to come back
         return t
@@ -541,12 +557,20 @@ class Table:
                     if not self.ready(cfg[k]):
                         raise ValueError(f'{cfg[k]} needs your own {provider(cfg[k]).title()} API key.')
                     self.config[k] = cfg[k]
+            if 'effort' in cfg:
+                if cfg['effort'] not in self.efforts():
+                    raise ValueError('Unknown AI thinking level.')
+                self.config['effort'] = cfg['effort']
             if 'timer' in cfg:
                 t = int(cfg['timer'])
                 if t not in TIMERS:
                     raise ValueError('Unknown timer.')
                 self.config['timer'] = t
         self.save()
+
+    def efforts(self):
+        """The thinking levels a host may pick (plus this table's own, if the server was started with another)."""
+        return list(dict.fromkeys([*EFFORTS, self.config['effort']]))
 
     def set_key(self, token, prov, key):
         """A host's own API key for this table's games: kept in memory only. An empty key removes it."""
@@ -631,6 +655,7 @@ class Table:
                 p['seat'] = None
             self.status, self.error, self.result, self.game, self.seats, self.final = 'playing', None, None, None, {}, None
             self.ended, self.seat_map, self.paid_by, self.run = None, {}, paid_by, 1
+            self.asks = {'key': None, 'asked': [], 'open': set()}
             now = time.time()
             self.seen.update({t: now for t in self.people})
             self.game_id = secrets.token_hex(4)
@@ -678,6 +703,45 @@ class Table:
             seats = dict(self.seats)
         self.save()
         return seats
+
+    def track(self, name, seat):
+        """Note when the engine asks this seat (a person or an AI) for a turn and when it has answered, so
+        the page can say how many players the table is waiting on (`progress`). The engine is untouched: only
+        this seat object's `act` is wrapped."""
+        act = seat.act
+
+        async def tracked(text, request):
+            key = (request.kind, request.day, request.beat, request.mode)
+            with self.lock:
+                a = self.asks
+                # one round = every seat's turn for the same request (a beat's groups, one after another, are
+                # one round); a vote is asked one seat at a time, so each is its own
+                if not a['open'] and (key != a['key'] or name in a['asked'] or request.kind == 'vote'):
+                    a = self.asks = {'key': key, 'asked': [], 'open': set()}
+                a['key'] = key
+                a['asked'].append(name)
+                a['open'].add(name)
+            try:
+                return await act(text, request)
+            finally:
+                with self.lock:
+                    a['open'].discard(name)
+        seat.act = tracked
+        return seat
+
+    def progress(self, seat, n):
+        """How the round of turns in progress stands, for a seat's page: how many seats the table is waiting
+        on now (`waiting`, and whether this seat is one of them), how many have had their turn this round
+        (`done`) out of how many (`of`). Counts only, never names: which seats are people (the slow ones) stays
+        secret. None at night and whenever nobody is being asked."""
+        with self.lock:
+            a = self.asks
+            kind, asked, open_ = (a['key'] or (None,))[0], len(a['asked']), set(a['open'])
+        if kind not in OPEN_KINDS or not open_:
+            return None
+        every = kind in ('beat', 'comment')  # everyone gets one turn, a few seats at a time
+        return {'kind': kind, 'waiting': len(open_), 'you': seat in open_, 'done': asked - len(open_),
+                'of': n if every else asked, 'groups': every}
 
     def client(self):
         """The API client for this game: the house's keys, or the host's own (never the house's then)."""
@@ -801,7 +865,7 @@ class Table:
                 'free_models': [names.get(m, m) for m in self.settings.free_models if self.settings.free(m)],
                 'keys': sorted(self.keys) if me and me['host'] else [], 'paid_by': self.payer()[0],
                 'caps': {'game': self.settings.game_cap, 'byo_game': self.settings.byo_game_cap},
-                'timers': TIMERS, 'max_people': MAX_PEOPLE,
+                'timers': TIMERS, 'efforts': self.efforts(), 'max_people': MAX_PEOPLE,
                 'links': {} if not me else {'friends': invite, 'host': f'{invite}#host={self.host_key}' if invite and me['host'] else None},
                 'home': HOME,
             }
@@ -913,6 +977,7 @@ class Table:
                                                            'defense' if req.kind == 'defense' else 'beat'],
                 'whisper_words': WORDS['whisper']},
             'waiting': req is None and not over, 'timer': self.config['timer'],
+            'progress': self.progress(seat, len(players)) if game and not over else None,
             'spent': spent, 'paid_by': self.paid_by, 'over': over, 'error': self.error, 'host': p['host'], 'home': HOME,
         }
         if over:
@@ -960,13 +1025,16 @@ def run_game(table, cfg):
     from .cli import Shared, play_one
     args = argparse.Namespace(**{**vars(table.args), 'players': str(cfg['players']), 'model': cfg['good_model'],
                                  'good_model': cfg['good_model'], 'evil_model': cfg['evil_model'],
-                                 'characters': None, 'probes': cfg.get('probes', False), 'seat_model': None})
+                                 'characters': None, 'probes': cfg.get('probes', False), 'seat_model': None,
+                                 'effort': cfg.get('effort') or getattr(table.args, 'effort', None) or 'high'})
     out = Path(cfg['out'])
     if out.exists() and not (out / 'checkpoint.pkl').exists():
         shutil.rmtree(out)  # it never reached its first dusk: start it again
     out.parent.mkdir(parents=True, exist_ok=True)
 
     def serve_(game):
+        make = game.seat_factory  # called once per seat when the characters are dealt (or the game resumes)
+        game.seat_factory = lambda name, team: table.track(name, make(name, team))
         with table.lock:
             table.game = game
 
