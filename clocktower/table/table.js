@@ -779,7 +779,7 @@ function tallyHTML() {
   } else {
     if (!others) return '';
     who = `Waiting on ${people(others)}.`;
-    then = g.kind === 'vote' ? 'Votes go one at a time, clockwise.' : g.kind === 'defense' ? '' : `${others === 1 ? 'Their' : 'Their'} ${g.groups ? (priv ? 'whispers' : 'words') : 'answers'} arrive together.`;
+    then = g.kind === 'vote' ? 'Votes go one at a time, clockwise.' : g.kind === 'defense' ? '' : `Their ${g.groups ? (priv ? 'whispers' : 'words') : 'answers'} arrive ${others === 1 && g.groups ? 'when they have acted' : 'together'}.`;
     if (g.groups) why = `Each round, players take their turns a few at a time. What a group ${priv ? 'whispers is delivered' : 'says is shown'} only once all of it has acted, so messages come in bursts. ${g.done} of ${g.of} players have had their turn this round.`;
     else if (g.kind === 'nominate') why = `Every living player who has not nominated today is asked at once, and the answers are shown together. ${g.done} of ${g.of} have answered.`;
   }
