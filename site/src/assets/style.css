@@ -443,3 +443,11 @@ details.think .body { margin-top: 4px; padding: 9px 12px; background: var(--surf
 @media (max-width: 600px) {
   .hero .wrap { padding-top: 32px; padding-bottom: 28px; }
 }
+
+/* Footnote-style text, folded away: a small "+ label" line that opens in place. */
+details.fn { margin-top: 8px; font-size: .85rem; color: var(--faint); }
+details.fn summary { cursor: pointer; list-style: none; min-height: 28px; display: inline-flex; align-items: center; }
+details.fn summary::-webkit-details-marker { display: none; }
+details.fn summary::before { content: "+ "; white-space: pre; } details.fn[open] summary::before { content: "− "; }
+details.fn summary:hover { color: var(--text-2); }
+details.fn p { margin: 2px 0 0; max-width: 75ch; }

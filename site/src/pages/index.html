@@ -16,10 +16,10 @@
 <section class="block tight" id="leaderboard">
   <div class="wrap">
     <h2>Leaderboard</h2>
-    <p class="muted" id="lb-lede">Every model plays both sides. Its rating combines how well it hunts the Demon as the town and how well it hides as the Demon's team.</p>
+    <p class="muted" id="lb-lede">Every model plays both sides.</p>
     <p class="lb-news" id="lb-news"></p>
     <div class="board-wrap"><div class="scroll-x"><table class="board" id="table"></table></div></div>
-      <p class="board-note">Ratings in Elo points; 1500 is the average of the eleven models in the original study (February to September 2026); models added since are rated on that fixed scale, so the numbers show how far play has risen. Bars run to each rating; the whisker is its 90% interval, from a bootstrap over side-swapped pairs. Neighbours whose whiskers overlap are not reliably ordered. Detection is the rating from games as good, deception from games as evil. Tap a name for its games.</p>
+    <details class="fn"><summary>How to read this</summary><p>Ratings are Elo points. 1500 is the average of the eleven models in the original study (February to September 2026); later models are rated on that fixed scale. Whiskers are 90% intervals from a bootstrap over side-swapped pairs; neighbours whose whiskers overlap are not reliably ordered. Detection is the rating from games as good, deception from games as evil. Tap a name for its games.</p></details>
   </div>
 </section>
 
@@ -47,9 +47,9 @@
       </div>
     </div>
     <div class="card">
-      <p class="cap" style="margin:0 0 14px">Chance (in %) that the row model beats the column model, from the ratings, averaged over the setups we deal. Hover or tap a cell for the games actually played.</p>
       <div class="scroll-x" id="h2h"></div>
       <div class="h2h-legend"><span><i class="win"></i>row model favoured</span><span><i class="lose"></i>column model favoured</span></div>
+      <details class="fn"><summary>How to read this</summary><p>Chance (in %) that the row model beats the column model, from the ratings, averaged over the setups we deal. Hover or tap a cell for the games actually played.</p></details>
     </div>
   </div>
 </section>
@@ -60,38 +60,38 @@
     <div class="grid two" style="margin-top:22px">
       <div class="card">
         <h3>Detection vs deception</h3>
-        <p class="cap" style="margin-top:0">Each model gets a second pair of ratings: one from its games as the town (detection) and one from its games as evil (deception). Models above the dashed line deceive better than they detect.</p>
         <div class="legend"><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>OpenAI</span><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Anthropic</span></div>
         <div class="chart" id="chart-split"></div>
-        <p class="cap">The two skills track each other closely. Most of OpenAI's lead is on the detection side: across the year its models improved as detectives about four times faster than Anthropic's, while as deceivers the two labs are roughly level.</p>
+        <p class="cap">OpenAI's lead is mostly in detection; as deceivers the two labs are roughly level.</p>
+        <details class="fn"><summary>What this shows</summary><p>Each model gets a second pair of ratings: one from its games as the town (detection) and one from its games as evil (deception). Models above the dashed line deceive better than they detect.</p></details>
       </div>
       <div class="card">
         <h3>The village learns, or doesn't</h3>
-        <p class="cap" style="margin-top:0">Before each day's votes, every good player privately says how likely each other player is to be the Demon. This is the average chance put on the real Demon, for the newest three models from each lab playing good.</p>
         <div class="legend"><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>OpenAI towns</span><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Anthropic towns</span></div>
         <div class="chart" id="chart-belief"></div>
-        <p class="cap">On day 1 both labs' towns are equally in the dark. OpenAI's towns build on evidence day after day; Claude's towns tend to treat early results as settled and stop updating.</p>
+        <p class="cap">OpenAI's towns keep building on evidence; Claude's tend to settle early and stop updating.</p>
+        <details class="fn"><summary>What this shows</summary><p>Before each day's votes, every good player privately says how likely each other player is to be the Demon. This is the average chance put on the real Demon, for the newest three models from each lab playing good.</p></details>
       </div>
       <div class="card" id="card-setup">
         <h3>Setup matters too</h3>
-        <p class="cap" style="margin-top:0">The fit also estimates how each deal tilts the game. Positive numbers help the good team, in Elo points, compared with a 10-player game whose Minions include a Poisoner.</p>
         <table class="data" id="setup"></table>
+        <details class="fn"><summary>What this shows</summary><p>The fit also estimates how each deal tilts the game. Positive numbers help the good team, in Elo points, compared with a 10-player game whose Minions include a Poisoner.</p></details>
       </div>
       <div class="card" id="card-tilt" hidden>
         <h3>As both sides get smarter, evil wins less</h3>
-        <p class="cap" style="margin-top:0">Chance the evil team wins when the two teams are evenly matched, by how strong both are. Line: the fit over all rated games, with its 90% band. Dots: games between models within 200 Elo of each other.</p>
         <div class="chart" id="chart-tilt"></div>
         <p class="cap" id="tilt-cap"></p>
+        <details class="fn"><summary>What this shows</summary><p>Chance the evil team wins when the two teams are evenly matched, by how strong both are. Line: the fit over all rated games, with its 90% band. Dots: games between models within 200 Elo of each other.</p></details>
       </div>
       <div class="card" id="card-mixed" hidden>
         <h3>Mixed teams play worse as evil</h3>
-        <p class="cap" style="margin-top:0">In 132 extra games each team was half Opus 5.5 and half GPT-5.6 Sol, seats dealt at random. The mixed team rated a little below its members' average, and clearly below it when playing evil, where coordination is explicit.</p>
         <div class="seg" role="group" aria-label="Which games" id="mixed-mode" style="margin-bottom:12px">
           <button type="button" aria-pressed="false" data-m="combined">Overall</button><button type="button" aria-pressed="false" data-m="detection">As good</button><button type="button" aria-pressed="true" data-m="deception">As evil</button>
         </div>
         <div class="legend"><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Opus 5.5</span><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>GPT-5.6 Sol</span><span><i class="dia"></i>Mixed team</span></div>
         <div class="chart" id="chart-mixed"></div>
         <p class="cap" id="mixed-cap"></p>
+        <details class="fn"><summary>What this shows</summary><p>In 132 extra games each team was half Opus 5.5 and half GPT-5.6 Sol, seats dealt at random. The mixed team rated a little below its members' average, and clearly below it when playing evil, where coordination is explicit.</p></details>
       </div>
     </div>
   </div>

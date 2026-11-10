@@ -3,7 +3,7 @@
   const [R, charts] = await Promise.all([CT.ratings(), CT.json('data/charts.json')]);
   const ms = R.models.slice().sort((a, b) => b.combined - a.combined);
   const words = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen'];
-  $('#lb-lede').textContent = `${words[ms.length] || ms.length} models released in 2026, ${R.games} rated games. Every model plays both sides: its rating combines how well it hunts the Demon as the town and how well it hides as the Demon's team.`;
+  $('#lb-lede').textContent = `${words[ms.length] || ms.length} models released in 2026, ${R.games} rated games. Every model plays both sides.`;
 
   // The newest model, in one line above the table.
   const newest = R.models.slice().sort((a, b) => b.date.localeCompare(a.date))[0], rank = ms.indexOf(newest) + 1;
@@ -16,7 +16,7 @@
   const host = $('#chart-date');
   const trendCap = (m) => {
     const t = R.trend_per_year[{ combined: 'c', detection: 'd', deception: 'v' }[m]];
-    $('#trend-cap').textContent = `Dashed line: the trend across the year, +${t[0]} Elo per year (90%: ${t[1][0]} to ${t[1][1]}). A model from the end of 2026 beats one from the start of the year almost every time.`;
+    $('#trend-cap').textContent = `Trend: +${t[0]} Elo per year (90%: ${t[1][0]} to ${t[1][1]}).`;
   };
   CT.chartByDate(host, R, 'combined'); trendCap('combined');
   $$('#metric button').forEach((b) => b.addEventListener('click', () => {
@@ -38,7 +38,7 @@
   if (charts.evil_tilt) {
     $('#card-tilt').hidden = false;
     CT.chartTilt($('#chart-tilt'), charts.evil_tilt);
-    $('#tilt-cap').textContent = `In ${Math.round(charts.evil_tilt.p_good_gains * 100)}% of bootstrap resamples the good side gains with skill: catching a liar gets easier faster than lying does.`;
+    $('#tilt-cap').textContent = `Catching a liar gets easier faster than lying does (in ${Math.round(charts.evil_tilt.p_good_gains * 100)}% of bootstrap resamples).`;
   }
   if (charts.mixed) {
     $('#card-mixed').hidden = false;
