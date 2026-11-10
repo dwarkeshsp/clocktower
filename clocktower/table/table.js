@@ -283,7 +283,7 @@ function resetTable(game) {
     game, since: 0, players: [], me: null, pending: null, sent: null, over: false, reveal: null, revealShown: false,
     filter: 'all', who: null, head: '', day: 0, stage: '', nominee: null, yes: new Set(), block: null, tie: false,
     speaking: null, wh: {}, ballot: null, form: null, deadline: null, alertedTurn: null, did: '', needed: null,
-    progress: null, townSig: '',
+    progress: null, townSig: '', whyOpen: false,
   });
   $('feed').innerHTML = '';
   $('reveal').hidden = true;
@@ -546,12 +546,14 @@ const CATS = [['all', 'All'], ['town', 'Town square'], ['whisper', 'Whispers'], 
 
 function renderFilters() {
   const f = $('filters');
-  f.innerHTML = CATS.map(([k, label]) => `<button class="chip${T.filter === k ? ' on' : ''}" data-f="${k}" aria-pressed="${T.filter === k}">${label}</button>`).join('') +
-    (T.who ? `<button class="chip who" data-who="1" aria-label="Showing only what involves ${esc(T.who)}. Show everyone again">Only ${esc(T.who === (T.me && T.me.seat) ? 'you' : T.who)} &times;</button>`
-      : '<span class="chip-hint">Tap a player to see only them</span>');
+  // the player filter comes first, so on a phone it is never scrolled out of sight
+  f.innerHTML = (T.who ? `<button class="chip who" data-who="1" aria-label="Showing only what involves ${esc(T.who)}. Show everyone again">Only ${esc(T.who === (T.me && T.me.seat) ? 'you' : T.who)} &times;</button>` : '')
+    + CATS.map(([k, label]) => `<button class="chip${T.filter === k ? ' on' : ''}" data-f="${k}" aria-pressed="${T.filter === k}">${label}</button>`).join('')
+    + (T.who ? '' : '<span class="chip-hint">Tap a player to see only them</span>');
   f.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { T.filter = b.dataset.f; renderFilters(); applyFilter(); });
   const w = f.querySelector('[data-who]');
   if (w) w.onclick = () => { T.who = null; renderFilters(); applyFilter(); renderTown(); };
+  f.scrollLeft = 0;
 }
 
 function matches(el) {
@@ -731,7 +733,7 @@ function headline(p, f) {
   if (need) T.needed = +need;
   switch (p.kind === 'comment' ? 'comment' : f.mode) {
     case 'night': return p.kind === 'ravenkeeper' ? 'You died tonight. Choose a player to learn their character.' : `Choose ${f.max === 2 ? 'two players' : 'a player'}.`;
-    case 'whisper': return 'Whisper to one or two players. Only they will see it.';  // who: the "Whisper to" buttons below
+    case 'whisper': return 'Send a private whisper, or stay silent.';  // to whom: the "Whisper to" buttons in the dock
     case 'speak': return 'Speak to the whole town, or stay quiet.';
     case 'comment': return `Say something before the vote on ${esc(nominee)}, or stay quiet.`;
     case 'nominate': return 'Nominate a player for execution, or pass.';
@@ -761,34 +763,45 @@ const people = (n) => `${n} ${n === 1 ? 'player' : 'players'}`;
 function tallyHTML() {
   const g = T.progress, ts = turnState();
   if (ts === 'over') return '';
-  const mine = ts === 'yours', priv = T.pending && T.pending.mode === 'private';
+  const mine = ts === 'yours', priv = T.pending ? T.pending.mode === 'private' : T.stage === 'private';
   if (!g) return mine ? '<p class="tally-line"><b>The table is waiting for you.</b></p>' : '';
   // right after you send, the server may still count you for one poll
   const others = Math.max(0, g.waiting - (g.you ? 1 : 0));
-  const pips = g.of > 1 ? `<span class="pips" aria-hidden="true">${Array.from({ length: g.of }, (_, i) => `<i class="${i < g.done ? 'done' : i < g.done + g.waiting ? 'now' : ''}"></i>`).join('')}</span>` : '';
-  const count = g.of > 1 ? `<span class="tally-n">${pips}<span>${g.done} of ${g.of} ${g.kind === 'nominate' ? 'have answered' : 'have had their turn'}</span></span>` : '';
-  let who, why = '';
+  const done = g.kind === 'nominate' ? 'have answered' : 'have had their turn';
+  const count = g.of > 1 ? `<span class="tally-n" title="${g.done} of ${g.of} ${done} this round"><span class="pips" aria-hidden="true">${Array.from({ length: g.of }, (_, i) => `<i class="${i < g.done ? 'done' : i < g.done + g.waiting ? 'now' : ''}"></i>`).join('')}</span><span>${g.done} of ${g.of}<span class="sr-only"> ${done} this round</span></span></span>` : '';
+  let who, then, why = '';
   if (mine) {
     who = `Waiting on you${others ? ` and ${others} other${others === 1 ? '' : 's'}` : ''}.`;
-    if (g.groups) why = `Turns are taken a few players at a time. What your group ${priv ? 'whispers is delivered' : 'says is shown'} only once all of you have acted, so nothing new will arrive until you ${priv ? 'whisper or stay silent' : 'speak or stay quiet'}.`;
-    else if (g.kind === 'nominate') why = 'Everyone is asked at once, and the answers are shown together: nothing new will arrive until you nominate or pass.';
-    else if (g.kind === 'vote') why = 'Votes go one at a time, clockwise: the next player votes after you.';
+    then = 'Nothing new will arrive until you act.';
+    if (g.groups) why = `Each round, players take their turns a few at a time. What your group ${priv ? 'whispers is delivered' : 'says is shown'} only once all of you have acted, and then the next group goes. So the chat is not stuck: it is waiting for you${others ? ` and ${others === 1 ? 'one other player' : `${others} others`}` : ''}. ${g.done} of ${g.of} players have had their turn this round.`;
+    else if (g.kind === 'nominate') why = `Every living player who has not nominated today is asked at once, and the answers are shown together. ${g.done} of ${g.of} have answered.`;
+    else if (g.kind === 'vote') { then = 'The vote goes on when you have voted.'; why = 'Votes are cast one at a time, clockwise from the nominee, each player seeing the hands already raised.'; }
   } else {
     if (!others) return '';
     who = `Waiting on ${people(others)}.`;
-    if (g.groups) why = `What they ${T.stage === 'private' ? 'whisper is delivered' : 'say is shown'} together, once ${others === 1 ? 'they have' : 'all of them have'} acted.`;
-    else if (g.kind === 'nominate') why = 'The answers are shown together once everyone has answered.';
-    else if (g.kind === 'vote') why = 'Votes go one at a time, clockwise.';
+    then = g.kind === 'vote' ? 'Votes go one at a time, clockwise.' : g.kind === 'defense' ? '' : `${others === 1 ? 'Their' : 'Their'} ${g.groups ? (priv ? 'whispers' : 'words') : 'answers'} arrive together.`;
+    if (g.groups) why = `Each round, players take their turns a few at a time. What a group ${priv ? 'whispers is delivered' : 'says is shown'} only once all of it has acted, so messages come in bursts. ${g.done} of ${g.of} players have had their turn this round.`;
+    else if (g.kind === 'nominate') why = `Every living player who has not nominated today is asked at once, and the answers are shown together. ${g.done} of ${g.of} have answered.`;
   }
-  return `<p class="tally-line"><b>${who}</b>${count}</p>${why ? `<p class="tally-why">${why}</p>` : ''}`;
+  return `<p class="tally-line"><span class="tally-who"><b>${who}</b> ${then}${why ? ` <button type="button" class="why" id="why" aria-expanded="${!!T.whyOpen}" aria-controls="tally-why">Why?</button>` : ''}</span>${count}</p>`
+    + (why ? `<p class="tally-why" id="tally-why"${T.whyOpen ? '' : ' hidden'}>${why}</p>` : '');
 }
 
 function paintTally() {
   const el = $('tally');
   if (!el) return;
   const h = tallyHTML();
-  if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !h; setDockHeight(); }
+  if (el.dataset.h === h) return;
+  const focused = document.activeElement && document.activeElement.id === 'why';
+  el.dataset.h = h; el.innerHTML = h; el.hidden = !h;
+  if (focused) $('why')?.focus();
+  setDockHeight();
 }
+// "Why?" opens the longer explanation (one handler for the whole dock: the line is repainted every poll)
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#why')) return;
+  T.whyOpen = !T.whyOpen; paintTally(); $('why')?.focus();
+});
 const tally = () => { const h = tallyHTML(); return `<div class="tally" id="tally" role="status" data-h="${esc(h)}"${h ? '' : ' hidden'}>${h}</div>`; };
 
 function renderDock() {
@@ -810,7 +823,15 @@ function renderDock() {
   const f = T.form || (T.form = newForm(p));
   const kindLabel = p.kind === 'comment' ? KIND.comment : p.kind === 'ravenkeeper' ? KIND.ravenkeeper : KIND[f.mode];
   dock.className = 'turn ' + (f.mode === 'whisper' ? 'private' : f.mode === 'night' ? 'night' : f.mode === 'vote' || f.mode === 'nominate' || f.mode === 'defense' ? 'blood' : 'public');
-  let h = `<div class="ask"><div class="what"><div class="kind"><span class="yt">Your turn</span>${kindLabel}</div>
+  const fold = (open) => `<button type="button" class="fold" id="fold" aria-expanded="${open}" aria-controls="dock-body" title="${open ? 'Fold your move away to read the chronicle' : 'Back to your move'}">${open ? 'Read first' : 'Your move'}<span aria-hidden="true">${open ? ' ▾' : ' ▴'}</span></button>`;
+  if (f.min) {  // folded away, to read the chronicle (filtered by player or not) with the whole screen
+    dock.className += ' min';
+    dock.dataset.turn = p.turn;
+    dock.innerHTML = `<div class="dock-body" id="dock-body"><div class="ask"><div class="what"><div class="kind"><span class="yt">Your turn</span>${kindLabel}</div></div>${timerHTML()}${fold(false)}</div>${tally()}</div>`;
+    $('fold').onclick = () => { f.min = false; renderDock(); $('fold')?.focus(); };
+    return setDockHeight();
+  }
+  let h = `<div class="ask"><div class="what"><div class="kind"><span class="yt">Your turn</span>${kindLabel}${fold(true)}</div>
     <div class="head">${headline(p, f)}</div><div class="prompt" role="button" tabindex="0" aria-expanded="${!!f.promptOpen}">${esc(stripPrompt(p.prompt))}</div></div>${timerHTML()}</div>${tally()}`;
   let foot = '';  // the action buttons: rendered outside the scrolling body so they are always in view
   const picks = (list, label, note = '') => `<div class="pick-label" id="pick-label">${label}${note ? ` <em>${note}</em>` : ''}</div><div class="picks" role="group" aria-labelledby="pick-label">${list.map((n) => {
@@ -852,7 +873,7 @@ function renderDock() {
   if (f.err) foot = `<p class="err" role="alert">${esc(f.err)}</p>` + foot;
   const fresh = dock.dataset.turn !== String(p.turn);
   dock.dataset.turn = p.turn;
-  dock.innerHTML = `<div class="dock-body">${h}</div><div class="dock-foot">${foot}</div>`;  // the body scrolls, the buttons stay
+  dock.innerHTML = `<div class="dock-body" id="dock-body">${h}</div><div class="dock-foot">${foot}</div>`;  // the body scrolls, the buttons stay
   if (fresh && !REDUCED.matches) { dock.classList.add('arrive'); setTimeout(() => dock.classList.remove('arrive'), 400); }
 
   const pr = dock.querySelector('.ask .prompt');
@@ -881,6 +902,7 @@ function renderDock() {
   on('shot-open', () => { f.showShot = true; renderDock(); });
   on('shot-close', () => { f.showShot = false; f.shot = null; renderDock(); renderTown(); });
   on('remark', () => { f.remark = true; renderDock(); $('say')?.focus(); });
+  on('fold', () => { f.min = true; renderDock(); $('fold')?.focus(); const fd = $('feed'); fd.scrollTop = fd.scrollHeight; });
   on('go', () => submit(false));
   on('pass', () => submit(true));
   on('yes', () => submit(false, true));
