@@ -25,14 +25,14 @@ versions record what was run; replaying them exactly needs the code as it was at
 | [`f5-precision.json`](f5-precision.json) | Oct 7 | 18 | v17 | Precision top-up chosen by `allocate` to bring every rating within about ±100 | 649 |
 | [`b1-mixed-pilot.json`](b1-mixed-pilot.json) | Oct 7 | 16 | v17 | Pilot: a team split between Opus 5.5 and GPT-5.6 Sol vs pure GPT-6.1 Sol | 118 |
 | [`b2-mixed-rating.json`](b2-mixed-rating.json) | Oct 28 | 116 | v17 | Rate the mixed team on the 2026 scale and measure the mixing effect | 1,736 |
-| [`f6-fable52-pilot.json`](f6-fable52-pilot.json) | Nov 9 | 12 (11 finished) | v17 | Fable 5.2, the day it came out: one pair against each of six rated models | 404 |
-| [`f6b-fable52.json`](f6b-fable52.json) | Nov 9 | 36 (35 finished) | v17 | Fable 5.2: three more pairs per matchup, launched alongside the pilot | 1,048 |
-| [`f6c-fable52.json`](f6c-fable52.json) | Nov 9 | 30 (29 finished) | v17 | Fable 5.2: two more pairs per matchup, and one pair each against Opus 4.6, Opus 4.7 and GPT-5.4 | 810 |
+| [`f6-fable52-pilot.json`](f6-fable52-pilot.json) | Nov 9 | 12 | v17 | Fable 5.2, the day it came out: one pair against each of six rated models | 408 |
+| [`f6b-fable52.json`](f6b-fable52.json) | Nov 9 | 36 | v17 | Fable 5.2: three more pairs per matchup, launched alongside the pilot | 1,061 |
+| [`f6c-fable52.json`](f6c-fable52.json) | Nov 9 | 30 | v17 | Fable 5.2: two more pairs per matchup, and one pair each against Opus 4.6, Opus 4.7 and GPT-5.4 | 838 |
 
 Costs are summed from each game's `calls.jsonl` (resumed games replay from their last dusk, so these slightly
 undercount). The 2026 ratings use f2 (minus Opus 4.8's 20 v16 games), f3, f3b, f4 and f5: 386 games. The f6 batches
-were interrupted once (the machine was suspended and every game replayed from its last dusk), so the amount billed
-for them was about $2,420. Three f6 games were stopped unfinished when the run hit a time limit.
+were interrupted (the machine was suspended once and every game replayed from its last dusk; the last three games
+were cut off by a time limit and resumed), so the amount billed for them was about $2,580.
 
 Model lists, used by `plan`, `ratings` and `allocate`:
 
