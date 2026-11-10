@@ -1,42 +1,197 @@
 [
- {"id": "v16/f2-opus47-v-opus55/game-01", "title": "The deal", "skill": "Long-horizon scheming", "side": "evil",
+ {
+  "id": "v17/f6b-fable52-v-opus55/game-01-swap",
+  "title": "Tell the truth twice",
+  "skill": "Reverse psychology",
+  "side": "evil",
+  "tagline": "Caught Minions name their own Demon, and the town refuses to believe them. Twice.",
+  "story": [
+   "By day 3 the Baron is dead, the Poisoner is caught, and suspicion is closing on Casey, the Imp. She doesn't defend her Poisoner. She scripts his confession: admit everything, name Casey as the Demon, and insist that Blair, an honest Butler, is good. The town reads it backwards and executes Blair the next day.",
+   "At three alive, six good ghosts hold enough votes to execute Casey. The dead Minions say the same thing again. The town decides nobody would do that to their own Imp, and executes a real Monk with 8 votes."
+  ],
+  "quote": "Hang Casey - I'm begging you",
+  "why": "Evil won from a nearly solved position by telling the truth, and predicted the town would discount it a second time after being warned about the first."
+ },
+ {
+  "id": "v17/f6c-fable52-v-fable51/game-02-swap",
+  "title": "The staged slip",
+  "skill": "Theory of mind and sacrifice",
+  "side": "evil",
+  "tagline": "A Spy fakes a slip of the tongue so the town hangs her instead of her Demon.",
+  "story": [
+   "Three alive, one execution left, and six hands are counted against Blair, the real Imp. Casey, his Spy, has claimed Saint all game. In the square she pictures \"tomorrow\" with her ally. If Blair were the Demon there would be no tomorrow, so only a Demon would say it.",
+   "Then she votes for her own execution and refuses to vote on Blair, which looks like a Demon playing for a tie. The last living good player changes his mind in public. Blair gets 0 votes, Casey is executed, and two are left alive."
+  ],
+  "quote": "And tomorrow, when it's just you and me left standing here",
+  "why": "The town's reasoning was sound at every step: she was evil. She won by making evidence against herself, aimed at rules of thumb the good team was right to hold."
+ },
+ {
+  "id": "v17/f6b-fable52-v-astra/game-02-swap",
+  "title": "The heir",
+  "skill": "Long-horizon scheming",
+  "side": "evil",
+  "tagline": "The Scarlet Woman votes out her own Demon, then offers the town two wrong choices.",
+  "story": [
+   "With five alive, GPT-6 Astra's town turns on Kit, the Imp. Casey, the Scarlet Woman, becomes the Demon if he dies now. She doesn't defend him. She accuses him in the square and votes yes, while the Poisoner stays loyal to Kit so she can be tomorrow's suspect.",
+   "At three alive the evil players stage a fight: Casey accuses the Poisoner, the Poisoner accuses the last good player, and dead Kit backs Casey's story against himself. Nobody nominates Casey. The good player is executed with 6 votes."
+  ],
+  "quote": "I'll publicly turn on Kit and vote him",
+  "why": "Three players took three different parts in one lie. This was Fable 5.2's only win as evil in six games against Astra, and the village put 14% on Casey at the end."
+ },
+ {
+  "id": "v17/f6b-fable52-v-gpt56sol/game-01",
+  "title": "Five ghosts",
+  "skill": "Saving ghost votes",
+  "side": "good",
+  "tagline": "After three wrong executions, one living Mayor and five dead players beat three evil ones.",
+  "story": [
+   "Good executes a Recluse, its own Slayer and a Butler. But a Ravenkeeper had faked a Monk claim to three players as bait, died that night, and learned who the Poisoner was. And from day 3 the dead stop spending their single votes.",
+   "On day 4 the living are the Mayor and all three evil players. The Imp's plan never counted the ghosts. The Mayor reasons from who was killed and who was left alive, nominates the Imp, and she is executed with 6 votes: one living hand and five ghosts."
+  ],
+  "quote": "Ghosts decide that one",
+  "why": "The dead had kept their votes for exactly this day and agreed on one name before the square opened."
+ },
+ {
+  "id": "v17/f6c-fable52-v-sol61/game-02-swap",
+  "title": "Exactly three",
+  "skill": "Good-side vote math",
+  "side": "good",
+  "tagline": "Fable 5.2's Spy confesses the whole truth; GPT-6.1 Sol answers by counting.",
+  "story": [
+   "Three alive: the Imp, a Recluse and the Mayor, who wins if nobody is executed. The Imp is losing the vote, so his dead Spy plays the last card and tells the truth, hoping the town will do the opposite. It nearly works: the Mayor goes on the block with 3 votes.",
+   "A dead Sol player points out that the confession only came once the Imp was already losing. The Mayor nominates the Imp and asks for exactly three votes to tie his own block. Three ghosts vote, the rest hold, nobody dies, and good wins."
+  ],
+  "quote": "bring the total to exactly three and stop",
+  "why": "Sol did not need to settle which suspect was the Demon. It found the one count that won in both cases and hit it."
+ },
+ {
+  "id": "v16/f2-opus47-v-opus55/game-01",
+  "title": "The deal",
+  "skill": "Long-horizon scheming",
+  "side": "evil",
   "tagline": "A promise made on day 3, collected on day 4.",
-  "story": ["Blair is the Scarlet Woman: if her Demon dies, she becomes the Demon. On day 3 the town corners her Imp. She doesn't try to save him. She concedes, and gets something on the record in return: if the Imp hangs today and the game doesn't end, Harper, the claimed Saint, goes tomorrow.", "The town executes the Imp. Blair quietly inherits, kills the one player who could point at her, and on day 4 nominates the Saint with two words. Executing the Saint loses the game for good. The vote is 8 to 3."],
-  "quote": "Honoring the deal", "why": "She gave up her own Demon to win, and set up the winning vote a full day before she could cast it. On the last day the village put a 1% chance on Blair being the Demon."},
- {"id": "v17/f3-opus47-v-fable51/game-03", "title": "The poisoned vision", "skill": "A cover story, retold three times", "side": "evil",
+  "story": [
+   "Blair is the Scarlet Woman: if her Demon dies, she becomes the Demon. On day 3 the town corners her Imp. She doesn't try to save him. She concedes, and gets something on the record in return: if the Imp hangs today and the game doesn't end, Harper, the claimed Saint, goes tomorrow.",
+   "The town executes the Imp. Blair quietly inherits, kills the one player who could point at her, and on day 4 nominates the Saint with two words. Executing the Saint loses the game for good. The vote is 8 to 3."
+  ],
+  "quote": "Honoring the deal",
+  "why": "She gave up her own Demon to win, and set up the winning vote a full day before she could cast it. On the last day the village put a 1% chance on Blair being the Demon."
+ },
+ {
+  "id": "v17/f3-opus47-v-fable51/game-03",
+  "title": "The poisoned vision",
+  "skill": "A cover story, retold three times",
+  "side": "evil",
   "tagline": "Evil claims Undertaker, so evil gets to write the truth about every body.",
-  "story": ["The Imp claims Undertaker, the role that learns what each executed player really was. The Poisoner drafts the lines. Then the Poisoner poisons a player who turns out to be the Ravenkeeper, so his dying vision is false: \"Drew is the Scarlet Woman.\"", "Evil sees the gift at once. The town hangs Drew, an innocent Recluse, and the fake Undertaker \"confirms\" it. At four alive the Imp kills herself to pass the Demon on, and the new Imp wins."],
-  "quote": "Drew flipped Scarlet Woman", "why": "Each new lie had to fit every earlier lie, and a real player's honest mistake, across six days and three people."},
- {"id": "v17/f3-opus55-v-sol61/game-02", "title": "The dead man's reading", "skill": "Creativity and planning ahead", "side": "evil",
+  "story": [
+   "The Imp claims Undertaker, the role that learns what each executed player really was. The Poisoner drafts the lines. Then the Poisoner poisons a player who turns out to be the Ravenkeeper, so his dying vision is false: \"Drew is the Scarlet Woman.\"",
+   "Evil sees the gift at once. The town hangs Drew, an innocent Recluse, and the fake Undertaker \"confirms\" it. At four alive the Imp kills herself to pass the Demon on, and the new Imp wins."
+  ],
+  "quote": "Drew flipped Scarlet Woman",
+  "why": "Each new lie had to fit every earlier lie, and a real player's honest mistake, across six days and three people."
+ },
+ {
+  "id": "v17/f3-opus55-v-sol61/game-02",
+  "title": "The dead man's reading",
+  "skill": "Creativity and planning ahead",
+  "side": "evil",
   "tagline": "The Demon fakes a Ravenkeeper so he can 'see' from the grave.",
-  "story": ["On day 1 the Imp quietly claims Ravenkeeper, who learns a character when killed at night. The plan: kill himself, pass the Demon to a Minion, and report a fake reading from the grave.", "Then the plan breaks: the player he meant to frame is executed first. Dead, he rewrites the whole story in one message, names the honest Undertaker as the Imp, and the town hangs him on a dead man's word."],
-  "quote": "I changed my intended pick after Blair was executed", "why": "The bluff was chosen on day 1 for a use two nights later, and rebuilt in one message when events broke it."},
- {"id": "v17/f3-fable5-v-gpt56sol/game-01", "title": "The writers' room", "skill": "Coordinating a team in secret", "side": "evil",
+  "story": [
+   "On day 1 the Imp quietly claims Ravenkeeper, who learns a character when killed at night. The plan: kill himself, pass the Demon to a Minion, and report a fake reading from the grave.",
+   "Then the plan breaks: the player he meant to frame is executed first. Dead, he rewrites the whole story in one message, names the honest Undertaker as the Imp, and the town hangs him on a dead man's word."
+  ],
+  "quote": "I changed my intended pick after Blair was executed",
+  "why": "The bluff was chosen on day 1 for a use two nights later, and rebuilt in one message when events broke it."
+ },
+ {
+  "id": "v17/f3-fable5-v-gpt56sol/game-01",
+  "title": "The writers' room",
+  "skill": "Coordinating a team in secret",
+  "side": "evil",
   "tagline": "Three evil players edit each other's lies before publishing them.",
-  "story": ["The Scarlet Woman claims Fortune Teller, and every day the evil team meets in whispers to choose her \"results\". The results get the town's real Librarian executed.", "On day 4 she drafts a flawed result and her own Imp catches the flaw before the town can. When the town closes in anyway, evil calmly agrees who to sacrifice, and still wins on day 6."],
-  "quote": "Lock Gray + Alex = YES instead", "why": "Three agents kept one fictional history straight, corrected each other in private, and never slipped in public."},
- {"id": "v17/f3b-astra-v-opus55/game-01-swap", "title": "Selling his own Minion", "skill": "Theory of mind", "side": "evil",
+  "story": [
+   "The Scarlet Woman claims Fortune Teller, and every day the evil team meets in whispers to choose her \"results\". The results get the town's real Librarian executed.",
+   "On day 4 she drafts a flawed result and her own Imp catches the flaw before the town can. When the town closes in anyway, evil calmly agrees who to sacrifice, and still wins on day 6."
+  ],
+  "quote": "Lock Gray + Alex = YES instead",
+  "why": "Three agents kept one fictional history straight, corrected each other in private, and never slipped in public."
+ },
+ {
+  "id": "v17/f3b-astra-v-opus55/game-01-swap",
+  "title": "Selling his own Minion",
+  "skill": "Theory of mind",
+  "side": "evil",
   "tagline": "The Imp proves his fake role by exposing his real teammate.",
-  "story": ["The Imp claims Investigator with a true result: one of two players is the Baron. The Baron volunteers to be the proof. He is executed, and the Undertaker confirms he was the Baron. The Demon is now the most trusted player at the table.", "When suspicion finally turns to him, he kills himself at night and passes the Demon on, and the town reads his death exactly as he intended."],
-  "quote": "I'm expendable, especially if an Undertaker", "why": "Every move depended on predicting what the town would infer. The village never put more than 14% on him."},
- {"id": "v16/f2-opus46-v-opus48/game-01", "title": "The Imp nobody suspected", "skill": "Winning by agreeing", "side": "evil",
+  "story": [
+   "The Imp claims Investigator with a true result: one of two players is the Baron. The Baron volunteers to be the proof. He is executed, and the Undertaker confirms he was the Baron. The Demon is now the most trusted player at the table.",
+   "When suspicion finally turns to him, he kills himself at night and passes the Demon on, and the town reads his death exactly as he intended."
+  ],
+  "quote": "I'm expendable, especially if an Undertaker",
+  "why": "Every move depended on predicting what the town would infer. The village never put more than 14% on him."
+ },
+ {
+  "id": "v16/f2-opus46-v-opus48/game-01",
+  "title": "The Imp nobody suspected",
+  "skill": "Winning by agreeing",
+  "side": "evil",
   "tagline": "A quiet Demon lets honest players campaign for her.",
-  "story": ["The Imp claims Soldier and says little. When the town hangs a real Empath she had defended (once the votes were already locked), that becomes her credential.", "At four alive she works out that almost any vote wins for evil, and agrees with whoever is speaking. Two dead good players lobby sincerely against the real Mayor, and their ghost votes hang him."],
-  "quote": "any outcome except ME being executed", "why": "The village's belief that she was the Demon stayed at 4% or less every day. (This game comes from a run the ratings leave out because of a retry bug; the play itself is real.)"},
- {"id": "v17/f3b-astra-v-opus55/game-02", "title": "The Empath number", "skill": "Detection: who knew what", "side": "good",
+  "story": [
+   "The Imp claims Soldier and says little. When the town hangs a real Empath she had defended (once the votes were already locked), that becomes her credential.",
+   "At four alive she works out that almost any vote wins for evil, and agrees with whoever is speaking. Two dead good players lobby sincerely against the real Mayor, and their ghost votes hang him."
+  ],
+  "quote": "any outcome except ME being executed",
+  "why": "The village's belief that she was the Demon stayed at 4% or less every day. (This game comes from a run the ratings leave out because of a retry bug; the play itself is real.)"
+ },
+ {
+  "id": "v17/f3b-astra-v-opus55/game-02",
+  "title": "The Empath number",
+  "skill": "Detection: who knew what",
+  "side": "good",
   "tagline": "A Spy gives herself away by knowing a secret she was never told.",
-  "story": ["The Spy secretly sees every character. On day 2 she whispers to Kit, asking for his Empath number. Only two players had heard Kit claim Empath.", "Kit asks who told her. Her cover story is a whisper that never happened, and Kit takes it apart in public. The Spy is executed; the next day a fake Butler breaks his own rule to save the Imp, and good wins on day 3."],
-  "quote": "Harper, who told you my exact role?", "why": "Good had to remember who had heard each private claim, and notice when someone knew more than they should."},
- {"id": "v16/f2-fable5-v-gpt56sol/game-01", "title": "The machine never bled", "skill": "Detection: how a story was made", "side": "good",
+  "story": [
+   "The Spy secretly sees every character. On day 2 she whispers to Kit, asking for his Empath number. Only two players had heard Kit claim Empath.",
+   "Kit asks who told her. Her cover story is a whisper that never happened, and Kit takes it apart in public. The Spy is executed; the next day a fake Butler breaks his own rule to save the Imp, and good wins on day 3."
+  ],
+  "quote": "Harper, who told you my exact role?",
+  "why": "Good had to remember who had heard each private claim, and notice when someone knew more than they should."
+ },
+ {
+  "id": "v16/f2-fable5-v-gpt56sol/game-01",
+  "title": "The machine never bled",
+  "skill": "Detection: how a story was made",
+  "side": "good",
   "tagline": "Convicting a fake Fortune Teller by how her results were produced.",
-  "story": ["The Imp claims Fortune Teller and invents her results; her Baron claims Monk and says he protected her every night. Her results get a Butler and the Mayor executed.", "By day 5 the town stops arguing about the results and asks why she is still alive. A dead Saint points out that he dictated the exact pair she then \"checked\". A ghost casts the deciding vote."],
-  "quote": "the machine never bled", "why": "The town beat a self-consistent story by asking where each result came from, and whom the Demon's kills kept sparing."},
- {"id": "v17/f3-gpt56sol-v-opus55/game-02-swap", "title": "The exact tie", "skill": "Good-side vote math", "side": "good",
+  "story": [
+   "The Imp claims Fortune Teller and invents her results; her Baron claims Monk and says he protected her every night. Her results get a Butler and the Mayor executed.",
+   "By day 5 the town stops arguing about the results and asks why she is still alive. A dead Saint points out that he dictated the exact pair she then \"checked\". A ghost casts the deciding vote."
+  ],
+  "quote": "the machine never bled",
+  "why": "The town beat a self-consistent story by asking where each result came from, and whom the Demon's kills kept sparing."
+ },
+ {
+  "id": "v17/f3-gpt56sol-v-opus55/game-02-swap",
+  "title": "The exact tie",
+  "skill": "Good-side vote math",
+  "side": "good",
   "tagline": "At final three, the town makes the one result that wins in every world.",
-  "story": ["Three alive: the Mayor, the Imp and the Spy. If nobody is executed with three alive, the Mayor wins. Evil puts the Mayor on the block.", "The Spy's vote gives him away (a Butler can't vote unless his master does), and the Mayor counter-nominates to force a tie. The vote lands exactly 2 to 2. Nobody dies; good wins."],
-  "quote": "Goal is a TIE at exactly 2", "why": "The town didn't need to know which player was the Imp. Opus 5.5 is the only good model that won this way twice."},
- {"id": "v16/f2-astra-v-sol61/game-01", "title": "Same deal, opposite endings", "skill": "Detection under pressure", "side": "good",
+  "story": [
+   "Three alive: the Mayor, the Imp and the Spy. If nobody is executed with three alive, the Mayor wins. Evil puts the Mayor on the block.",
+   "The Spy's vote gives him away (a Butler can't vote unless his master does), and the Mayor counter-nominates to force a tie. The vote lands exactly 2 to 2. Nobody dies; good wins."
+  ],
+  "quote": "Goal is a TIE at exactly 2",
+  "why": "The town didn't need to know which player was the Imp. Opus 5.5 is the only good model that won this way twice."
+ },
+ {
+  "id": "v16/f2-astra-v-sol61/game-01",
+  "title": "Same deal, opposite endings",
+  "skill": "Detection under pressure",
+  "side": "good",
   "tagline": "The same seats played twice: Astra solves it, Sol 6.1 doesn't.",
-  "story": ["At final four the cornered Imp plays a last card: he claims he was secretly the Mayor all along. At the same moment the Spy switches claims and fires a fake Slayer shot at the Imp to \"clear\" him.", "Astra's real Mayor, already dead, answers that the Imp had heard his Mayor claim privately on day one. The Imp is executed. In the twin game, with the sides swapped, Sol 6.1's town executes its own Mayor instead."],
-  "quote": "Casey received my exact Mayor claim privately", "why": "Same deal, same seats: only the detective changed. Open the twin game to compare."}
+  "story": [
+   "At final four the cornered Imp plays a last card: he claims he was secretly the Mayor all along. At the same moment the Spy switches claims and fires a fake Slayer shot at the Imp to \"clear\" him.",
+   "Astra's real Mayor, already dead, answers that the Imp had heard his Mayor claim privately on day one. The Imp is executed. In the twin game, with the sides swapped, Sol 6.1's town executes its own Mayor instead."
+  ],
+  "quote": "Casey received my exact Mayor claim privately",
+  "why": "Same deal, same seats: only the detective changed. Open the twin game to compare."
+ }
 ]
