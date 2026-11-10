@@ -86,8 +86,31 @@ and pages are served with a strict Content-Security-Policy (scripts from the ser
 | `PLAY_BYO_GAME_BUDGET` | no | USD per own-key game, default 50 |
 | `PLAY_MAX_GAMES`, `PLAY_MAX_TABLES`, `PLAY_TABLES_PER_HOUR`, `PLAY_IDLE_MINUTES` | no | limits above |
 | `PLAY_KEEP_DAYS` | no | days to keep finished tables and their logs, default 14 (0 = forever) |
-| `PLAY_PROBES` | no | `1` (default): AI seats answer the eval's belief survey each day (about +15% calls), shown at the reveal as "what the AIs believed about you"; `0` to save the spend |
+| `PLAY_EFFORT` | no | the AI seats' reasoning effort at a new table: `low` (default), `medium` or `high` (the benchmark's). The host can change it per table in the lobby ("AI thinking"); `python -m clocktower play --effort X` overrides the default |
+| `PLAY_PROBES` | no | `0` (default): no belief survey. `1`: AI seats also answer the eval's belief survey each day (about +15% calls, sent alongside the game's own), shown at the reveal as "what the AIs believed" |
 | `PORT` | set by the host | port to listen on |
+
+## How long a game takes
+
+A day is a long chain of waits, each as long as its slowest AI seat: 9 rounds of turns (6 of whispers, 3 in the
+town square), each taken by three groups one after another (a group answers at once, and the next group sees
+what it said), then for every nomination one call to all, the defense, three groups of comments and the votes
+one seat at a time. That is about 75 waits in a day with three nominations at a table of 10. A person is in one
+group of each round: the AI seats in their group think while they do, the later groups wait for them.
+
+- **AI thinking** (`PLAY_EFFORT`, or per table in the lobby) is the main lever: `low` by default. At `high`
+  (the benchmark's setting, which the lobby's ratings were measured at) a day against GPT-6.1 Sol took about an
+  hour on the public table.
+- **Belief probes** are off by default (`PLAY_PROBES`). They never held a turn up, but each day they sent nine
+  more full-context requests on the same key at the same moment as the game's own, and the day's checkpoint
+  waits for them.
+- `--waves 1` on the server's command line makes every round one group (everyone answers at once: a third of
+  the waits in the rounds, and the AI seats never wait for a person's turn before starting theirs). It changes
+  the game (nobody answers a message in the round it was sent), so it is not the default.
+- To see where a slow game's time went: each line of its `calls.jsonl` has `latency` (seconds), `attempt`,
+  `stop` (`max_tokens` = the turn hit the 8K ceiling and was retried) and `effort`.
+
+The page shows how many players the table is waiting on (counts only: which seats are people stays secret).
 
 ## Deploy on Fly.io (recommended: cheap, volumes, one machine)
 

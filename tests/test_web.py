@@ -157,6 +157,123 @@ class GameTest(unittest.TestCase):
             self.assertEqual(len(final['players']), 10)
 
 
+class PaceTest(unittest.TestCase):
+    """What keeps a table with people at it moving: the AI seats' effort, no belief probes, and a page that
+    can say how many players the table is waiting on."""
+
+    def test_effort_default_choice_and_what_the_engine_gets(self):
+        self.assertEqual(Settings().effort, 'low')
+        self.assertEqual(Settings.from_env({}).effort, 'low')
+        self.assertEqual(Settings.from_env({'PLAY_EFFORT': 'Medium'}).effort, 'medium')
+        self.assertEqual(Settings.from_env({'PLAY_EFFORT': 'nonsense'}).effort, 'low')
+        seen = []
+        with tempfile.TemporaryDirectory() as d:
+            a_ = args(d)
+            a_.effort = None  # `python -m clocktower play` with no --effort
+            h = Hub(a_, Settings(data_dir=Path(d)), runner=lambda table, cfg: seen.append(cfg) or {})
+            t = h.create('x')
+            a, b = t.join('Ann', 'good'), t.join('Bo', 'good')
+            self.assertEqual(t.config['effort'], 'low')
+            self.assertEqual(t.lobby(a)['efforts'], ['low', 'medium', 'high'])
+            with self.assertRaises(PermissionError):
+                t.set_config(b, {'effort': 'high'})
+            with self.assertRaisesRegex(ValueError, 'thinking'):
+                t.set_config(a, {'effort': 'max'})
+            t.set_config(a, {'effort': 'medium'})
+            t.start(a)
+            self.assertTrue(wait(lambda: t.status == 'over'))
+            self.assertEqual((seen[0]['effort'], seen[0]['probes']), ('medium', False))
+            # a table saved before hosts could choose gets the server's default when it is loaded again
+            data = t.snapshot()
+            del data['config']['effort']
+            self.assertEqual(Table.from_snapshot(a_, data, h).config['effort'], 'low')
+        self.assertEqual(Table(args()).config['effort'], 'high')  # an explicit --effort wins over the setting
+
+    def test_the_engine_is_given_the_tables_effort(self):
+        with tempfile.TemporaryDirectory() as d, mock.patch('clocktower.cli.play_one') as play_one:
+            async def fake(a_, seed, out, env, humans=None, serve=None):
+                return vars(a_)
+            play_one.side_effect = fake
+            a_ = args(d)
+            a_.effort = None
+            t = Table(a_)
+            got = run_game(t, {**t.config, 'effort': 'low', 'seed': 1, 'out': str(Path(d) / 'g'), 'probes': False})
+            self.assertEqual((got['effort'], got['probes'], got['waves'], got['max_output']), ('low', False, 3, 8000))
+
+    def test_probes_are_off_unless_asked_for(self):
+        self.assertFalse(Settings().probes)
+        self.assertFalse(Settings.from_env({}).probes)
+        self.assertTrue(Settings.from_env({'PLAY_PROBES': '1'}).probes)
+        self.assertFalse(Settings.from_env({'PLAY_PROBES': '0'}).probes)
+
+    def test_only_play_changes_the_cli_default_effort(self):
+        """The benchmark commands keep --effort high; only `play` leaves it to the play server."""
+        from clocktower import cli
+        got = {}
+        with mock.patch('clocktower.web.main', side_effect=lambda a_: got.update(play=a_.effort)), \
+                mock.patch.object(cli, 'run_batch', new=lambda a_: got.update(run=a_.effort)), \
+                mock.patch.object(cli.asyncio, 'run', new=lambda x: None):
+            cli.main(['play'])
+            cli.main(['run', '--model', 'random'])
+            cli.main(['play', '--effort', 'high'])
+        self.assertEqual(got['run'], 'high')
+        self.assertEqual(got['play'], 'high')
+        with mock.patch('clocktower.web.main', side_effect=lambda a_: got.update(play=a_.effort)):
+            cli.main(['play'])
+        self.assertIsNone(got['play'])
+
+    def test_progress_counts_who_the_table_waits_on(self):
+        """While a seat's turn is pending the state says how many seats are being waited on and how many
+        have gone this round: counts only, nothing at night, and nothing new arrives until the seat acts."""
+        with tempfile.TemporaryDirectory() as d:
+            t = Table(args(d))
+            a, b = t.join('Ann', 'good', t.host_key), t.join('Bo', 'good')
+            t.start(a)
+            seen, kinds, end = {a: 0, b: 0}, set(), time.time() + 60
+            held = None  # (events seen by Ann, when) while Ann sits on a town-square turn
+            while t.status == 'playing' and time.time() < end and not {'beat', 'nominate', 'vote'} <= kinds:
+                for tok in (a, b):
+                    s = t.state(tok, seen[tok])
+                    if not s.get('seated'):
+                        continue
+                    seen[tok] = s['next']
+                    p, g = s['pending'], s['progress']
+                    if g:
+                        self.assertEqual(set(g), {'kind', 'waiting', 'you', 'done', 'of', 'groups'})
+                        self.assertTrue(all(isinstance(g[k], (int, bool)) for k in ('waiting', 'you', 'done', 'of', 'groups')), g)
+                        self.assertLessEqual(g['done'] + g['waiting'], g['of'])
+                    if not p:
+                        self.assertFalse(g and g['you'])
+                        continue
+                    if p['kind'] in ('night', 'ravenkeeper'):
+                        self.assertIsNone(g)  # how many players are awake would give characters away
+                    else:
+                        self.assertEqual((g['kind'], g['you']), (p['kind'], True), g)
+                        self.assertGreaterEqual(g['waiting'], 1)
+                        if p['kind'] in ('beat', 'comment'):
+                            self.assertEqual((g['of'], g['groups']), (10, True))
+                        kinds.add(p['kind'])
+                    if tok == a and p['kind'] == 'beat' and p['mode'] == 'public' and held is None:
+                        held = (s['next'], time.time())
+                        continue
+                    if tok == a and held and time.time() - held[1] < 0.5:
+                        self.assertEqual(s['next'], held[0], 'something arrived while the table waited on Ann')
+                        continue
+                    act = ({'vote': False} if p['kind'] == 'vote' else
+                           {'targets': p['options'][:p['n_targets']]} if p['n_targets'] else {'say': 'hello'})
+                    try:
+                        t.act(tok, {'turn': p['turn'], 'action': act})
+                    except ValueError:
+                        pass
+                time.sleep(0.01)
+            self.assertTrue({'beat', 'nominate', 'vote'} <= kinds, kinds)
+            self.assertIsNotNone(held)
+            self.assertNotIn('Ann', json.dumps(t.state(a, 0)['progress']))
+            t.end(a)
+            self.assertTrue(wait(lambda: t.status == 'over', 30))
+            self.assertIsNone(t.state(a, 0)['progress'])
+
+
 class StallTest(unittest.TestCase):
     def test_absent_player_and_host_end(self):
         """A player whose page never checks in passes (no stall); the host can end the game early."""

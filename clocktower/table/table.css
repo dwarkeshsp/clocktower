@@ -393,17 +393,17 @@ details summary em { font: italic 400 14px var(--serif); color: var(--faint); }
 .timer.low { color: #1a1206; background: var(--gold); border-color: var(--gold); }
 /* who the table is waiting on: one line (counts, a pip per seat), and why nothing new arrives meanwhile */
 .tally { margin: 9px 0 0; padding: 8px 0 0; border-top: 1px solid var(--rule); }
-.tally-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin: 0; font: 400 14.5px/1.4 var(--sans); color: var(--text-2); }
+.tally-line { margin: 0; font: 400 14.5px/1.5 var(--sans); color: var(--text-2); overflow: hidden; }
 .tally-line b { font-weight: 600; color: var(--text); }
 #dock.turn .tally-line b { color: var(--gold-2); }
-.tally-n { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-size: 13.5px; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tally-n { float: right; display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; line-height: 21.75px; font-size: 13.5px; color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pips { display: inline-flex; gap: 3px; }
 .pips i { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); }
 .pips i.done { background: var(--faint); }
 .pips i.now { background: var(--gold); }
 .why { background: none; border: 0; padding: 6px 4px; margin: -6px 0; color: var(--gold); font: 500 14.5px/1.2 var(--sans); text-decoration: underline; text-underline-offset: 3px; }
 .why:hover { color: var(--gold-2); }
-.tally-why { margin: 6px 0 0; font-size: 14px; line-height: 1.45; color: var(--text-2); }
+.tally-why { margin: 6px 0 8px; font-size: 14px; line-height: 1.45; color: var(--text-2); }
 #dock.idle .tally { margin-top: 2px; }
 /* fold your move away to read the chronicle with the whole screen (a phone's dock covers most of it) */
 .fold { margin-left: auto; flex: none; min-height: 36px; padding: 0 10px; background: transparent; border: 1px solid var(--rule-2); border-radius: 18px; color: var(--text-2); font: 500 13.5px/1 var(--sans); letter-spacing: 0; text-transform: none; white-space: nowrap; }

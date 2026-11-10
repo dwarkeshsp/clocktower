@@ -549,7 +549,7 @@ function renderFilters() {
   // the player filter comes first, so on a phone it is never scrolled out of sight
   f.innerHTML = (T.who ? `<button class="chip who" data-who="1" aria-label="Showing only what involves ${esc(T.who)}. Show everyone again">Only ${esc(T.who === (T.me && T.me.seat) ? 'you' : T.who)} &times;</button>` : '')
     + CATS.map(([k, label]) => `<button class="chip${T.filter === k ? ' on' : ''}" data-f="${k}" aria-pressed="${T.filter === k}">${label}</button>`).join('')
-    + (T.who ? '' : '<span class="chip-hint">Tap a player to see only them</span>');
+    + (T.who ? '' : '<span class="chip-hint">Tap a player to filter</span>');
   f.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { T.filter = b.dataset.f; renderFilters(); applyFilter(); });
   const w = f.querySelector('[data-who]');
   if (w) w.onclick = () => { T.who = null; renderFilters(); applyFilter(); renderTown(); };
