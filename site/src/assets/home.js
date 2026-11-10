@@ -4,7 +4,5 @@
   if (C.youtubeVideoId) {
     $('#essay').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(C.youtubeVideoId)}" title="Clocktower Bench: the video essay" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
     $('#essay').hidden = false;
-    document.querySelector('.feature-grid').classList.add('has-video');
-    const vc = $('#fc-video'); if (vc) vc.remove();
   }
 })();

@@ -10,7 +10,7 @@ The Storyteller is code, not a person or a model: a probability table, set by ha
 Storyteller would typically do, so every outcome the rules allow can still happen but nobody steers the game. The
 rules went through 17 versions, each checked by having models play batches of games and other models read every one.
 
-![Ratings of the 11 models released in 2026, by release date, with 90% intervals](docs/charts/clocktower-final-ratings.png)
+![Ratings of the 12 models released in 2026, by release date, with 90% intervals](docs/charts/clocktower-final-ratings.png)
 
 Website (leaderboard, every game's replay): [clocktowerbench.com](https://clocktowerbench.com) · Play against the
 models in your browser: [play.clocktowerbench.com](https://play.clocktowerbench.com) · Write-up and video essay:
@@ -22,27 +22,31 @@ models in your browser: [play.clocktowerbench.com](https://play.clocktowerbench.
 
 ## Results
 
-386 games between the 11 models released in 2026 (protocol v16/v17; Elo scale, the 11 models average 1500;
-90% intervals from a bootstrap over side-swapped pairs):
+464 games between the 12 models released in 2026 (protocol v16/v17; Elo scale; 90% intervals from a bootstrap over
+side-swapped pairs). The scale is fixed where the original 11-model study put it: those 11 average 1500, and models
+added since (Claude Fable 5.2, 78 games on its release day, 9 Nov) are rated against it:
 
 | Model | Lab | Released | Rating | 90% interval | Detection (good) | Deception (evil) |
 |---|---|---|---|---|---|---|
-| GPT-6 Astra | OpenAI | Sep 2026 | **1859** | 1779–1983 | 1940 | 1806 |
-| GPT-6.1 Sol | OpenAI | Sep 2026 | **1734** | 1684–1815 | 1793 | 1688 |
-| Claude Fable 5.1 | Anthropic | Sep 2026 | **1595** | 1537–1668 | 1582 | 1588 |
-| GPT-5.6 Sol | OpenAI | Jul 2026 | **1591** | 1543–1647 | 1666 | 1519 |
-| Claude Opus 5.5 | Anthropic | Sep 2026 | **1549** | 1489–1612 | 1500 | 1585 |
-| Claude Fable 5 | Anthropic | Jun 2026 | **1544** | 1454–1643 | 1438 | 1643 |
-| GPT-5.5 | OpenAI | Apr 2026 | **1482** | 1408–1551 | 1380 | 1560 |
-| Claude Opus 4.6 | Anthropic | Feb 2026 | **1432** | 1340–1517 | 1489 | 1338 |
-| GPT-5.4 | OpenAI | Mar 2026 | **1276** | 1193–1335 | 1309 | 1228 |
-| Claude Opus 4.7 | Anthropic | Apr 2026 | **1241** | 1126–1323 | 1266 | 1224 |
-| Claude Opus 4.8 | Anthropic | May 2026 | **1198** | 1076–1275 | 1136 | 1320 |
+| GPT-6 Astra | OpenAI | Sep 2026 | **1892** | 1811–2012 | 1922 | 1855 |
+| GPT-6.1 Sol | OpenAI | Sep 2026 | **1764** | 1714–1840 | 1861 | 1697 |
+| Claude Fable 5.2 | Anthropic | Nov 2026 | **1759** | 1696–1838 | 1731 | 1753 |
+| GPT-5.6 Sol | OpenAI | Jul 2026 | **1583** | 1533–1643 | 1654 | 1507 |
+| Claude Fable 5.1 | Anthropic | Sep 2026 | **1567** | 1512–1634 | 1551 | 1563 |
+| Claude Opus 5.5 | Anthropic | Sep 2026 | **1547** | 1492–1610 | 1513 | 1568 |
+| Claude Fable 5 | Anthropic | Jun 2026 | **1534** | 1446–1640 | 1427 | 1634 |
+| GPT-5.5 | OpenAI | Apr 2026 | **1486** | 1422–1553 | 1393 | 1566 |
+| Claude Opus 4.6 | Anthropic | Feb 2026 | **1428** | 1344–1508 | 1487 | 1331 |
+| GPT-5.4 | OpenAI | Mar 2026 | **1269** | 1186–1336 | 1298 | 1234 |
+| Claude Opus 4.7 | Anthropic | Apr 2026 | **1233** | 1118–1317 | 1253 | 1228 |
+| Claude Opus 4.8 | Anthropic | May 2026 | **1195** | 1072–1269 | 1141 | 1316 |
 
-- Models released in 2026 gain about **650 Elo a year** (90% CI 553–827): GPT-6 Astra beats Opus 4.6, seven months
-  older, about 92% of the time. Detection and deception rise together.
-- Evil wins 33% of games. Setup matters: a Spy or Baron game helps good (+65, +70), a Scarlet Woman game helps
-  evil (−66), relative to a Poisoner game.
+- **Claude Fable 5.2** (9 Nov) is level with GPT-6.1 Sol in second place and about 190 above Fable 5.1. It won 32 of
+  39 games as good and 19 of 39 as evil, but only 7 of 24 against GPT-6 Astra and GPT-6.1 Sol.
+- Models released in 2026 gain about **671 Elo a year** (90% CI 590–819): GPT-6 Astra beats Opus 4.6, seven months
+  older, about 93% of the time. Detection and deception rise together.
+- Evil wins 33% of games. Setup matters: a Spy or Baron game helps good (+105, +96) relative to a Poisoner
+  game; a Scarlet Woman game is about level with one (−16).
 - **Why OpenAI's newer models win:** mostly detection. Both labs' towns are level on day 1; from day 2 OpenAI towns
   weigh each new result against everything so far, while Claude towns take reported results at face value, treat
   early results as settled and execute more good players.
@@ -118,7 +122,7 @@ Controlling a running batch:
 ## How ratings are computed
 
 ```sh
-python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*'   # the 2026 games' logs (~2 GB)
+python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*' 'v17/f6*'   # the 2026 games' logs (~2.5 GB)
 python -m clocktower ratings --no-page      # refit: rewrites docs/plans/f2-ratings.json (reproduces it exactly)
 python -m clocktower ratings --lab-trends   # also per-lab trends and the HTML pages
 ```
@@ -126,7 +130,8 @@ python -m clocktower ratings --lab-trends   # also per-lab trends and the HTML p
 One Bradley–Terry model over every game: P(good wins) = logistic(r_good − r_evil + h + setup), where h is the
 good side's advantage and the setup terms are the Minions in play (vs a Poisoner game) and the table size. Each
 model gets one combined rating, plus a detection rating (as good) and a deception rating (as evil) from a split fit.
-Ratings are on the Elo scale, centred so the models in `experiments/models-2026.json` average 1500; 90% intervals
+Ratings are on the Elo scale, centred so the models in `experiments/models-2026.json` average 1500 (all but those
+marked `"centre": false`, which were added after the original study and are rated on its scale); 90% intervals
 come from 500 bootstrap resamples of side-swapped pairs (both games of a pair together). Code:
 [`clocktower/ratings.py`](clocktower/ratings.py). Where to spend extra games is decided by a rule fixed in advance
 (uncertainty per dollar, never which way results lean): `python -m clocktower allocate` ([`clocktower/allocate.py`](clocktower/allocate.py)).

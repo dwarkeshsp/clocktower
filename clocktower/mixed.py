@@ -178,8 +178,9 @@ def main(argv=None):
     if '--rate' in argv:
         boot = int(argv[argv.index('--boot') + 1]) if '--boot' in argv else 500
         out = argv[argv.index('--out') + 1] if '--out' in argv else None
-        ids = [m['id'] for m in json.loads((REPO / 'experiments/models-2026.json').read_text())]
-        res = rate(rating_games(), ids, boot)
+        ids = [m['id'] for m in json.loads((REPO / 'experiments/models-2026.json').read_text()) if m.get('centre', True)]
+        ok = set(ids) | {MIX}  # the 2026 study's models and the mixed team (later models' games are left out)
+        res = rate([g for g in rating_games() if g['good'] in ok and g['evil'] in ok], ids, boot)
         text = json.dumps(res, indent=1); print(text)
         if out:
             Path(out).write_text(text + '\n')

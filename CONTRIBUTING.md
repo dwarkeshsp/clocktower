@@ -28,7 +28,7 @@ To check the rating code against the published numbers, fetch the 2026 logs and 
 `docs/plans/f2-ratings.json` byte for byte:
 
 ```sh
-python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*'
+python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*' 'v17/f6*'
 python -m clocktower ratings --no-page --out /tmp/f2.json && cmp /tmp/f2.json docs/plans/f2-ratings.json
 ```
 

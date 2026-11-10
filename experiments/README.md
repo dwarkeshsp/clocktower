@@ -30,18 +30,16 @@ versions record what was run; replaying them exactly needs the code as it was at
 | [`f6c-fable52.json`](f6c-fable52.json) | Nov 9 | 30 | v17 | Fable 5.2: two more pairs per matchup, and one pair each against Opus 4.6, Opus 4.7 and GPT-5.4 | 838 |
 
 Costs are summed from each game's `calls.jsonl` (resumed games replay from their last dusk, so these slightly
-undercount). The 2026 ratings use f2 (minus Opus 4.8's 20 v16 games), f3, f3b, f4 and f5: 386 games. The f6 batches
+undercount). The 2026 ratings use f2 (minus Opus 4.8's 20 v16 games), f3, f3b, f4, f5 (386 games, the original
+11-model study) and f6 (78 games, Claude Fable 5.2): 464 games. The f6 batches
 were interrupted (the machine was suspended once and every game replayed from its last dusk; the last three games
 were cut off by a time limit and resumed), so the amount billed for them was about $2,580.
 
 Model lists, used by `plan`, `ratings` and `allocate`:
 
-- [`models-2026.json`](models-2026.json): the 11 models released in 2026, with lab and release date. The rating
-  scale is centred so these average 1500.
-- [`models-2026-fable52.json`](models-2026-fable52.json): the same 11 plus Claude Fable 5.2 (Nov 9), marked
-  `"centre": false` so the scale stays where the 11-model study put it. Its fit is
-  [`docs/plans/f6-ratings.json`](../docs/plans/f6-ratings.json):
-  `python -m clocktower ratings --models experiments/models-2026-fable52.json --out docs/plans/f6-ratings.json --no-page`.
+- [`models-2026.json`](models-2026.json): the models released in 2026, with lab and release date. The rating
+  scale is centred so the 11 of the original study average 1500; a model added later (Claude Fable 5.2, Nov 9) is
+  marked `"centre": false`, so the scale stays where that study put it and later models show how far play has risen.
 - [`timeline-models.json`](timeline-models.json): 21 models from GPT-4o (May 2024) on, for a timeline experiment
   that has not been run (see [`docs/experiments.md`](../docs/experiments.md)).
 

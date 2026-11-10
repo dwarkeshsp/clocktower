@@ -1,97 +1,97 @@
 {
  "Anthropic|c": {
-  "slope": 390,
-  "intercept": 1257,
+  "slope": 530,
+  "intercept": 1182,
   "ci": [
-   255,
-   562
+   420,
+   690
   ]
  },
  "Anthropic|d": {
-  "slope": 252,
-  "intercept": 1292,
+  "slope": 444,
+  "intercept": 1204,
   "ci": [
-   31,
-   497
+   293,
+   647
   ]
  },
  "Anthropic|v": {
-  "slope": 534,
-  "intercept": 1217,
+  "slope": 590,
+  "intercept": 1172,
   "ci": [
-   340,
-   812
+   447,
+   800
   ]
  },
  "OpenAI|c": {
-  "slope": 891,
-  "intercept": 1159,
+  "slope": 958,
+  "intercept": 1117,
   "ci": [
-   762,
-   1111
+   817,
+   1174
   ]
  },
  "OpenAI|d": {
-  "slope": 1071,
-  "intercept": 1102,
+  "slope": 1135,
+  "intercept": 1060,
   "ci": [
-   900,
-   1364
+   947,
+   1430
   ]
  },
  "OpenAI|v": {
-  "slope": 788,
-  "intercept": 1181,
+  "slope": 826,
+  "intercept": 1153,
   "ci": [
-   593,
-   1065
+   631,
+   1088
   ]
  },
  "all|c": {
-  "slope": 651,
-  "intercept": 1203,
+  "slope": 671,
+  "intercept": 1172,
   "ci": [
-   553,
-   813
+   570,
+   818
   ]
  },
  "all|d": {
-  "slope": 670,
-  "intercept": 1194,
+  "slope": 673,
+  "intercept": 1170,
   "ci": [
-   540,
-   865
+   559,
+   858
   ]
  },
  "all|v": {
-  "slope": 670,
-  "intercept": 1195,
+  "slope": 666,
+  "intercept": 1174,
   "ci": [
-   539,
-   871
+   559,
+   846
   ]
  },
  "gap|d": {
-  "slope": 819,
+  "slope": 691,
   "ci": [
-   526,
-   1194
+   426,
+   1016
   ],
   "p_openai_faster": 1.0
  },
  "gap|v": {
-  "slope": 254,
+  "slope": 236,
   "ci": [
-   -70,
-   613
+   -53,
+   535
   ],
-  "p_openai_faster": 0.905
+  "p_openai_faster": 0.915
  },
  "gap|c": {
-  "slope": 501,
+  "slope": 428,
   "ci": [
-   319,
-   720
+   259,
+   625
   ],
   "p_openai_faster": 1.0
  }

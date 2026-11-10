@@ -20,7 +20,7 @@ the dataset are sections of About (`about.html#run-your-own`, `#data`); `run.htm
 
 ## Build
 
-The game logs must be on disk (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/b1-* v17/b2-*`, or
+The game logs must be on disk (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/b1-* v17/b2-*`, or
 point `--games` at a checkout that has them):
 
 ```sh
@@ -28,7 +28,7 @@ python -m clocktower.export --games games --media media/explainer-three-tricks/e
 python -m http.server -d site/dist 8000        # preview at http://localhost:8000
 ```
 
-- About 30 s; writes `site/dist/` (~67 MB with the 8 MB explainer video; ~58 MB of it is 538 gzipped games).
+- About 30 s; writes `site/dist/` (~75 MB with the 8 MB explainer video; ~66 MB of it is 616 gzipped games).
 - `--media` is optional: without it the video plays from the Hugging Face dataset (`explainerFallback`).
 - `--pages-only` re-renders pages and assets over an existing build in a second (for design work).
 - `--limit 20` builds a quick site with the highlight games plus 20 others.

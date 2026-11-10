@@ -169,7 +169,8 @@
     const vals = ms.flatMap((m) => m[key[1]]);
     const lo = Math.floor((Math.min(...vals) - 30) / 100) * 100, hi = Math.ceil((Math.max(...vals) + 30) / 100) * 100;
     const day = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
-    const t0 = Date.UTC(2026, 0, 15), t1 = Date.UTC(2026, 9, 15);
+    const last = Math.max(...ms.map((m) => day(m.date)));  // the axis runs a little past the newest model
+    const t0 = Date.UTC(2026, 0, 15), t1 = last + 18 * 864e5;
     const x = (s) => L + (day(s) - t0) / (t1 - t0) * (W - L - Rm), y = (v) => T + (hi - v) / (hi - lo) * (H - T - B);
     const { s, el } = svgIn(host, W, H, `${metric} rating of each model by release date`);
     const step = small ? 200 : 100;
@@ -177,7 +178,7 @@
       el('line', { x1: L, x2: W - Rm, y1: y(v), y2: y(v), class: v === lo ? 'axis-line' : 'grid-line' });
       el('text', { x: L - 8, y: y(v) + 4, 'text-anchor': 'end' }, v.toLocaleString('en-US'));
     }
-    for (let m = 1; m <= 9; m += small ? 2 : 1) {
+    for (let m = 1; m <= 11 && Date.UTC(2026, m, 1) <= t1; m += small ? 2 : 1) {
       const sd = `2026-${String(m + 1).padStart(2, '0')}-01`;
       el('text', { x: x(sd), y: H - 8, 'text-anchor': 'middle' }, MON[m]);
     }
@@ -187,7 +188,7 @@
       const xs = ms.map((m) => day(m.date)), ys = ms.map((m) => m[key[0]]);
       const mx = xs.reduce((a, b) => a + b) / xs.length, my = ys.reduce((a, b) => a + b) / ys.length;
       const slope = tr[0] / (365.25 * 864e5);
-      const a = Date.UTC(2026, 0, 20), b = Date.UTC(2026, 9, 5);
+      const a = Date.UTC(2026, 0, 20), b = last + 8 * 864e5;
       const p = (t) => my + slope * (t - mx);
       el('line', { x1: L + (a - t0) / (t1 - t0) * (W - L - Rm), x2: L + (b - t0) / (t1 - t0) * (W - L - Rm), y1: y(p(a)), y2: y(p(b)), stroke: CT.css('--p-mute'), 'stroke-dasharray': '6 5', 'stroke-width': 1.6, opacity: .9 });
     }

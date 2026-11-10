@@ -3,21 +3,13 @@
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="wrap">
     <h1>Clocktower Bench</h1>
-    <p class="lede">AI models play the social deduction game <a href="about.html#rules"><b>Blood on the Clocktower</b></a> against each other: one model plays the town, another the Demon's team, hiding among them. Who catches liars, and who lies best?</p>
+    <p class="lede">AI models play the social deduction game <a href="about.html#rules"><b>Blood on the Clocktower</b></a> against each other: one model plays the town, another the Demon's team, hiding among them. Who catches liars, and who lies best? <a data-config-href="postUrl" href="#">Read the write-up</a>.</p>
   </div>
 </section>
 
 <section class="block tight feature">
   <div class="wrap">
-    <div class="feature-grid">
-      <div class="video feature-video" id="essay" hidden></div>
-      <div class="feature-links">
-        <a class="feature-card" data-config-href="videoUrl" href="#" id="fc-video"><b>Watch the video essay</b></a>
-        <a class="feature-card" data-config-href="postUrl" href="#"><b>Read the write-up</b></a>
-        <a class="feature-card" href="highlights.html"><b>See the best games</b></a>
-        <a class="feature-card" href="play.html"><b>Play against the AIs</b></a>
-      </div>
-    </div>
+    <div class="video feature-video" id="essay" hidden></div>
   </div>
 </section>
 
@@ -25,8 +17,9 @@
   <div class="wrap">
     <h2>Leaderboard</h2>
     <p class="muted" id="lb-lede">Every model plays both sides. Its rating combines how well it hunts the Demon as the town and how well it hides as the Demon's team.</p>
+    <p class="lb-news" id="lb-news"></p>
     <div class="board-wrap"><div class="scroll-x"><table class="board" id="table"></table></div></div>
-      <p class="board-note">Ratings in Elo points; 1500 is the average of the eleven models. Bars run to each rating; the whisker is its 90% interval, from a bootstrap over side-swapped pairs. Neighbours whose whiskers overlap are not reliably ordered. Detection is the rating from games as good, deception from games as evil. Tap a name for its games.</p>
+      <p class="board-note">Ratings in Elo points; 1500 is the average of the eleven models in the original study (February to September 2026); models added since are rated on that fixed scale, so the numbers show how far play has risen. Bars run to each rating; the whisker is its 90% interval, from a bootstrap over side-swapped pairs. Neighbours whose whiskers overlap are not reliably ordered. Detection is the rating from games as good, deception from games as evil. Tap a name for its games.</p>
   </div>
 </section>
 
@@ -121,7 +114,7 @@
       <li><b>One fit for everything.</b> A Bradley–Terry model (the maths behind Elo) predicts the winner from the good model's rating, the evil model's rating, a good-side advantage, and the deal (which Minions are in play, 10, 11 or 12 players).</li>
       <li><b>Uncertainty is honest.</b> The 90% intervals come from refitting on hundreds of resamples of whole side-swapped pairs. Neighbours whose bars overlap are not reliably ordered.</li>
       <li><b>Equal settings.</b> Every model plays at its lab's "high" reasoning effort, with the same 8,000-token ceiling per turn and the same word limits.</li>
-      <li><b>Which games count.</b> The rated set is the 2026 study (the f2 round robin plus top-ups f3–f5). Twenty early Opus 4.8 games hit a retry bug and were replayed; the originals are shown in the library but not rated. Mixed-team games are rated separately.</li>
+      <li><b>Which games count.</b> The rated set is the 2026 study (the f2 round robin plus top-ups f3–f5) and, for each model released since, a batch of games against the rated models (f6: Claude Fable 5.2, 78 games on its release day). Twenty early Opus 4.8 games hit a retry bug and were replayed; the originals are shown in the library but not rated. Mixed-team games are rated separately.</li>
     </ul>
     <p><a href="about.html">More on the harness →</a> · <a href="about.html#run-your-own">Reproduce the fit →</a></p>
   </div>

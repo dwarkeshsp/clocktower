@@ -44,7 +44,7 @@ MODELS = {
     'claude-opus-4-8': ('Opus 4.8', 'Anthropic'), 'claude-fable-5': ('Fable 5', 'Anthropic'),
     'gpt-5.6-sol': ('GPT-5.6 Sol', 'OpenAI'), 'claude-fable-5-1': ('Fable 5.1', 'Anthropic'),
     'gpt-6-astra': ('GPT-6 Astra', 'OpenAI'), 'claude-opus-5-5': ('Opus 5.5', 'Anthropic'),
-    'gpt-6.1-sol': ('GPT-6.1 Sol', 'OpenAI'),
+    'gpt-6.1-sol': ('GPT-6.1 Sol', 'OpenAI'), 'claude-fable-5-2': ('Fable 5.2', 'Anthropic'),
 }
 MIXED_ID = 'mixed:claude-opus-5-5+gpt-5.6-sol'
 

@@ -2,7 +2,12 @@
   const { $, $$, esc } = CT;
   const [R, charts] = await Promise.all([CT.ratings(), CT.json('data/charts.json')]);
   const ms = R.models.slice().sort((a, b) => b.combined - a.combined);
-  $('#lb-lede').textContent = `Eleven models released in 2026, ${R.games} rated games. Every model plays both sides: its rating combines how well it hunts the Demon as the town and how well it hides as the Demon's team.`;
+  const words = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen'];
+  $('#lb-lede').textContent = `${words[ms.length] || ms.length} models released in 2026, ${R.games} rated games. Every model plays both sides: its rating combines how well it hunts the Demon as the town and how well it hides as the Demon's team.`;
+
+  // The newest model, in one line above the table.
+  const newest = R.models.slice().sort((a, b) => b.date.localeCompare(a.date))[0], rank = ms.indexOf(newest) + 1;
+  if ($('#lb-news')) $('#lb-news').innerHTML = `<b>Newest:</b> <a href="games.html?model=${encodeURIComponent(newest.id)}">${esc(CT.name(R, newest.id))}</a>, released ${CT.fmtDate(newest.date)}, rates <b>${newest.combined}</b> (90%: ${newest.c90[0]}–${newest.c90[1]}) after ${newest.good_games + newest.evil_games} games: ${['', 'first', 'second', 'third', 'fourth', 'fifth'][rank] || '#' + rank} of ${ms.length}.`;
 
   // Ranked table: the script sheet (CT.board in site.js).
   CT.board($('#table'), R);

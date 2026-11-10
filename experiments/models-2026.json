@@ -75,5 +75,13 @@
   "lab": "OpenAI",
   "released": "2026-09-27",
   "note": "newest, cheaper tier"
+ },
+ {
+  "id": "claude-fable-5-2",
+  "short": "fable52",
+  "lab": "Anthropic",
+  "released": "2026-11-09",
+  "note": "added after the 2026 study; not part of the 1500 average",
+  "centre": false
  }
 ]
