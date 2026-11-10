@@ -25,22 +25,6 @@
 
 <section class="block">
   <div class="wrap">
-    <div class="grid two" style="align-items:center">
-      <div>
-        <h2>Detection vs deception</h2>
-        <p>Each model gets a second pair of ratings: one from its games as the town (detection) and one from its games as evil (deception). Models above the dashed line deceive better than they detect.</p>
-        <p class="muted">The two skills track each other closely. Most of OpenAI's lead is on the detection side: across the year its models improved as detectives about four times faster than Anthropic's, while as deceivers the two labs are roughly level.</p>
-      </div>
-      <div class="card">
-        <div class="legend"><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>OpenAI</span><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Anthropic</span></div>
-        <div class="chart" id="chart-split"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="block">
-  <div class="wrap">
     <div class="head-row">
       <h2>By release date: newer models play much better</h2>
       <div class="seg" role="group" aria-label="Rating shown" id="metric">
@@ -74,6 +58,13 @@
   <div class="wrap">
     <h2>More from the games</h2>
     <div class="grid two" style="margin-top:22px">
+      <div class="card">
+        <h3>Detection vs deception</h3>
+        <p class="cap" style="margin-top:0">Each model gets a second pair of ratings: one from its games as the town (detection) and one from its games as evil (deception). Models above the dashed line deceive better than they detect.</p>
+        <div class="legend"><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>OpenAI</span><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Anthropic</span></div>
+        <div class="chart" id="chart-split"></div>
+        <p class="cap">The two skills track each other closely. Most of OpenAI's lead is on the detection side: across the year its models improved as detectives about four times faster than Anthropic's, while as deceivers the two labs are roughly level.</p>
+      </div>
       <div class="card">
         <h3>The village learns, or doesn't</h3>
         <p class="cap" style="margin-top:0">Before each day's votes, every good player privately says how likely each other player is to be the Demon. This is the average chance put on the real Demon, for the newest three models from each lab playing good.</p>
