@@ -72,6 +72,8 @@ def fmt(value):
 
 
 class Game:
+    SCRIPT = 'tb'  # Trouble Brewing; clocktower/bmr.py subclasses this for Bad Moon Rising
+
     def __init__(self, seats, storyteller=None, *, names=NAMES, seed=None, private_beats=6, public_beats=3, max_days=10,
                  waves=3, characters=None, minion=None, out=None, seat_factory=None, probes=True):
         """`seats` maps names to seats; alternatively `seat_factory(name, team)` creates them once the
@@ -106,7 +108,7 @@ class Game:
                 f.write(line + '\n')
 
     def emit(self, kind, data, to='public'):
-        dead = {p.name for p in self.g.players if not p.alive} if self.g else set()
+        dead = {p.name for p in self.g.players if not p.seems_alive} if self.g else set()
         ev = {'seq': len(self.events), 'time': round(time.time(), 2), 'day': self.day, 'phase': self.phase,
               'kind': kind, 'data': data, 'to': to, 'dead': sorted(dead)}
         self.events.append(ev)
@@ -231,6 +233,8 @@ class Game:
     # ---- night -------------------------------------------------------------------------------
     def targets(self, name, action, request):
         chosen = [x for x in dict.fromkeys(action.get('targets') or []) if x in request.options][:request.n_targets]
+        if request.optional and not chosen:
+            return chosen
         if len(chosen) < request.n_targets:
             chosen += self.rng.sample([x for x in request.options if x not in chosen], request.n_targets - len(chosen))
             self.emit('notice', {'text': f'(Your choice was incomplete, so the Storyteller chose for you: '
@@ -392,9 +396,9 @@ class Game:
             requests = {}
             for name in wave:
                 prompt = f'{head} — your turn{note}. {tail}'
-                if not g[name].alive:
+                if not g[name].seems_alive:
                     prompt += ' (You are dead, but you can still ' + ('whisper.)' if private else 'talk.)')
-                requests[name] = Request(kind, prompt, n, beat=beat, alive=g[name].alive,
+                requests[name] = Request(kind, prompt, n, beat=beat, alive=g[name].seems_alive,
                                          mode='private' if private else 'public')
             acts = await self.ask_many(requests)
             if private:
@@ -493,7 +497,7 @@ class Game:
 
     async def vote(self, nominee, block, top):
         g, n = self.g, self.day
-        needed = math.ceil(g.alive_count() / 2)
+        needed = math.ceil(len(g.seeming_alive()) / 2)
         required = max(needed, top + 1)
         yes, voted, early = [], set(), {}
 
@@ -506,7 +510,7 @@ class Game:
                 lines[0] += f' (more than the {top} of an earlier tied vote)'
             lines[0] += '.'
             lines.append(f'Yes so far: {", ".join(yes) if yes else "none"} ({len(yes)}).')
-            if not p.alive:
+            if not p.seems_alive:
                 lines.append('You are dead: voting yes uses your one ghost vote.')
             if p.character == 'Butler' and p.alive and g.master:  # poisoned or not: the Butler can't tell
                 up = g.master in yes or early.get(g.master, (False,))[0]
@@ -520,7 +524,7 @@ class Game:
             return a.get('vote') is True, clip(a.get('say'), WORDS['vote'])
 
         def can_vote(q):
-            return q.alive or q.ghost_vote
+            return q.seems_alive or q.ghost_vote
 
         for voter in self.vote_order(nominee):
             p = g[voter]
@@ -535,7 +539,7 @@ class Game:
             if v and g.works(p, 'Butler') and g.master and not (g.master in yes or early.get(g.master, (False,))[0]):
                 v, remark = False, ''  # a Butler may only raise their hand while their master's is up
                 self.emit('notice', {'text': f'(Your master {g.master} is not voting yes, so you cannot vote.)'}, [voter])
-            ghost = v and not p.alive
+            ghost = v and not p.seems_alive
             if ghost:
                 p.ghost_vote = False
             self.emit('vote', {'voter': voter, 'nominee': nominee, 'yes': v, 'ghost': ghost, 'text': remark})
@@ -564,7 +568,7 @@ class Game:
         nominators, nominees = set(), set()
         block, top = None, 0
         while not g.winner:
-            eligible = [p.name for p in g.living() if p.name not in nominators]
+            eligible = [p.name for p in g.seeming_alive() if p.name not in nominators]
             options = [x for x in self.names if x not in nominees]
             if not eligible or not options:
                 break
@@ -728,7 +732,7 @@ class Game:
             usage['cache_read'] += u.get('cache_read_input_tokens', 0)
             usage['cache_write'] += u.get('cache_creation_input_tokens', 0)
             usage['output'] += u.get('output_tokens', 0)
-        return {'winner': g.winner if g else None, 'reason': (g.reason if g else None) or stopped,
+        return {**({'script': self.SCRIPT} if self.SCRIPT != 'tb' else {}), 'winner': g.winner if g else None, 'reason': (g.reason if g else None) or stopped,
                 'stopped': stopped, 'days': self.day, 'seed': self.seed, 'starting': self.starting,
                 'final': {p.name: p.character for p in g.players} if g else None,
                 'bluffs': g.bluffs if g else None, 'red_herring': g.red_herring if g else None,

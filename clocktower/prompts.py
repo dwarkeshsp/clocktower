@@ -1,6 +1,6 @@
 """The player system prompt (identical for every seat and every game, so it caches) and the
 scripted Storyteller's dawn narration."""
-from .characters import SETUPS, script_text
+from .characters import BMR, SETUPS, script_text
 
 WORDS = {1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten', 11: 'eleven', 12: 'twelve',
          13: 'thirteen', 14: 'fourteen', 15: 'fifteen'}
@@ -27,11 +27,25 @@ MEMORY = {
 }
 
 
-def player_system(n=9, memory='reasoning', private_beats=6):
+def _teams_bmr(n):
+    tf, os_, mn = SETUPS[n]
+    minions = 'one Minion' if mn == 1 else f'{mn} Minions'
+    return (f"Teams. Good: Townsfolk and Outsiders. Evil: one Demon (any of the four on the sheet) and {minions}. "
+            f"With {WORDS[n]} players there are normally {tf} Townsfolk, {os_} Outsider{'' if os_ == 1 else 's'}, "
+            f"{minions} and the Demon; if the Godfather is in play there is one Outsider more or one fewer (and "
+            f"one Townsfolk fewer or more). Each character is in play at most once. You are told your own "
+            f"character, not anyone else's.\n"
+            f"Evil knows itself. The Demon and {'its Minion know each other' if mn == 1 else 'its Minions all know one another'} "
+            f"from the start, and the Demon learns three good characters that are not in play (bluffs). Evil players can "
+            f"only talk the way everyone else does: in town or by whisper.")
+
+
+def player_system(n=9, memory='reasoning', private_beats=6, script='tb'):
     """The player system prompt for an n-player game with `private_beats` beats of private time. `memory`
     says truthfully whether the model's own earlier thinking carries over ('reasoning') or only its replies
-    do ('replies', older models)."""
-    return (_PLAYER_SYSTEM.replace('{N}', WORDS[n]).replace('{TEAMS}', _teams(n)).replace('{MEMORY}', MEMORY[memory])
+    do ('replies', older models). `script` is 'tb' (Trouble Brewing) or 'bmr' (Bad Moon Rising)."""
+    template, teams = (_BMR_SYSTEM, _teams_bmr(n)) if script == 'bmr' else (_PLAYER_SYSTEM, _teams(n))
+    return (template.replace('{N}', WORDS[n]).replace('{TEAMS}', teams).replace('{MEMORY}', MEMORY[memory])
             .replace('{PW}', WORDS[private_beats]).replace('{P}', str(private_beats)))
 
 
@@ -80,6 +94,47 @@ Always respond with the JSON object:
 - targets: the player(s) you choose for a night ability, otherwise [].
 - slayer_shot: a player's name to publicly use the Slayer's ability, otherwise null. You can shoot on any public turn: the town square, the call for nominations, or the comments on a nomination.
 Fill in only what the prompt asks for and leave the rest empty."""
+
+
+def _between(start, end):
+    """A passage of the Trouble Brewing prompt that Bad Moon Rising shares word for word."""
+    i = _PLAYER_SYSTEM.index(start)
+    return _PLAYER_SYSTEM[i:_PLAYER_SYSTEM.index(end, i)]
+
+
+_BMR_SYSTEM = (_between('You are one of', 'THE GAME').replace(
+    'using the Trouble Brewing script', 'using the Bad Moon Rising script (played here without the Gossip)') + f"""THE GAME
+{{TEAMS}}
+Winning. Good wins when the Demon dies. Evil wins when only two players are left alive. The Mastermind can delay the first: if the Demon is executed while the Mastermind is alive, nobody is told and the game goes on for one more day; the team of whoever is executed on that extra day loses, and if nobody is executed then, good wins.
+Nights and days. At night, characters with night abilities act and the Storyteller gives out information. Night order: Sailor, Innkeeper, Courtier, Gambler, Devil's Advocate, Exorcist, then the Demon, then the Assassin, the Godfather and the Professor, then deaths from the Tinker and the Moonchild, and last the Chambermaid. A player killed in the night is not woken later that night. Abilities marked * do not act on the first night. At dawn the night's deaths are announced, and anyone who has come back to life, but not how or why. On this script several players can die in one night, on some nights nobody dies, and a player who is executed does not always die.
+Nothing is revealed when a player dies, by execution or at night: their character stays secret. During the day the town talks and whispers, then nominates and votes. There is at most one execution per day.
+{_between('Nominations. Only living', 'Drunk and poisoned')}Dead players can be nominated and executed too, though it normally changes nothing.
+Drunk and poisoned players have no ability but aren't told: their night choices quietly do nothing, and the Storyteller may give them false information (or true). On this script drunkenness is common (the Sailor, Innkeeper, Courtier, Goon and Minstrel all cause it) and the Pukka poisons.
+The Lunatic is told they are a Demon, is shown players as their "Minions" and three bluffs, and is woken to attack each night like a Demon, but none of it is real: their choices do nothing, and their "Minions" may be anyone. The real Demon is told who the Lunatic is, and each night whom the Lunatic chose. So a player told they are the Demon, with nobody named to them as the Lunatic, may be the Lunatic.
+The Goon takes the alignment of the first player to choose them with an ability each night, and is told when their alignment changes. An evil Goon wins with evil, but is not told who the evil players are.
+The Moonchild's choice is public, and anyone can claim to make it: when your death is announced you are asked whether to point at a living player. A choice made by anyone but the real Moonchild does nothing.
+
+CHARACTERS
+{script_text(BMR)}
+
+{_between('HOW THIS TABLE WORKS', 'THINGS EXPERIENCED PLAYERS KNOW')}THINGS EXPERIENCED PLAYERS KNOW
+- What someone tells you in private may not be what they tell others. Comparing notes exposes liars, and it is also how a liar tells each player what they want to hear.
+- Claims are cheap. Liars get caught by inconsistency: a story that shifts between conversations, or between days. Keep yours straight.
+- Deaths are the main evidence here. Each Demon kills in its own pattern: the Po often kills nobody one night and three the next, the Shabaloth two a night, the Pukka one a night starting on the second night, and the Zombuul only after a day on which nobody died. But protection (Innkeeper, Tea Lady, Sailor, Fool, Exorcist) hides kills and other characters add deaths (Assassin, Godfather, Gambler, Tinker, Moonchild, Grandmother), so the count is a clue, not proof.
+- Death is not always what it seems. A player who "died" may be a living Zombuul. A dead player may return (Professor, Shabaloth). An execution that fails points to the Fool, Sailor, Tea Lady, Pacifist or Devil's Advocate. And the game going on after an execution does not prove the Demon is alive (Mastermind).
+- Information can be wrong, and abilities can silently fail: any player may be drunk or poisoned without knowing.
+- The Demon's three bluffs are characters not in play. The Minions only learn them if the Demon shares them.
+- Good wins by pooling true information, but not blindly: good players sometimes hold back, or bluff a character, to protect themselves from the Demon or to draw out a liar. Evil wins by claiming good characters, backing them with believable information, and turning the town's doubt onto good players.
+
+{_between('HOW TO TALK', 'YOUR RESPONSE')}YOUR RESPONSE
+Always respond with the JSON object:
+- say: what you say to the town ("" for nothing). When nominating it is your accusation (if you don't nominate, it isn't heard), when nominated your defense, and while voting an optional short remark.
+- whispers: a list of {{"to": [one or two names], "text": ...}} — at most one, during private time only; [] for none.
+- nominate: a player's name when you nominate, otherwise null.
+- vote: true or false when voting, otherwise null.
+- targets: the player(s) you choose for a night ability (or for the Moonchild's choice when you die), otherwise [].
+- character: a character's name when a night ability asks you to name one (Courtier, Gambler), otherwise null.
+Fill in only what the prompt asks for and leave the rest empty.""")
 
 
 DAWN_DEATHS = [

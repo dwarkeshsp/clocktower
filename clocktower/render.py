@@ -31,7 +31,7 @@ def render(ev, viewer, dead=()):
         return None
     k, d = ev['kind'], ev['data']
     nm = lambda n: _name(n, viewer, dead)
-    if k in ('intro', 'info', 'notice', 'text'):
+    if k in ('intro', 'info', 'notice', 'text', 'st_note'):
         return d['text']
     if k == 'header':
         return f"\n— {d['text']} —"
@@ -39,6 +39,8 @@ def render(ev, viewer, dead=()):
         deaths = d['deaths']
         s = d.get('narration') or ''
         tail = (f"Died in the night: {', '.join(deaths)}." if deaths else 'Nobody died in the night.')
+        if d.get('risen'):
+            tail += f" Back from the dead: {', '.join(d['risen'])}."
         return (s + ' ' if s else '') + tail
     if k == 'say':
         return f"{nm(d['speaker'])}: {d['text']}"
@@ -70,6 +72,10 @@ def render(ev, viewer, dead=()):
         return s + {'block': f" {d['nominee']} is about to be executed.",
                     'tie': ' That ties the leader, so nobody is about to be executed.',
                     'short': ''}[d['outcome']]
+    if k == 'execution' and d.get('survived'):
+        return f"{d['player']} is executed, but does not die."
+    if k == 'moonchild':
+        return f"{nm(d['player'])}, now dead, makes the Moonchild's choice and points at {d['target']}."
     if k == 'execution':
         return f"{d['player']} is executed." + ('' if d['died'] else ' (They were already dead.)')
     if k == 'no_execution':

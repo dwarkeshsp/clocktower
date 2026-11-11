@@ -15,7 +15,7 @@ from .llm import Reply
 
 @dataclass
 class Request:
-    kind: str                   # night | ravenkeeper | beat | nominate | defense | comment | vote
+    kind: str                   # night | ravenkeeper | beat | nominate | defense | comment | vote | death
     prompt: str
     day: int
     beat: int | None = None
@@ -23,6 +23,8 @@ class Request:
     options: list = field(default_factory=list)   # legal targets / nominees
     alive: bool = True
     mode: str = ''              # 'private' (whispers only) or 'public' (speech only)
+    optional: bool = False      # a night choice the player may decline (no targets)
+    characters: list = field(default_factory=list)  # legal values of `character`, when one is asked for
 
 
 class ModelSeat:
@@ -53,6 +55,13 @@ class RandomSeat:
              'slayer_shot': None}
         if request.kind in ('night', 'ravenkeeper'):
             a['targets'] = r.sample(request.options, min(request.n_targets, len(request.options)))
+            if request.optional and r.random() < 0.4:
+                a['targets'] = []
+            if request.characters and not (request.optional and r.random() < 0.4):
+                a['character'] = r.choice(request.characters)
+        elif request.kind == 'death':  # the Moonchild's public choice, which anyone may claim to make
+            if request.options and r.random() < 0.3:
+                a['targets'] = [r.choice(request.options)]
         elif request.kind == 'beat':
             if r.random() < 0.5: a['say'] = r.choice(LINES)
             if r.random() < 0.3: a['whispers'] = [{'to': [r.choice(others)], 'text': 'psst, what are you?'}]

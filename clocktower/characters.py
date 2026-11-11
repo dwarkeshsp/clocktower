@@ -1,4 +1,4 @@
-"""Trouble Brewing characters: types, ability text and night order."""
+"""Characters by script: types, ability text and (for Trouble Brewing) night order."""
 
 TOWNSFOLK = ['Washerwoman', 'Librarian', 'Investigator', 'Chef', 'Empath', 'Fortune Teller',
              'Undertaker', 'Monk', 'Ravenkeeper', 'Virgin', 'Slayer', 'Soldier', 'Mayor']
@@ -47,16 +47,79 @@ OTHER_NIGHTS = ['Poisoner', 'Monk', 'Scarlet Woman', 'Imp', 'Ravenkeeper', 'Empa
                 'Fortune Teller', 'Undertaker', 'Butler', 'Spy']
 
 
+class Script:
+    """A script: its characters by type. Trouble Brewing is the rated one; Bad Moon Rising is experimental
+    (clocktower/bmr.py)."""
+
+    def __init__(self, key, name, townsfolk, outsiders, minions, demons):
+        self.key, self.name = key, name
+        self.townsfolk, self.outsiders, self.minions, self.demons = townsfolk, outsiders, minions, demons
+        self.good = townsfolk + outsiders
+        self.all = self.good + minions + demons
+
+
+# Bad Moon Rising, without the Gossip: its ability turns on whether a free-text public statement is
+# true, which a scripted Storyteller cannot judge. Twelve Townsfolk are more than any table size needs.
+BMR_TOWNSFOLK = ['Grandmother', 'Sailor', 'Chambermaid', 'Exorcist', 'Innkeeper', 'Gambler', 'Courtier',
+                 'Professor', 'Minstrel', 'Tea Lady', 'Pacifist', 'Fool']
+BMR_OUTSIDERS = ['Tinker', 'Moonchild', 'Goon', 'Lunatic']
+BMR_MINIONS = ['Godfather', "Devil's Advocate", 'Assassin', 'Mastermind']
+BMR_DEMONS = ['Zombuul', 'Pukka', 'Shabaloth', 'Po']
+
+ABILITY.update({
+    'Grandmother': 'You start knowing a good player & their character. If the Demon kills them, you die too.',
+    'Sailor': "Each night, choose an alive player: either you or they are drunk until dusk. You can't die.",
+    'Chambermaid': 'Each night, choose 2 alive players (not yourself): you learn how many woke tonight due to '
+                   'their ability.',
+    'Exorcist': "Each night*, choose a player (different to last night): the Demon, if chosen, learns who you "
+                "are then doesn't wake tonight.",
+    'Innkeeper': "Each night*, choose 2 players: they can't die tonight, but 1 is drunk until dusk.",
+    'Gambler': 'Each night*, choose a player & guess their character: if you guess wrong, you die.',
+    'Courtier': 'Once per game, at night, choose a character: they are drunk for 3 nights & 3 days.',
+    'Professor': 'Once per game, at night*, choose a dead player: if they are a Townsfolk, they are resurrected.',
+    'Minstrel': 'When a Minion dies by execution, all other players are drunk until dusk tomorrow.',
+    'Tea Lady': "If both your alive neighbours are good, they can't die.",
+    'Pacifist': 'Executed good players might not die.',
+    'Fool': "The 1st time you die, you don't.",
+    'Tinker': 'You might die at any time.',
+    'Moonchild': 'When you learn that you died, publicly choose 1 alive player. Tonight, if it was a good '
+                 'player, they die.',
+    'Goon': 'Each night, the 1st player to choose you with their ability is drunk until dusk. You become their '
+            'alignment.',
+    'Lunatic': 'You think you are a Demon, but you are not. The Demon knows who you are & who you choose at night.',
+    'Godfather': 'You start knowing which Outsiders are in play. If 1 died today, choose a player tonight: they '
+                 'die. [-1 or +1 Outsider]',
+    "Devil's Advocate": "Each night, choose a living player (different to last night): if executed tomorrow, "
+                        "they don't die.",
+    'Assassin': 'Once per game, at night*, choose a player: they die, even if for some reason they could not.',
+    'Mastermind': 'If the Demon dies by execution (ending the game), play for 1 more day. If a player is then '
+                  'executed, their team loses.',
+    'Zombuul': 'Each night*, if no-one died today, choose a player: they die. The 1st time you die, you live '
+               'but register as dead.',
+    'Pukka': 'Each night, choose a player: they are poisoned. The previously poisoned player dies then becomes '
+             'healthy.',
+    'Shabaloth': 'Each night*, choose 2 players: they die. A dead player you chose last night might be '
+                 'regurgitated (brought back to life).',
+    'Po': 'Each night*, you may choose a player: they die. If your last choice was no-one, choose 3 players '
+          'tonight.',
+})
+
+TB = Script('tb', 'Trouble Brewing', TOWNSFOLK, OUTSIDERS, MINIONS, DEMONS)
+BMR = Script('bmr', 'Bad Moon Rising', BMR_TOWNSFOLK, BMR_OUTSIDERS, BMR_MINIONS, BMR_DEMONS)
+SCRIPTS = {'tb': TB, 'bmr': BMR}
+
+
 def kind(character):
-    if character in TOWNSFOLK: return 'Townsfolk'
-    if character in OUTSIDERS: return 'Outsider'
-    if character in MINIONS: return 'Minion'
-    if character in DEMONS: return 'Demon'
+    for s in SCRIPTS.values():
+        if character in s.townsfolk: return 'Townsfolk'
+        if character in s.outsiders: return 'Outsider'
+        if character in s.minions: return 'Minion'
+        if character in s.demons: return 'Demon'
     raise KeyError(character)
 
 
 def is_evil_character(character):
-    return character in MINIONS or character in DEMONS
+    return kind(character) in ('Minion', 'Demon')
 
 
 def card(character):
@@ -64,11 +127,12 @@ def card(character):
     return f'{character} ({kind(character)}, {team} team): {ABILITY[character]}'
 
 
-def script_text():
+def script_text(script=None):
     """The character sheet every player and the Storyteller sees."""
+    s = script or TB
     lines = []
-    for title, group in [('Townsfolk (good)', TOWNSFOLK), ('Outsiders (good)', OUTSIDERS),
-                         ('Minions (evil)', MINIONS), ('Demon (evil)', DEMONS)]:
+    for title, group in [('Townsfolk (good)', s.townsfolk), ('Outsiders (good)', s.outsiders),
+                         ('Minions (evil)', s.minions), ('Demon (evil)' if len(s.demons) == 1 else 'Demons (evil)', s.demons)]:
         lines.append(f'{title}:')
         lines += [f'- {c}: {ABILITY[c]}' for c in group]
     lines.append('(* = not on the first night)')

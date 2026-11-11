@@ -12,6 +12,12 @@ games/logs/
 !games/v*/**/result.json
 !games/v*/**/*.txt
 games/play/
+# Bad Moon Rising practice games (experimental): the same rule, config and result only
+games/bmr-dev/**
+!games/bmr-dev/**/
+!games/bmr-dev/**/config.json
+!games/bmr-dev/**/result.json
+.worktrees/
 # Your own spend ledger and quick-start games (the maintainer tracks games/ledger.jsonl explicitly)
 games/ledger.jsonl
 games/demo/

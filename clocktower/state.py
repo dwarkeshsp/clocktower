@@ -23,10 +23,17 @@ class Player:
     shown: str              # the character this player believes they are (differs only for the Drunk)
     alive: bool = True
     ghost_vote: bool = True
+    team: str | None = None     # 'good' / 'evil' once an ability has changed it (Bad Moon Rising's Goon)
+    looks_dead: bool = False    # alive, but the town believes otherwise (Bad Moon Rising's Zombuul)
 
     @property
     def evil(self):
-        return is_evil_character(self.character)
+        return self.team == 'evil' if self.team else is_evil_character(self.character)
+
+    @property
+    def seems_alive(self):
+        """Alive as far as the town can tell: who may nominate, counts toward the vote and has neighbours."""
+        return self.alive and not self.looks_dead
 
 
 def team_sizes(n, baron=False):
@@ -149,6 +156,9 @@ class Grimoire:
     def alive_count(self):
         return len(self.living())
 
+    def seeming_alive(self):
+        return [p for p in self.players if p.seems_alive]
+
     def with_character(self, character, alive=True):
         return next((p for p in self.players if p.character == character and (p.alive or not alive)), None)
 
@@ -175,7 +185,7 @@ class Grimoire:
             for _ in range(n - 1):
                 i = (i + step) % n
                 q = self.players[i]
-                if q.alive and q is not p:
+                if q.seems_alive and q is not p:
                     out.append(q)
                     break
         if len(out) == 2 and out[0] is out[1]:
