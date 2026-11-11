@@ -1,0 +1,55 @@
+{
+  "script": "bmr",
+  "winner": "good",
+  "reason": "The Demon is dead.",
+  "stopped": null,
+  "days": 2,
+  "seed": 100,
+  "starting": {
+    "Alex": "Chambermaid",
+    "Blair": "Godfather",
+    "Casey": "Zombuul",
+    "Drew": "Courtier",
+    "Ellis": "Exorcist",
+    "Frankie": "Professor",
+    "Gray": "Gambler",
+    "Harper": "Fool"
+  },
+  "final": {
+    "Alex": "Chambermaid",
+    "Blair": "Godfather",
+    "Casey": "Zombuul",
+    "Drew": "Courtier",
+    "Ellis": "Exorcist",
+    "Frankie": "Professor",
+    "Gray": "Gambler",
+    "Harper": "Fool"
+  },
+  "bluffs": [
+    "Tinker",
+    "Pacifist",
+    "Sailor"
+  ],
+  "red_herring": null,
+  "drunk_as": null,
+  "cost": 0.7917,
+  "calls": 172,
+  "tokens": {
+    "input": 557,
+    "cache_read": 1229365,
+    "cache_write": 88872,
+    "output": 21713
+  },
+  "seconds": 352.3,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "claude-opus-5-5",
+    "Casey": "claude-opus-5-5",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gpt-6.1-sol",
+    "Harper": "gpt-6.1-sol"
+  }
+}

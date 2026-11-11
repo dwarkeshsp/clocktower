@@ -632,8 +632,12 @@ class BMRGame(Game):
         def resolve(answers, order):
             for role in order:
                 for p in g.players:
-                    if p.shown == role and p.name in answers and (p.alive or role in DEMONS):
-                        self.act(p, role, *answers[p.name], n)
+                    if p.shown != role or p.name not in answers:
+                        continue
+                    if not p.alive:  # killed earlier in this round, before their turn: they never woke
+                        g.woke.discard(p.name)
+                        continue
+                    self.act(p, role, *answers[p.name], n)
 
         # 1. everyone before the Demon, and the Lunatic (the Demon is told the Lunatic's choice)
         early = [p for p in g.living() if p.shown in EARLY or p is lunatic]

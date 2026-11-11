@@ -170,13 +170,28 @@ and word limits. Friends on the same network open the printed address; for other
 [play.clocktowerbench.com](https://play.clocktowerbench.com) runs on Fly (`fly.toml`); `render.yaml` is an
 alternative. See [`docs/hosting.md`](docs/hosting.md).
 
+## Bad Moon Rising (experimental)
+
+`python -m clocktower run --script bmr` plays the Bad Moon Rising script instead of Trouble Brewing, on the same table
+(beats, whispers, nominations, votes) with a scripted Storyteller. It is a practice mode for trying a second script,
+not part of the rated game:
+
+- Games go to `games/bmr-dev/` under the protocol label `bmr-dev`, so no rating or analysis of the rated games reads them.
+- The Gossip is left off the script: its ability turns on whether a free-text statement is true, which a scripted
+  Storyteller cannot judge.
+- `--demons Zombuul,Pukka,Shabaloth,Po` rotates the Demon across a batch, as `--minions` does for Minions.
+- The Storyteller's style for this script (`POLICY` in `clocktower/bmr.py`) is a first guess and has not been tuned
+  for balance.
+- AI seats and random bots only: the browser table, the spectator apps and the website do not know the script yet.
+
 ## Repository map
 
 | Path | What it holds |
 |---|---|
-| `clocktower/characters.py` | Trouble Brewing characters, setups by table size, night order |
+| `clocktower/characters.py` | Characters by script, setups by table size, Trouble Brewing's night order |
 | `clocktower/state.py` | Grimoire, registration, deaths and victory; the Storyteller's choices and `POLICY` |
 | `clocktower/game.py` | Setup, nights, beats, nominations, votes; one typography for all speech |
+| `clocktower/bmr.py` | Bad Moon Rising (experimental, `--script bmr`): its setup, night, deaths and endings on the same table |
 | `clocktower/prompts.py`, `schema.py` | The player system prompt and the fixed output schema ([full prompt](docs/player-prompt.md)) |
 | `clocktower/llm.py` | Claude and OpenAI conversations, per-model settings (`MODELS`), prices, context trimming, ledger |
 | `clocktower/agents.py`, `probe.py` | Seats (model, random bot); belief probes (out-of-game forks of a seat's conversation) |

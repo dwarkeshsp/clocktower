@@ -202,6 +202,12 @@ class ProtectionTests(unittest.TestCase):
         g = play(play_more, 1, 2, 3)
         self.assertEqual(alive(g), {F, G})  # Drew's Grandmother went with them
 
+    def test_a_professor_killed_by_the_assassin_does_not_act(self):
+        g = play(table(seven('Pacifist', 'Assassin', 'Po'),
+                       {2: {G: kills()}, 3: {G: kills(A, B, D)}, 4: {F: kills(C), C: kills(A), G: kills()}}), 1, 2, 3, 4)
+        self.assertEqual(alive(g), {F, G})
+        self.assertNotIn(C, g.g.woke)
+
     def test_fool_survives_once(self):
         g = play(table(seven('Fool', 'Assassin', 'Shabaloth'), {2: {G: kills(A, B)}, 3: {G: kills(A, C)}},
                        {'Shabaloth:regurgitate': {'players': []}}), 1, 2)

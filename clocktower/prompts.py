@@ -147,6 +147,8 @@ DAWN_DEATHS = [
     'The well bucket creaks in the dawn stillness. Word spreads fast: {dead} was taken in the night.',
     'Dogs howl until daybreak. When the town gathers, {dead} does not answer to their name.',
 ]
+PLURAL = [('does not answer to their name', 'do not answer to their names'), ('is missing', 'are missing'),
+          ('is dead', 'are dead'), ('was taken', 'were taken')]
 DAWN_QUIET = [
     'Dawn breaks over the rooftops, and every face in the square is accounted for.',
     'The night passes without a scream. The town gathers, uneasy but whole.',
@@ -163,4 +165,8 @@ def dawn_narration(r, deaths):
     if not deaths:
         return r.choice(DAWN_QUIET)
     dead = deaths[0] if len(deaths) == 1 else ', '.join(deaths[:-1]) + ' and ' + deaths[-1]
-    return r.choice(DAWN_DEATHS).format(dead=dead)
+    line = r.choice(DAWN_DEATHS).format(dead=dead)
+    if len(deaths) > 1:  # several deaths in a night (Bad Moon Rising): the same lines, in the plural
+        for one, many in PLURAL:
+            line = line.replace(one, many)
+    return line

@@ -60,3 +60,4 @@ These ran with `python -m clocktower run` during protocol development. Their con
 | `v9/e1-*` | v9 | 60 | Old and new models plus an effort sweep |
 | `v12/c2-*` | v12 | 12 | Calibration of the v12 Storyteller rules |
 | `v13/f1-*` | v13 | partial | First timeline launch, stopped for the v14 redesign |
+| `bmr-dev/p1`, `bmr-dev/p2` | bmr-dev | 8 | Bad Moon Rising engine practice games (`--script bmr`, experimental): GPT-6.1 Sol against Claude Opus 5.5, each side once per Demon, short days; $20. Not rated |
