@@ -163,6 +163,14 @@ finished games, plus `media/` for videos). `python -m clocktower fetch v17/b2-*`
 
 ## Playing with friends
 
+There are three browser apps, each started by its own command:
+
+| Command | Local URL | Purpose |
+|---|---|---|
+| `python -m clocktower watch` | <http://127.0.0.1:8800> | Read-only spectator: follows live game logs and lets you inspect past games. You cannot join a seat or make moves. |
+| `python -m clocktower play` | <http://localhost:8765> | Interactive game: create a table, join a seat, receive private role information, whisper, nominate and vote. Choose models in the lobby. |
+| `python -m clocktower.export --serve` | <http://localhost:8000> | Leaderboard and replay website: builds a static snapshot from local logs. Its Play link opens the table on port 8765, which you start separately. Re-run to pick up new logs. |
+
 `python -m clocktower play` opens a table on port 8765 for several people on their own devices, plus AI seats
 (`random` bots are free). Each person's seat gets exactly what a model's seat gets: the same events, prompts, moves
 and word limits. Friends on the same network open the printed address; for others, use a tunnel such as

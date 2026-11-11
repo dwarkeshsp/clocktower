@@ -28,6 +28,11 @@ python -m clocktower.export --games games --media media/explainer-three-tricks/e
 python -m http.server -d site/dist 8000        # preview at http://localhost:8000
 ```
 
+For local development, `python -m clocktower.export --serve` does both in one step: it builds, then serves the site
+on `127.0.0.1:8000` (`--port` changes it) with Play pointed at a local table on <http://localhost:8765> (start that
+separately with `python -m clocktower play`). Re-run it after editing `site/src/`. Do not deploy a `--serve` build.
+Without downloaded game logs, the leaderboard works and Games and Highlights are empty.
+
 - About 30 s; writes `site/dist/` (~75 MB with the 8 MB explainer video; ~66 MB of it is 616 gzipped games).
 - `--media` is optional: without it the video plays from the Hugging Face dataset (`explainerFallback`).
 - `--pages-only` re-renders pages and assets over an existing build in a second (for design work).
