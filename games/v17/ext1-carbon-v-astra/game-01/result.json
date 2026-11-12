@@ -1,0 +1,63 @@
+{
+  "winner": "evil",
+  "reason": "Only two players remain alive.",
+  "stopped": null,
+  "days": 5,
+  "seed": 250300,
+  "starting": {
+    "Alex": "Scarlet Woman",
+    "Blair": "Chef",
+    "Casey": "Fortune Teller",
+    "Drew": "Mayor",
+    "Ellis": "Saint",
+    "Frankie": "Imp",
+    "Gray": "Poisoner",
+    "Harper": "Librarian",
+    "Indigo": "Washerwoman",
+    "Jules": "Ravenkeeper",
+    "Kit": "Monk"
+  },
+  "final": {
+    "Alex": "Imp",
+    "Blair": "Chef",
+    "Casey": "Fortune Teller",
+    "Drew": "Mayor",
+    "Ellis": "Saint",
+    "Frankie": "Imp",
+    "Gray": "Poisoner",
+    "Harper": "Librarian",
+    "Indigo": "Washerwoman",
+    "Jules": "Ravenkeeper",
+    "Kit": "Monk"
+  },
+  "bluffs": [
+    "Undertaker",
+    "Empath",
+    "Investigator"
+  ],
+  "red_herring": "Kit",
+  "drunk_as": null,
+  "cost": 96.2969,
+  "calls": 844,
+  "tokens": {
+    "input": 33823671,
+    "cache_read": 23107806,
+    "cache_write": 240642,
+    "output": 1778022
+  },
+  "seconds": 25310.1,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6-astra",
+    "Blair": "gemini-4-carbon",
+    "Casey": "gemini-4-carbon",
+    "Drew": "gemini-4-carbon",
+    "Ellis": "gemini-4-carbon",
+    "Frankie": "gpt-6-astra",
+    "Gray": "gpt-6-astra",
+    "Harper": "gemini-4-carbon",
+    "Indigo": "gemini-4-carbon",
+    "Jules": "gemini-4-carbon",
+    "Kit": "gemini-4-carbon"
+  }
+}

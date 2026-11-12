@@ -1,0 +1,40 @@
+{
+ "note": "External batch, run and paid for by Google on its own copy of this repo (v17, unchanged rules and prompts; its own Gemini adapter): Gemini 4 Carbon against three OpenAI models, 4 side-swapped pairs, one of each Minion forced. Shared as full logs on 10 Nov 2026; the Storyteller setups were re-dealt from the seeds here and match. Their plan named it f6; renamed ext1 here so it stays apart from the Fable 5.2 f6 batches.",
+ "out": "games/v17/ext1",
+ "seed": 250000,
+ "players": "10-12",
+ "budget": 400.0,
+ "matchups": [
+  {
+   "name": "carbon-v-sol61",
+   "good": "gemini-4-carbon",
+   "evil": "gpt-6.1-sol",
+   "pairs": 2,
+   "seed": 250000,
+   "minions": [
+    "Spy",
+    "Baron"
+   ]
+  },
+  {
+   "name": "carbon-v-gpt56sol",
+   "good": "gemini-4-carbon",
+   "evil": "gpt-5.6-sol",
+   "pairs": 1,
+   "seed": 250200,
+   "minions": [
+    "Scarlet Woman"
+   ]
+  },
+  {
+   "name": "carbon-v-astra",
+   "good": "gemini-4-carbon",
+   "evil": "gpt-6-astra",
+   "pairs": 1,
+   "seed": 250300,
+   "minions": [
+    "Poisoner"
+   ]
+  }
+ ]
+}

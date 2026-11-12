@@ -28,6 +28,16 @@ versions record what was run; replaying them exactly needs the code as it was at
 | [`f6-fable52-pilot.json`](f6-fable52-pilot.json) | Nov 9 | 12 | v17 | Fable 5.2, the day it came out: one pair against each of six rated models | 408 |
 | [`f6b-fable52.json`](f6b-fable52.json) | Nov 9 | 36 | v17 | Fable 5.2: three more pairs per matchup, launched alongside the pilot | 1,061 |
 | [`f6c-fable52.json`](f6c-fable52.json) | Nov 9 | 30 | v17 | Fable 5.2: two more pairs per matchup, and one pair each against Opus 4.6, Opus 4.7 and GPT-5.4 | 838 |
+| [`ext1-carbon.json`](ext1-carbon.json) | Nov 10 | 8 | v17 | **External**, run and paid for by Google on its own copy of the repo: Gemini 4 Carbon vs GPT-6.1 Sol (2 pairs), GPT-5.6 Sol and GPT-6 Astra (1 pair each) | — |
+
+The ext1 games came as full logs. Checked here: every config is the standard v17 one (high effort, 8,000-token
+ceiling, reasoning carried over, scripted Storyteller, 6/3 beats, probes, the v17 prompt hashes); re-dealing each
+seed with this engine gives the same characters, bluffs, red herring and Drunk; the OpenAI seats ran normally; and
+Carbon's saved conversations keep its thought parts and `thoughtSignature`s. One difference from other models:
+Gemini's low-effort retry still often spent all 8,000 tokens thinking, so 62 of Carbon's 2,589 turns (2.4%; up to
+6.3% in one game, mostly as good) passed with no action. If that matters, it costs Carbon. They are rated
+separately (`--models models-2026-external.json` → [`docs/plans/ext1-ratings.json`](../docs/plans/ext1-ratings.json));
+the default fit leaves them out.
 
 Costs are summed from each game's `calls.jsonl` (resumed games replay from their last dusk, so these slightly
 undercount). The 2026 ratings use f2 (minus Opus 4.8's 20 v16 games), f3, f3b, f4, f5 (386 games, the original

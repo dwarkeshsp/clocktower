@@ -11,7 +11,11 @@ later models show how far ratings have risen).
     python -m clocktower ratings --lab-trends       # also per-lab gains -> docs/charts/lab-trends.json and .html
     python -m clocktower ratings --games /path/to/games --boot 100 --out /tmp/r.json --no-page
 
-Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6*`).
+    python -m clocktower ratings --models experiments/models-2026-external.json --out docs/plans/ext1-ratings.json --no-page
+                                                    # with externally run models (Gemini 4 Carbon), kept apart
+
+Needs only each game's config.json and result.json (in git). Games whose models are not in the --models list are
+left out, so the default list gives the published fit unchanged.
 """
 from __future__ import annotations
 import collections
@@ -29,7 +33,8 @@ ROOT = Path(__file__).resolve().parent.parent
 K = 400 / math.log(10)  # logits -> Elo points
 MINIONS = ['Spy', 'Scarlet Woman', 'Baron']  # setup terms, each vs a Poisoner game
 BATCHES = ['v16/f2-*', 'v17/f3*-*', 'v17/f4-*', 'v17/f5-*',  # the 2026 study
-           'v17/f6*-*']  # Fable 5.2 (Nov 2026)
+           'v17/f6*-*',  # Fable 5.2 (Nov 2026)
+           'v17/ext1-*']  # external: Gemini 4 Carbon, run by Google on its own copy of this repo (experiments/ext1-carbon.json)
 DROPPED = ('/v16/', 'claude-opus-4-8')  # Opus 4.8's 20 v16 games (bugged retries; replayed under v17)
 
 
@@ -45,8 +50,11 @@ def load(games_root=ROOT / 'games', batches=BATCHES):
             continue
         if DROPPED[0] in d and DROPPED[1] in (c['good_model'], c['evil_model']):
             continue
-        setup = next(json.loads(l) for l in open(d + '/events.jsonl') if '"kind": "setup"' in l)
-        inplay = {s['character'] for s in setup['data']['seats']}
+        if r.get('starting'):  # the starting characters, the same as events.jsonl's setup seats
+            inplay = set(r['starting'].values())
+        else:
+            setup = next(json.loads(l) for l in open(d + '/events.jsonl') if '"kind": "setup"' in l)
+            inplay = {s['character'] for s in setup['data']['seats']}
         parts = d.split('/')
         games.append({'pair': parts[-2] + '/' + parts[-1].replace('-swap', ''), 'good': c['good_model'],
                       'evil': c['evil_model'], 'won': r['winner'] == 'good', 'minions': [m in inplay for m in MINIONS],

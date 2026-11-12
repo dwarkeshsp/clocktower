@@ -1,0 +1,66 @@
+{
+  "winner": "good",
+  "reason": "The Demon is dead.",
+  "stopped": null,
+  "days": 4,
+  "seed": 250001,
+  "starting": {
+    "Alex": "Butler",
+    "Blair": "Investigator",
+    "Casey": "Librarian",
+    "Drew": "Slayer",
+    "Ellis": "Saint",
+    "Frankie": "Baron",
+    "Gray": "Recluse",
+    "Harper": "Fortune Teller",
+    "Indigo": "Imp",
+    "Jules": "Drunk",
+    "Kit": "Chef",
+    "Logan": "Poisoner"
+  },
+  "final": {
+    "Alex": "Butler",
+    "Blair": "Investigator",
+    "Casey": "Librarian",
+    "Drew": "Slayer",
+    "Ellis": "Saint",
+    "Frankie": "Baron",
+    "Gray": "Recluse",
+    "Harper": "Fortune Teller",
+    "Indigo": "Imp",
+    "Jules": "Drunk",
+    "Kit": "Chef",
+    "Logan": "Imp"
+  },
+  "bluffs": [
+    "Undertaker",
+    "Virgin",
+    "Mayor"
+  ],
+  "red_herring": "Blair",
+  "drunk_as": "Ravenkeeper",
+  "cost": 57.0184,
+  "calls": 755,
+  "tokens": {
+    "input": 17867004,
+    "cache_read": 23869487,
+    "cache_write": 276942,
+    "output": 1820510
+  },
+  "seconds": 26025.9,
+  "errors": [],
+  "models": {
+    "Alex": "gemini-4-carbon",
+    "Blair": "gemini-4-carbon",
+    "Casey": "gemini-4-carbon",
+    "Drew": "gemini-4-carbon",
+    "Ellis": "gemini-4-carbon",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gemini-4-carbon",
+    "Harper": "gemini-4-carbon",
+    "Indigo": "gpt-6.1-sol",
+    "Jules": "gemini-4-carbon",
+    "Kit": "gemini-4-carbon",
+    "Logan": "gpt-6.1-sol"
+  }
+}
