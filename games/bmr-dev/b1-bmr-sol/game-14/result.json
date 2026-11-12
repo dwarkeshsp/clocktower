@@ -1,0 +1,64 @@
+{
+  "script": "bmr",
+  "winner": "good",
+  "reason": "The Demon had already been executed with the Mastermind alive; Blair, an evil player, was executed on the extra day.",
+  "stopped": null,
+  "days": 4,
+  "seed": 3013,
+  "starting": {
+    "Alex": "Minstrel",
+    "Blair": "Pukka",
+    "Casey": "Moonchild",
+    "Drew": "Grandmother",
+    "Ellis": "Professor",
+    "Frankie": "Chambermaid",
+    "Gray": "Gambler",
+    "Harper": "Sailor",
+    "Indigo": "Pacifist",
+    "Jules": "Mastermind",
+    "Kit": "Assassin"
+  },
+  "final": {
+    "Alex": "Minstrel",
+    "Blair": "Pukka",
+    "Casey": "Moonchild",
+    "Drew": "Grandmother",
+    "Ellis": "Professor",
+    "Frankie": "Chambermaid",
+    "Gray": "Gambler",
+    "Harper": "Sailor",
+    "Indigo": "Pacifist",
+    "Jules": "Mastermind",
+    "Kit": "Assassin"
+  },
+  "bluffs": [
+    "Tea Lady",
+    "Courtier",
+    "Exorcist"
+  ],
+  "red_herring": null,
+  "drunk_as": null,
+  "cost": 3.5127,
+  "calls": 639,
+  "tokens": {
+    "input": 1917,
+    "cache_read": 9994128,
+    "cache_write": 346321,
+    "output": 164364
+  },
+  "seconds": 2809.1,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "gpt-6.1-sol",
+    "Casey": "gpt-6.1-sol",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gpt-6.1-sol",
+    "Harper": "gpt-6.1-sol",
+    "Indigo": "gpt-6.1-sol",
+    "Jules": "gpt-6.1-sol",
+    "Kit": "gpt-6.1-sol"
+  }
+}

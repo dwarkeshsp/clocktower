@@ -1,0 +1,61 @@
+{
+  "script": "bmr",
+  "winner": "good",
+  "reason": "The Demon had already been executed with the Mastermind alive; Harper, an evil player, was executed on the extra day.",
+  "stopped": null,
+  "days": 6,
+  "seed": 3012,
+  "starting": {
+    "Alex": "Exorcist",
+    "Blair": "Sailor",
+    "Casey": "Devil's Advocate",
+    "Drew": "Mastermind",
+    "Ellis": "Chambermaid",
+    "Frankie": "Fool",
+    "Gray": "Courtier",
+    "Harper": "Zombuul",
+    "Indigo": "Professor",
+    "Jules": "Innkeeper"
+  },
+  "final": {
+    "Alex": "Exorcist",
+    "Blair": "Sailor",
+    "Casey": "Devil's Advocate",
+    "Drew": "Mastermind",
+    "Ellis": "Chambermaid",
+    "Frankie": "Fool",
+    "Gray": "Courtier",
+    "Harper": "Zombuul",
+    "Indigo": "Professor",
+    "Jules": "Innkeeper"
+  },
+  "bluffs": [
+    "Moonchild",
+    "Grandmother",
+    "Minstrel"
+  ],
+  "red_herring": null,
+  "drunk_as": null,
+  "cost": 4.6377,
+  "calls": 858,
+  "tokens": {
+    "input": 2574,
+    "cache_read": 17647141,
+    "cache_write": 385213,
+    "output": 190481
+  },
+  "seconds": 3611.1,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "gpt-6.1-sol",
+    "Casey": "gpt-6.1-sol",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gpt-6.1-sol",
+    "Harper": "gpt-6.1-sol",
+    "Indigo": "gpt-6.1-sol",
+    "Jules": "gpt-6.1-sol"
+  }
+}
