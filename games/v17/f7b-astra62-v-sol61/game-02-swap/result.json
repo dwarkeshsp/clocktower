@@ -1,0 +1,63 @@
+{
+  "winner": "evil",
+  "reason": "Only two players remain alive.",
+  "stopped": null,
+  "days": 5,
+  "seed": 201001,
+  "starting": {
+    "Alex": "Investigator",
+    "Blair": "Scarlet Woman",
+    "Casey": "Fortune Teller",
+    "Drew": "Drunk",
+    "Ellis": "Soldier",
+    "Frankie": "Saint",
+    "Gray": "Undertaker",
+    "Harper": "Baron",
+    "Indigo": "Recluse",
+    "Jules": "Mayor",
+    "Kit": "Imp"
+  },
+  "final": {
+    "Alex": "Investigator",
+    "Blair": "Imp",
+    "Casey": "Fortune Teller",
+    "Drew": "Drunk",
+    "Ellis": "Soldier",
+    "Frankie": "Saint",
+    "Gray": "Undertaker",
+    "Harper": "Imp",
+    "Indigo": "Recluse",
+    "Jules": "Mayor",
+    "Kit": "Imp"
+  },
+  "bluffs": [
+    "Washerwoman",
+    "Butler",
+    "Monk"
+  ],
+  "red_herring": "Gray",
+  "drunk_as": "Ravenkeeper",
+  "cost": 8.1648,
+  "calls": 821,
+  "tokens": {
+    "input": 2463,
+    "cache_read": 13963026,
+    "cache_write": 486600,
+    "output": 273051
+  },
+  "seconds": 4123.8,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "gpt-6.2-astra",
+    "Casey": "gpt-6.1-sol",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gpt-6.1-sol",
+    "Harper": "gpt-6.2-astra",
+    "Indigo": "gpt-6.1-sol",
+    "Jules": "gpt-6.1-sol",
+    "Kit": "gpt-6.2-astra"
+  }
+}

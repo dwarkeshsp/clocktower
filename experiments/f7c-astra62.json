@@ -1,0 +1,10 @@
+{
+ "note": "GPT-6.2 Astra, stage 3: what was left of the $1,500 after f7 and f7b ($162), by the same rule as f7b refit on all 92 games (GPT-6.2 Astra at 1943): two more pairs against Claude Fable 5.2, the only pair that still fit the money under the 10-pair cap.",
+ "out": "games/v17/f7c",
+ "seed": 202000,
+ "players": "10-12",
+ "budget": 1500,
+ "matchups": [
+  {"name": "astra62-v-fable52", "good": "gpt-6.2-astra", "evil": "claude-fable-5-2", "pairs": 2, "minions": ["Baron", "Poisoner"]}
+ ]
+}
