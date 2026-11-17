@@ -33,7 +33,7 @@ on `127.0.0.1:8000` (`--port` changes it) with Play pointed at a local table on 
 separately with `python -m clocktower play`). Re-run it after editing `site/src/`. Do not deploy a `--serve` build.
 Without downloaded game logs, the leaderboard works and Games and Highlights are empty.
 
-- About 30 s; writes `site/dist/` (~75 MB with the 8 MB explainer video; ~66 MB of it is 616 gzipped games).
+- About 30 s; writes `site/dist/` (~85 MB with the 8 MB explainer video; ~76 MB of it is 712 gzipped games).
 - `--media` is optional: without it the video plays from the Hugging Face dataset (`explainerFallback`).
 - `--pages-only` re-renders pages and assets over an existing build in a second (for design work).
 - `--limit 20` builds a quick site with the highlight games plus 20 others.
