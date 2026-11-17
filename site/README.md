@@ -20,7 +20,7 @@ the dataset are sections of About (`about.html#run-your-own`, `#data`); `run.htm
 
 ## Build
 
-The game logs must be on disk (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/b1-* v17/b2-*`, or
+The game logs must be on disk (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/f7* v17/b1-* v17/b2-*`, or
 point `--games` at a checkout that has them):
 
 ```sh

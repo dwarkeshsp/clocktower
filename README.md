@@ -122,7 +122,7 @@ Controlling a running batch:
 ## How ratings are computed
 
 ```sh
-python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*' 'v17/f6*'   # the 2026 games' logs (~2.5 GB)
+python -m clocktower fetch 'v16/f2-*' 'v17/f3*' 'v17/f4-*' 'v17/f5-*' 'v17/f6*' 'v17/f7*'   # the 2026 games' logs (~2.5 GB)
 python -m clocktower ratings --no-page      # refit: rewrites docs/plans/f2-ratings.json (reproduces it exactly)
 python -m clocktower ratings --lab-trends   # also per-lab trends and the HTML pages
 ```

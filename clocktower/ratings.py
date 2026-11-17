@@ -11,7 +11,7 @@ later models show how far ratings have risen).
     python -m clocktower ratings --lab-trends       # also per-lab gains -> docs/charts/lab-trends.json and .html
     python -m clocktower ratings --games /path/to/games --boot 100 --out /tmp/r.json --no-page
 
-Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6*`).
+Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/f7*`).
 """
 from __future__ import annotations
 import collections
