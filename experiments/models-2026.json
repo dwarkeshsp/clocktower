@@ -83,5 +83,13 @@
   "released": "2026-11-09",
   "note": "added after the 2026 study; not part of the 1500 average",
   "centre": false
+ },
+ {
+  "id": "gpt-6.2-astra",
+  "short": "astra62",
+  "lab": "OpenAI",
+  "released": "2026-11-17",
+  "note": "added after the 2026 study; not part of the 1500 average",
+  "centre": false
  }
 ]

@@ -1,0 +1,45 @@
+{
+ "note": "GPT-6.2 Astra, the day it came out, on a $1,500 budget. Stage 1: five side-swapped pairs against each of the four opponents that an information-per-dollar allocation picks whatever GPT-6.2 Astra's rating turns out to be (GPT-6.1 Sol, GPT-6 Astra, GPT-5.6 Sol, Opus 5.5), and one pair each against Fable 5.2 and Fable 5.1. The rest of the budget is allocated after a refit (f7b).",
+ "out": "games/v17/f7",
+ "seed": 200000,
+ "players": "10-12",
+ "budget": 1500,
+ "matchups": [
+  {
+   "name": "astra62-v-sol61",
+   "good": "gpt-6.2-astra",
+   "evil": "gpt-6.1-sol",
+   "pairs": 5
+  },
+  {
+   "name": "astra62-v-astra",
+   "good": "gpt-6.2-astra",
+   "evil": "gpt-6-astra",
+   "pairs": 5
+  },
+  {
+   "name": "astra62-v-gpt56sol",
+   "good": "gpt-6.2-astra",
+   "evil": "gpt-5.6-sol",
+   "pairs": 5
+  },
+  {
+   "name": "astra62-v-opus55",
+   "good": "gpt-6.2-astra",
+   "evil": "claude-opus-5-5",
+   "pairs": 5
+  },
+  {
+   "name": "astra62-v-fable52",
+   "good": "gpt-6.2-astra",
+   "evil": "claude-fable-5-2",
+   "pairs": 1
+  },
+  {
+   "name": "astra62-v-fable51",
+   "good": "gpt-6.2-astra",
+   "evil": "claude-fable-5-1",
+   "pairs": 1
+  }
+ ]
+}
