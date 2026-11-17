@@ -28,17 +28,21 @@ versions record what was run; replaying them exactly needs the code as it was at
 | [`f6-fable52-pilot.json`](f6-fable52-pilot.json) | Nov 9 | 12 | v17 | Fable 5.2, the day it came out: one pair against each of six rated models | 408 |
 | [`f6b-fable52.json`](f6b-fable52.json) | Nov 9 | 36 | v17 | Fable 5.2: three more pairs per matchup, launched alongside the pilot | 1,061 |
 | [`f6c-fable52.json`](f6c-fable52.json) | Nov 9 | 30 | v17 | Fable 5.2: two more pairs per matchup, and one pair each against Opus 4.6, Opus 4.7 and GPT-5.4 | 838 |
+| [`f7-astra62.json`](f7-astra62.json) | Nov 17 | 44 | v17 | GPT-6.2 Astra, the day it came out: five pairs each against GPT-6.1 Sol, GPT-6 Astra, GPT-5.6 Sol and Opus 5.5, one each against Fable 5.2 and Fable 5.1 | 614 |
+| [`f7b-astra62.json`](f7b-astra62.json) | Nov 17 | 48 | v17 | GPT-6.2 Astra: by information per dollar after a refit on the first 30 games (at most 10 pairs per opponent) | 723 |
+| [`f7c-astra62.json`](f7c-astra62.json) | Nov 17 | 4 | v17 | GPT-6.2 Astra: the rest of its $1,500, two more pairs against Fable 5.2 | 109 |
 
 Costs are summed from each game's `calls.jsonl` (resumed games replay from their last dusk, so these slightly
 undercount). The 2026 ratings use f2 (minus Opus 4.8's 20 v16 games), f3, f3b, f4, f5 (386 games, the original
-11-model study) and f6 (78 games, Claude Fable 5.2): 464 games. The f6 batches
+11-model study) f6 (78 games, Claude Fable 5.2) and f7 (96 games, GPT-6.2 Astra): 560 games. The f6 batches
 were interrupted (the machine was suspended once and every game replayed from its last dusk; the last three games
 were cut off by a time limit and resumed), so the amount billed for them was about $2,580.
 
 Model lists, used by `plan`, `ratings` and `allocate`:
 
 - [`models-2026.json`](models-2026.json): the models released in 2026, with lab and release date. The rating
-  scale is centred so the 11 of the original study average 1500; a model added later (Claude Fable 5.2, Nov 9) is
+  scale is centred so the 11 of the original study average 1500; a model added later (Claude Fable 5.2, Nov 9;
+  GPT-6.2 Astra, Nov 17) is
   marked `"centre": false`, so the scale stays where that study put it and later models show how far play has risen.
 - [`timeline-models.json`](timeline-models.json): 21 models from GPT-4o (May 2024) on, for a timeline experiment
   that has not been run (see [`docs/experiments.md`](../docs/experiments.md)).

@@ -1,0 +1,66 @@
+{
+  "winner": "good",
+  "reason": "The Demon is dead.",
+  "stopped": null,
+  "days": 5,
+  "seed": 202001,
+  "starting": {
+    "Alex": "Monk",
+    "Blair": "Investigator",
+    "Casey": "Butler",
+    "Drew": "Saint",
+    "Ellis": "Imp",
+    "Frankie": "Scarlet Woman",
+    "Gray": "Soldier",
+    "Harper": "Chef",
+    "Indigo": "Librarian",
+    "Jules": "Mayor",
+    "Kit": "Poisoner",
+    "Logan": "Virgin"
+  },
+  "final": {
+    "Alex": "Monk",
+    "Blair": "Investigator",
+    "Casey": "Butler",
+    "Drew": "Saint",
+    "Ellis": "Imp",
+    "Frankie": "Imp",
+    "Gray": "Soldier",
+    "Harper": "Chef",
+    "Indigo": "Librarian",
+    "Jules": "Mayor",
+    "Kit": "Poisoner",
+    "Logan": "Virgin"
+  },
+  "bluffs": [
+    "Washerwoman",
+    "Fortune Teller",
+    "Empath"
+  ],
+  "red_herring": null,
+  "drunk_as": null,
+  "cost": 22.6372,
+  "calls": 930,
+  "tokens": {
+    "input": 3022,
+    "cache_read": 19059002,
+    "cache_write": 622635,
+    "output": 258434
+  },
+  "seconds": 2448.5,
+  "errors": [],
+  "models": {
+    "Alex": "gpt-6.2-astra",
+    "Blair": "gpt-6.2-astra",
+    "Casey": "gpt-6.2-astra",
+    "Drew": "gpt-6.2-astra",
+    "Ellis": "claude-fable-5-2",
+    "Frankie": "claude-fable-5-2",
+    "Gray": "gpt-6.2-astra",
+    "Harper": "gpt-6.2-astra",
+    "Indigo": "gpt-6.2-astra",
+    "Jules": "gpt-6.2-astra",
+    "Kit": "claude-fable-5-2",
+    "Logan": "gpt-6.2-astra"
+  }
+}

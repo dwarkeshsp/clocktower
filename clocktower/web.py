@@ -57,18 +57,19 @@ HOME = 'https://clocktowerbench.com'
 # What the lobby offers, strongest first: the 2026 rating (docs/plans/f2-ratings.json) and the fitted
 # cost of one AI seat for one game (v16-v17 results), so a host can see roughly what a game costs.
 MODELS = [
-    ('gpt-6-astra', 'GPT-6 Astra', 1892, 1.85),
-    ('gpt-6.1-sol', 'GPT-6.1 Sol', 1764, 0.11),
-    ('claude-fable-5-2', 'Claude Fable 5.2', 1759, 3.88),
-    ('gpt-5.6-sol', 'GPT-5.6 Sol', 1583, 0.74),
-    ('claude-fable-5-1', 'Claude Fable 5.1', 1567, 2.66),
-    ('claude-opus-5-5', 'Claude Opus 5.5', 1547, 0.85),
-    ('claude-fable-5', 'Claude Fable 5', 1534, 10.43),
-    ('gpt-5.5', 'GPT-5.5', 1486, 1.91),
-    ('claude-opus-4-6', 'Claude Opus 4.6', 1428, 3.30),
-    ('gpt-5.4', 'GPT-5.4', 1269, 3.87),
+    ('gpt-6.2-astra', 'GPT-6.2 Astra', 1945, 1.51),
+    ('gpt-6-astra', 'GPT-6 Astra', 1920, 1.85),
+    ('claude-fable-5-2', 'Claude Fable 5.2', 1748, 3.88),
+    ('gpt-6.1-sol', 'GPT-6.1 Sol', 1745, 0.11),
+    ('gpt-5.6-sol', 'GPT-5.6 Sol', 1581, 0.74),
+    ('claude-fable-5-1', 'Claude Fable 5.1', 1560, 2.66),
+    ('claude-opus-5-5', 'Claude Opus 5.5', 1540, 0.85),
+    ('claude-fable-5', 'Claude Fable 5', 1532, 10.43),
+    ('gpt-5.5', 'GPT-5.5', 1494, 1.91),
+    ('claude-opus-4-6', 'Claude Opus 4.6', 1429, 3.30),
+    ('gpt-5.4', 'GPT-5.4', 1270, 3.87),
     ('claude-opus-4-7', 'Claude Opus 4.7', 1233, 2.77),
-    ('claude-opus-4-8', 'Claude Opus 4.8', 1195, 8.44),
+    ('claude-opus-4-8', 'Claude Opus 4.8', 1196, 8.44),
     ('random', 'Practice bots (random moves, free)', None, 0.0),
 ]
 TEAMS = ('good', 'evil', 'any')

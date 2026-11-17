@@ -10,7 +10,7 @@ The Storyteller is code, not a person or a model: a probability table, set by ha
 Storyteller would typically do, so every outcome the rules allow can still happen but nobody steers the game. The
 rules went through 17 versions, each checked by having models play batches of games and other models read every one.
 
-![Ratings of the 12 models released in 2026, by release date, with 90% intervals](docs/charts/clocktower-final-ratings.png)
+![Ratings of the 13 models released in 2026, by release date, with 90% intervals](docs/charts/clocktower-final-ratings.png)
 
 Website (leaderboard, every game's replay): [clocktowerbench.com](https://clocktowerbench.com) · Play against the
 models in your browser: [play.clocktowerbench.com](https://play.clocktowerbench.com) · Write-up and video essay:
@@ -22,30 +22,35 @@ models in your browser: [play.clocktowerbench.com](https://play.clocktowerbench.
 
 ## Results
 
-464 games between the 12 models released in 2026 (protocol v16/v17; Elo scale; 90% intervals from a bootstrap over
+560 games between the 13 models released in 2026 (protocol v16/v17; Elo scale; 90% intervals from a bootstrap over
 side-swapped pairs). The scale is fixed where the original 11-model study put it: those 11 average 1500, and models
-added since (Claude Fable 5.2, 78 games on its release day, 9 Nov) are rated against it:
+added since (Claude Fable 5.2, 78 games on its release day, 9 Nov; GPT-6.2 Astra, 96 games on its release day,
+17 Nov) are rated against it:
 
 | Model | Lab | Released | Rating | 90% interval | Detection (good) | Deception (evil) |
 |---|---|---|---|---|---|---|
-| GPT-6 Astra | OpenAI | Sep 2026 | **1892** | 1811–2012 | 1922 | 1855 |
-| GPT-6.1 Sol | OpenAI | Sep 2026 | **1764** | 1714–1840 | 1861 | 1697 |
-| Claude Fable 5.2 | Anthropic | Nov 2026 | **1759** | 1696–1838 | 1731 | 1753 |
-| GPT-5.6 Sol | OpenAI | Jul 2026 | **1583** | 1533–1643 | 1654 | 1507 |
-| Claude Fable 5.1 | Anthropic | Sep 2026 | **1567** | 1512–1634 | 1551 | 1563 |
-| Claude Opus 5.5 | Anthropic | Sep 2026 | **1547** | 1492–1610 | 1513 | 1568 |
-| Claude Fable 5 | Anthropic | Jun 2026 | **1534** | 1446–1640 | 1427 | 1634 |
-| GPT-5.5 | OpenAI | Apr 2026 | **1486** | 1422–1553 | 1393 | 1566 |
-| Claude Opus 4.6 | Anthropic | Feb 2026 | **1428** | 1344–1508 | 1487 | 1331 |
-| GPT-5.4 | OpenAI | Mar 2026 | **1269** | 1186–1336 | 1298 | 1234 |
-| Claude Opus 4.7 | Anthropic | Apr 2026 | **1233** | 1118–1317 | 1253 | 1228 |
-| Claude Opus 4.8 | Anthropic | May 2026 | **1195** | 1072–1269 | 1141 | 1316 |
+| GPT-6.2 Astra | OpenAI | Nov 2026 | **1945** | 1889–2034 | 1936 | 1931 |
+| GPT-6 Astra | OpenAI | Sep 2026 | **1920** | 1851–2010 | 1921 | 1892 |
+| Claude Fable 5.2 | Anthropic | Nov 2026 | **1748** | 1685–1825 | 1734 | 1734 |
+| GPT-6.1 Sol | OpenAI | Sep 2026 | **1745** | 1694–1809 | 1814 | 1676 |
+| GPT-5.6 Sol | OpenAI | Jul 2026 | **1581** | 1535–1634 | 1656 | 1496 |
+| Claude Fable 5.1 | Anthropic | Sep 2026 | **1560** | 1505–1621 | 1542 | 1563 |
+| Claude Opus 5.5 | Anthropic | Sep 2026 | **1540** | 1485–1598 | 1519 | 1551 |
+| Claude Fable 5 | Anthropic | Jun 2026 | **1532** | 1435–1633 | 1436 | 1626 |
+| GPT-5.5 | OpenAI | Apr 2026 | **1494** | 1433–1561 | 1417 | 1561 |
+| Claude Opus 4.6 | Anthropic | Feb 2026 | **1429** | 1351–1497 | 1491 | 1336 |
+| GPT-5.4 | OpenAI | Mar 2026 | **1270** | 1187–1330 | 1300 | 1242 |
+| Claude Opus 4.7 | Anthropic | Apr 2026 | **1233** | 1113–1338 | 1257 | 1233 |
+| Claude Opus 4.8 | Anthropic | May 2026 | **1196** | 1069–1287 | 1147 | 1323 |
 
-- **Claude Fable 5.2** (9 Nov) is level with GPT-6.1 Sol in second place and about 190 above Fable 5.1. It won 32 of
-  39 games as good and 19 of 39 as evil, but only 7 of 24 against GPT-6 Astra and GPT-6.1 Sol.
-- Models released in 2026 gain about **671 Elo a year** (90% CI 590–819): GPT-6 Astra beats Opus 4.6, seven months
-  older, about 93% of the time. Detection and deception rise together.
-- Evil wins 33% of games. Setup matters: a Spy or Baron game helps good (+105, +96) relative to a Poisoner
+- **GPT-6.2 Astra** (17 Nov) rates first, but its interval overlaps GPT-6 Astra's almost entirely: head to head it
+  won 9 of 20 games against GPT-6 Astra. It won 44 of 48 games as good and 29 of 48 as evil, including 59 of 70
+  against GPT-6.1 Sol, Claude Fable 5.2, GPT-5.6 Sol and Claude Opus 5.5.
+- **Claude Fable 5.2** (9 Nov) is level with GPT-6.1 Sol in third place and about 190 above Fable 5.1. It won 34 of
+  44 games as good and 19 of 44 as evil, but only 7 of 24 against GPT-6 Astra and GPT-6.1 Sol.
+- Models released in 2026 gain about **734 Elo a year** (90% CI 650–870): GPT-6 Astra beats Opus 4.6, seven months
+  older, about 94% of the time. Detection and deception rise together.
+- Evil wins 34% of games. Setup matters: a Spy or Baron game helps good (+106, +72) relative to a Poisoner
   game; a Scarlet Woman game is about level with one (−16).
 - **Why OpenAI's newer models win:** mostly detection. Both labs' towns are level on day 1; from day 2 OpenAI towns
   weigh each new result against everything so far, while Claude towns take reported results at face value, treat
