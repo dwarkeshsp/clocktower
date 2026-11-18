@@ -309,7 +309,12 @@ class PersistenceTest(unittest.TestCase):
     def test_game_survives_a_restart(self):
         """Tables, people and the game come back after a restart; the game continues from its last dusk
         and the same links still work."""
-        with tempfile.TemporaryDirectory() as d:
+        # Human seat assignment has its own unseeded RNG. Fix the seats so this practice game
+        # reaches a winner within the day limit, independent of the machine running the test.
+        def fixed_seats(people, players, rng):
+            return assign(people, players, random.Random(0))
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(web, 'assign', side_effect=fixed_seats):
             h1 = hub(d)
             t = h1.create('1.2.3.4')
             a, b = t.join('Ann', 'good'), t.join('Bo', 'any')
