@@ -16,6 +16,7 @@ from pathlib import Path
 from unittest import mock
 
 import clocktower.web as web
+from clocktower.check_play import PlayCheck
 from clocktower.llm import BudgetExceeded
 from clocktower.state import Grimoire
 from clocktower.web import Hub, PlayLedger, RateLimited, Settings, Table, assign, clean, evil_seats, redact, run_game
@@ -359,6 +360,7 @@ class PersistenceTest(unittest.TestCase):
             t3 = h3.get(t.id)
             s = t3.state(a, 0)
             self.assertTrue(s['over'] and s['seated'])
+            self.assertTrue(t3.lobby(a)['me']['seated'])
             self.assertEqual({x['player'] for x in s['reveal']['seats'] if x['player']}, {'Ann', 'Bo'})
             self.assertGreater(len(s['events']), 50)
             self.assertIn('Night 1', t3.transcript(b))
@@ -380,6 +382,41 @@ class PersistenceTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 t2.resume(a)  # no key yet
             self.assertEqual(t2.keys, {})
+
+    def test_ending_restored_own_key_game_returns_to_lobby(self):
+        """Lobby and state must agree, including records ended before this fix was deployed."""
+        for legacy_ended in (False, True):
+            with self.subTest(legacy_ended=legacy_ended), tempfile.TemporaryDirectory() as d:
+                h1 = hub(d)
+                t = h1.create()
+                token = t.join('Host', 'good')
+                t.people[token]['seat'] = 'Alex'
+                t.seat_map, t.dealt = {'Alex': token}, {token}
+                t.status, t.paid_by = ('over' if legacy_ended else 'playing'), 'player'
+                t.save()
+                h1.store.db.close()
+
+                h2 = hub(d).restore()
+                t2 = h2.get(t.id)
+                if not legacy_ended:
+                    self.assertEqual(t2.status, 'paused')
+                    self.assertTrue(t2.lobby(token)['me']['in_game'])
+                    t2.end(token)
+                    self.assertNotIn('API key again', t2.error)
+                self.assertEqual(t2.status, 'over')
+                self.assertFalse(t2.lobby(token)['me']['seated'])
+                self.assertFalse(t2.state(token, 0)['seated'])
+                h2.store.db.close()
+
+                h3 = hub(d).restore()
+                t3 = h3.get(t.id)
+                self.assertFalse(t3.lobby(token)['me']['seated'])
+                self.assertFalse(t3.state(token, 0)['seated'])
+                with mock.patch.object(Table, 'launch'):
+                    t3.set_config(token, {'good_model': 'random', 'evil_model': 'random'})
+                    t3.start(token)
+                self.assertEqual(t3.status, 'playing')
+                h3.store.db.close()
 
 
 class SpendTest(unittest.TestCase):
@@ -606,6 +643,18 @@ class HTTPTest(unittest.TestCase):
                 return r.status, dict(r.headers), r.read()
         except urllib.error.HTTPError as e:
             return e.code, dict(e.headers), e.read()
+
+    def test_hourly_check_starts_and_ends_a_real_practice_game(self):
+        check = PlayCheck(self.base, poll_interval=0.1)
+        with mock.patch.object(web, 'assign', side_effect=lambda people, players, rng: assign(people, players, random.Random(0))):
+            check.run()
+        table = self.hub.get(check.table)
+        self.assertEqual(table.status, 'over')
+        self.assertEqual(table.ended, 'host')
+        self.assertIsNone(table.paid_by)
+        self.assertEqual((table.config['good_model'], table.config['evil_model']), ('random', 'random'))
+        self.assertTrue(table.state(check.token, 0)['seated'])
+        self.assertNotIn(table, self.hub.running())
 
     def test_flow(self):
         code, _, body = self.call('/healthz')

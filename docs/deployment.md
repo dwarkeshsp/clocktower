@@ -64,3 +64,32 @@ by a retrying health check which fails on HTTP errors or a response without `ok:
 
 A Fly deploy briefly restarts the server. Active games resume from their last dusk, replaying the current day;
 games using players' own API keys pause until the host re-enters the keys. The site job does not restart games.
+
+
+## Hourly play check
+
+`.github/workflows/play-check.yml` runs at minute 17 of every hour (UTC), and can also be run manually
+from Actions → **Hourly play check** → Run workflow → `main`. It uses the public
+`https://play.clocktowerbench.com` API to create a table, join as host, explicitly select practice bots
+for both teams, and verify that configuration before starting. It waits up to 60 seconds for a seated
+human player with game events and an actionable turn, then ends the game and verifies it has stopped.
+Failures also attempt cleanup, including when the start request times out after reaching the server.
+The job fails if startup or cleanup fails. It uses only Python's standard library and needs no secrets.
+
+Run the same check locally:
+
+```sh
+python -m clocktower.check_play --base-url https://play.clocktowerbench.com
+```
+
+The check spends no model credits. It covers table creation, joining, configuration, game startup and
+state polling; it does not verify paid model providers or browser rendering. Finished check games use
+the server's normal 14-day retention; a table that never starts expires under the idle-lobby policy.
+
+For failure alerts, open [GitHub notification settings](https://github.com/settings/notifications),
+under **System → Actions** enable email notifications and **Send notifications for failed workflows only**.
+Scheduled-run notifications go to the user who last changed the cron schedule (or re-enabled it).
+GitHub schedules can be delayed or dropped under load, and public-repository schedules are disabled after
+60 days without repository activity. This is an hourly availability check, not a guaranteed paging service.
+See [GitHub's schedule documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
+and [Actions notifications](https://docs.github.com/en/subscriptions-and-notifications/how-tos/managing-github-actions-notifications).

@@ -826,7 +826,7 @@ class Table:
             game = self.game
             if self.status == 'paused':
                 self.status, self.ended, self.finished = 'over', why, time.time()
-                self.error = self.error or 'The game was paused and has been closed.'
+                self.error = 'The paused game has ended.'
                 self.save()
                 return
             if self.status != 'playing' or not game or not game.out:
@@ -846,6 +846,10 @@ class Table:
         with self.lock:
             self.touch(token)
             me = self.people.get(token) if isinstance(token, str) else None
+            seat = me['seat'] if me and token in self.dealt else None
+            # Match state(): a saved seat alone cannot open a game after a paused game ends.
+            seated = bool(seat and ((self.game and self.game.g) or
+                                   (self.final and seat in self.final['me'] and self.out)))
             n = self.config['players']
             tf, os_, mn = SETUPS[n]
             now = time.time()
@@ -855,7 +859,7 @@ class Table:
             return {
                 'table': self.id, 'status': self.status, 'error': self.error, 'game': self.game_id,
                 'me': None if not me else {'name': me['name'], 'team': me['team'], 'host': me['host'], 'id': me['id'],
-                                           'seated': bool(me['seat']) and token in self.dealt, 'in_game': token in self.dealt},
+                                           'seated': seated, 'in_game': token in self.dealt},
                 'people': [{'id': p['id'], 'name': p['name'], 'host': p['host'], 'you': t == token,
                             'online': now - self.seen.get(t, 0) < 15} for t, p in self.people.items()],
                 'config': self.config, 'setup': {'townsfolk': tf, 'outsiders': os_, 'minions': mn, 'demons': 1},
