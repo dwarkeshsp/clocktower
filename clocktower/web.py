@@ -125,7 +125,6 @@ class Settings:
     byo_game_cap: float = 50.0                # USD one game on a player's own key may spend
     free_models: tuple = ('gpt-6.1-sol',)     # models the house pays for; ('all',) = every model with a key
     max_games: int = 20                       # games running at once
-    max_tables: int = 300                     # open tables (lobbies and games)
     tables_per_hour: int = 6                  # new tables per IP per hour
     idle_minutes: float = 30.0                # a lobby or game nobody has looked at for this long closes
     keep_days: float = 14.0                   # finished tables (and their logs) are kept this long; 0 = forever
@@ -155,7 +154,7 @@ class Settings:
                    budget_period=env.get('PLAY_BUDGET_PERIOD', 'day').strip().lower(),
                    byo_game_cap=env_num(env, 'PLAY_BYO_GAME_BUDGET', 50.0),
                    free_models=tuple(m.strip() for m in env.get('PLAY_FREE_MODELS', 'gpt-6.1-sol').split(',') if m.strip()),
-                   max_games=env_num(env, 'PLAY_MAX_GAMES', 20, int), max_tables=env_num(env, 'PLAY_MAX_TABLES', 300, int),
+                   max_games=env_num(env, 'PLAY_MAX_GAMES', 20, int),
                    tables_per_hour=env_num(env, 'PLAY_TABLES_PER_HOUR', 6, int),
                    idle_minutes=env_num(env, 'PLAY_IDLE_MINUTES', 30.0), keep_days=env_num(env, 'PLAY_KEEP_DAYS', 14.0),
                    proxy_hops=env_num(env, 'PLAY_PROXY_HOPS', 0, int), public_url=url,
@@ -1092,8 +1091,7 @@ class Hub:
                 times.popleft()
             if len(times) >= self.settings.tables_per_hour:
                 raise RateLimited('You have opened several tables in the last hour: use one of those, or try later.')
-            if len(self.tables) >= self.settings.max_tables:
-                raise ValueError('The server is full right now; try again later.')
+            # Capacity is checked when a game starts/resumes; retained tables do not use game slots.
             times.append(now)
             t = Table(self.args, self.runner, self)
             t.links = self.links

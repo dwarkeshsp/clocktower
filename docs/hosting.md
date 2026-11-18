@@ -55,13 +55,15 @@ Everything lives under `PLAY_DATA_DIR` (mount a persistent volume there):
 | Limit | Default | Env |
 |---|---|---|
 | Games at once | 20 (`fly.toml`: 100) | `PLAY_MAX_GAMES` |
-| Open tables (lobbies + games) | 300 | `PLAY_MAX_TABLES` |
 | New tables per IP per hour | 6 | `PLAY_TABLES_PER_HOUR` |
 | API requests per IP | 40/s reads (burst 80), 15/s writes (burst 30) | code (`Hub.gets`, `Hub.posts`) |
 | Request body | 32 KB | code (`BODY_LEN`) |
 | Names / messages | 24 chars / 2000 chars, then the game's word limits | code |
 | Table size | 10–12 seats; 1–12 people, the rest AI | code (`SIZES`) |
 | Idle | a lobby nobody opens for 30 min closes; a game nobody watches for 30 min ends (stops spending); an absent player's turns pass after 2 min | `PLAY_IDLE_MINUTES` |
+
+Only currently running games count toward `PLAY_MAX_GAMES`, checked when a game starts or resumes. Lobbies,
+paused games and retained finished games do not consume slots. `PLAY_MAX_TABLES` is no longer used.
 
 Tokens (per person) are 144-bit random, table ids 72-bit; there is no host password (the first to join hosts,
 anyone can take the chair). Nobody's token is ever sent to anyone else. All user text is escaped in the page,
@@ -84,7 +86,7 @@ and pages are served with a strict Content-Security-Policy (scripts from the ser
 | `PLAY_BUDGET_TIMEZONE` | no | IANA timezone for midnight reset, default UTC |
 | `PLAY_GAME_BUDGET` | no | USD per free game, default 5 |
 | `PLAY_BYO_GAME_BUDGET` | no | USD per own-key game, default 50 |
-| `PLAY_MAX_GAMES`, `PLAY_MAX_TABLES`, `PLAY_TABLES_PER_HOUR`, `PLAY_IDLE_MINUTES` | no | limits above |
+| `PLAY_MAX_GAMES`, `PLAY_TABLES_PER_HOUR`, `PLAY_IDLE_MINUTES` | no | limits above |
 | `PLAY_KEEP_DAYS` | no | days to keep finished tables and their logs, default 14 (0 = forever) |
 | `PLAY_EFFORT` | no | the AI seats' reasoning effort at a new table: `low` (default), `medium` or `high` (the benchmark's). The host can change it per table in the lobby ("AI thinking"); `python -m clocktower play --effort X` overrides the default |
 | `PLAY_PROBES` | no | `0` (default): no belief survey. `1`: AI seats also answer the eval's belief survey each day (about +15% calls, sent alongside the game's own), shown at the reveal as "what the AIs believed" |

@@ -512,15 +512,39 @@ class ReadsTest(unittest.TestCase):
 class LimitsTest(unittest.TestCase):
     def test_table_creation_rate_limit(self):
         with tempfile.TemporaryDirectory() as d:
-            h = hub(d, tables_per_hour=3, max_tables=5)
+            h = hub(d, tables_per_hour=3)
             for _ in range(3):
                 h.create('9.9.9.9')
             with self.assertRaises(RateLimited):
                 h.create('9.9.9.9')
             h.create('8.8.8.8')
             h.create('7.7.7.7')
-            with self.assertRaisesRegex(ValueError, 'full'):
-                h.create('6.6.6.6')
+            h.create('6.6.6.6')
+
+    def test_finished_tables_do_not_consume_game_capacity_after_restart(self):
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(Table, 'launch'):
+            h = hub(d, max_games=1)
+            # Fill the old 300-table limit with retained game history.
+            for i in range(300):
+                archived = h.create(f'old-{i}')
+                archived.status, archived.finished = 'over', time.time()
+                archived.save()
+            h.store.db.close()
+
+            h = hub(d, max_games=1).restore()
+            self.addCleanup(h.store.db.close)
+            self.assertEqual(len(h.tables), 300)
+            self.assertEqual(h.running(), [])
+            first, second, paused = (h.create(ip) for ip in ('first', 'second', 'paused'))
+            paused.status = 'paused'
+            a, b = first.join('A', 'good'), second.join('B', 'good')
+            first.start(a)  # saved games, lobbies and paused games consume no running-game slots
+            self.assertEqual(h.running(), [first])
+            with self.assertRaisesRegex(ValueError, 'game slots'):
+                second.start(b)
+            first.status = 'over'
+            second.start(b)  # finishing a game immediately frees its slot
+            self.assertEqual(h.running(), [second])
 
     def test_bucket(self):
         b = web.Bucket(rate=1, burst=3)
