@@ -18,6 +18,12 @@ games/demo/
 games/smoke/
 .wrangler/
 scripts/deploy.sh
+scripts/deploy-matt.sh
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
 
 # Private: kept locally, out of the public repo
 CLAUDE.md

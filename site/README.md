@@ -70,6 +70,11 @@ public; the site itself then shrinks to ~9 MB.
 
 ## Deploy
 
+Production deployment runs through GitHub Actions on pushes to `main`, after tests pass. It builds this site
+with `python -m clocktower.site_build` and uploads it to Cloudflare Pages; a separate job handles the Fly play
+server. See [CI/CD setup, credentials and manual reruns](../docs/deployment.md). The GitHub Pages workflow below
+is an optional example for a different hosting destination, not the production workflow.
+
 Both hosts serve `site/dist/` as is. Pages use relative links, so they also work from a sub-path.
 
 **Cloudflare Pages** (recommended: fast, free, no size worries at this scale):
