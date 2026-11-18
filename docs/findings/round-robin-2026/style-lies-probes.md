@@ -74,6 +74,11 @@ hedge with 3-for-3s (62%; GPT models 62–88%, older Claude 26–48%). Games wit
 won 62% (66 games), versus 69% otherwise.
 
 ## 3. Belief probes: detection vs results
+
+Reprocessed 18 November 2026 for issues #3 and #4: raw answers are reparsed and scored against the living
+Demon at each survey. The game cohort and win rates are unchanged. The Elo column retains the original
+published fit. The corrected website chart uses a different, documented game-weighted six-model average;
+see [its data and game list](../../charts/demon-belief.json).
 Each seat answers an out-of-game survey before nominations each day, giving P(evil) and P(Demon) for
 everyone (`probes.jsonl`).
 
@@ -84,26 +89,25 @@ Columns for good seats, pooled over days:
 - d1/d2/d3: P(Imp) on days 1–3.
 - good win: the model's win rate as good.
 
-| model | P(Imp) | Imp top | evil AUC | d1/d2/d3 | good win | detection Elo |
+| model | P(Imp) | Imp top | evil AUC | d1/d2/d3 | good win | detection Elo (original fit) |
 |---|---|---|---|---|---|---|
-| GPT-6.1 Sol | .32 | .42 | .82 | .16/.32/.40 | 91% | 1781 |
-| GPT-6 Astra | .31 | .41 | .88 | .15/.32/.39 | 100% | 1931 |
-| GPT-5.6 Sol | .26 | .31 | .78 | .14/.22/.34 | 82% | 1652 |
-| Fable 5.1 | .22 | .30 | .71 | .14/.20/.26 | 73% | 1574 |
-| Opus 5.5 | .21 | .24 | .73 | .14/.15/.20 | 58% | 1481 |
-| GPT-5.5 | .21 | .29 | .77 | .11/.15/.27 | 68% | 1359 |
-| Opus 4.6 | .21 | .27 | .65 | .09/.22/.29 | 64% | 1507 |
-| GPT-5.4 | .19 | .24 | .69 | .11/.14/.28 | 47% | 1294 |
-| Opus 4.7 | .19 | .20 | .64 | .11/.21/.22 | 50% | 1288 |
-| Opus 4.8 | .19 | .17 | .65 | .13/.16/.11 | 34% | 1173 |
-| Fable 5 | .18 | .22 | .65 | .11/.11/.15 | 65% | 1461 |
+| GPT-6 Astra | .35 | .45 | .88 | .15/.32/.47 | 100% | 1931 |
+| GPT-6.1 Sol | .34 | .45 | .82 | .16/.35/.44 | 91% | 1781 |
+| GPT-5.6 Sol | .32 | .38 | .78 | .14/.23/.40 | 82% | 1652 |
+| Fable 5.1 | .26 | .35 | .71 | .14/.23/.31 | 73% | 1574 |
+| Opus 5.5 | .22 | .26 | .73 | .14/.16/.21 | 58% | 1481 |
+| GPT-5.5 | .22 | .31 | .77 | .11/.18/.29 | 68% | 1359 |
+| Opus 4.6 | .21 | .28 | .65 | .09/.22/.29 | 64% | 1507 |
+| Fable 5 | .21 | .26 | .65 | .11/.11/.16 | 65% | 1461 |
+| Opus 4.7 | .21 | .22 | .64 | .11/.22/.25 | 50% | 1288 |
+| GPT-5.4 | .20 | .26 | .69 | .10/.13/.27 | 47% | 1294 |
+| Opus 4.8 | .19 | .16 | .64 | .13/.20/.12 | 34% | 1173 |
 
-- Across models, P(Imp) correlates 0.87 with good win rate and 0.89 with detection Elo. "Imp is my top
-  suspect" correlates 0.94 with good win rate.
+- Across models, P(Imp) correlates 0.92 with good win rate and 0.92 with detection Elo from the original fit. "Imp is my top
+  suspect" correlates 0.97 with good win rate.
 - On day 1 everyone is near chance (.09–.16). The separation comes on days 2–3, and the top GPT models
   double their read.
-- As evil, the P(Imp) the opposing town puts on this model's Imp correlates −0.73 with evil win rate and
-  −0.78 with deception Elo. The best hiders are Fable 5, GPT-6.1 Sol and GPT-5.6 Sol (.18–.19); the worst
-  are Opus 4.6, 4.7 and 4.8 (.27–.29). These figures are raw, and opponents are roughly balanced by the
-  round robin.
-- Per game, if the town's day-1 consensus ranks the true Imp in its top 3, good wins 76–80%; otherwise 58%.
+- As evil, the P(Imp) the opposing town puts on the living Demon correlates −0.82 with evil win rate.
+  The lowest town probabilities are for GPT-6.1 Sol, Fable 5 and GPT-5.5 (.19–.20); the highest are for
+  Opus 4.6, 4.7 and 4.8 (about .30). These are raw averages, with opponents roughly balanced by the round robin.
+- Per game, if the town's day-1 consensus ranks the true Imp in its top 3, good wins 74–80%; otherwise 59%.

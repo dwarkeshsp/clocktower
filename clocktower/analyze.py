@@ -16,6 +16,7 @@ import math
 import statistics
 from collections import defaultdict
 from pathlib import Path
+from . import probe
 
 EVIL = {'Imp', 'Poisoner', 'Spy', 'Scarlet Woman', 'Baron'}
 from .characters import GOOD as _GOOD
@@ -56,7 +57,8 @@ def game_metrics(path):
         return None
     result = json.loads((path / 'result.json').read_text())
     config = json.loads((path / 'config.json').read_text()) if (path / 'config.json').exists() else {}
-    events, probes = _jsonl(path / 'events.jsonl'), _jsonl(path / 'probes.jsonl')
+    events = _jsonl(path / 'events.jsonl')
+    probes = probe.load(path / 'probes.jsonl', events=events)
     start = result.get('starting') or {}
     team = {n: 'evil' if c in EVIL else 'good' for n, c in start.items()}
     executed = [(e['day'], e['data']['player']) for e in events if e['kind'] == 'execution' and e['data']['died']]
@@ -80,7 +82,7 @@ def game_metrics(path):
         by_point[(r['day'], r['point'])].append(r)
     for (day, point), rs in by_point.items():
         truth = rs[0]['truth']
-        imp = next((n for n, t in truth.items() if t['character'] == 'Imp'), None)
+        imp = rs[0]['demon']
         good_reads = [r for r in rs if r['team'] == 'good' and r.get('players')]
         town = {}
         for n in truth:

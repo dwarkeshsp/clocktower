@@ -30,7 +30,7 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import characters
+from . import characters, probe
 from .ratings import BATCHES, DROPPED
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -182,22 +182,19 @@ def item(ev):
     return None  # header, intro, setup, st_choice, nominations_open, thinking: handled by the caller or dropped
 
 
-def beliefs(path, seats):
+def beliefs(path, seats, events=()):
     """Per day: the good players' average P(Demon) for each player (the probe before nominations, else dawn),
     and each good prober's own numbers. Probabilities in whole percent."""
     if not os.path.exists(path):
         return []
     names = [s['n'] for s in seats]
     by = defaultdict(lambda: defaultdict(dict))  # (day, point) -> prober -> target -> pct
-    alive = {}
-    for line in Path(path).read_text().splitlines():
-        try:
-            p = json.loads(line)
-        except ValueError:
-            continue
+    alive, demons = {}, {}
+    for p in probe.load(path, names, events):
         if p.get('team') != 'good' or not isinstance(p.get('players'), dict):
             continue
         key = (p['day'], p['point'])
+        demons[key] = p['demon']
         for t, v in p['players'].items():
             if t in names and isinstance(v, dict) and isinstance(v.get('demon'), (int, float)):
                 by[key][p['player']][t] = round(100 * max(0.0, min(1.0, v['demon'])))
@@ -212,7 +209,7 @@ def beliefs(path, seats):
             vals = [probers[p][t] for p in living if t in probers[p]]
             if vals:
                 avg[t] = round(sum(vals) / len(vals))
-        out.append({'d': day, 'pt': key[1], 'n': len(living), 'v': avg, 'by': {p: dict(v) for p, v in probers.items()}})
+        out.append({'d': day, 'pt': key[1], 'n': len(living), 'demon': demons.get(key), 'v': avg, 'by': {p: dict(v) for p, v in probers.items()}})
     return out
 
 
@@ -308,14 +305,14 @@ def export_game(d, gid, group=None):
         'seats': seats, 'bluffs': setup.get('bluffs', []), 'rh': setup.get('red_herring'),
         'intros': intros,
         'days_': [days[k] for k in sorted(days)],
-        'belief': beliefs(d / 'probes.jsonl', seats),
+        'belief': beliefs(d / 'probes.jsonl', seats, events),
     }
 
 
 def summary(g, available):
     """The library row for one game."""
-    demon = next((s['n'] for s in g['seats'] if s['c'] == 'Imp'), None)
-    b_last = g['belief'][-1]['v'].get(demon) if g['belief'] and demon else None
+    last = g['belief'][-1] if g['belief'] else {}
+    b_last = last.get('v', {}).get(last.get('demon'))
     whispers = sum(1 for day in g['days_'] for sec in day['secs'] for it in sec['it'] if it['k'] == 'w')
     return {'id': g['id'], 'batch': g['batch'], 'group': g['group'], 'good': g['good'], 'evil': g['evil'],
             'winner': g['winner'], 'reason': g['reason'], 'days': g['days'], 'players': g['players'],

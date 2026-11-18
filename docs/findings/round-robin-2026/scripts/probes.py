@@ -1,4 +1,5 @@
 import json,glob,collections,statistics as st,math
+from clocktower import probe
 R=json.load(open('docs/plans/f2-ratings.json'))
 elo={m['id']:m for m in R['models']}
 games=sorted(glob.glob('games/v16/f2-*/game-*')+glob.glob('games/v17/f3*/game-*'))
@@ -12,15 +13,15 @@ for g in games:
     cfg=json.load(open(g+'/config.json')); res=json.load(open(g+'/result.json'))
     gm,em=cfg['good_model'],cfg['evil_model']; goodwin=res['winner']=='good'
     pts=collections.defaultdict(list)
-    for l in open(g+'/probes.jsonl'):
-        r=json.loads(l)
-        if r.get('players'): pts[(r['day'],r['point'])].append(r)
+    events=[json.loads(l) for l in open(g+'/events.jsonl')]
+    for r in probe.load(g+'/probes.jsonl', events=events):
+        pts[(r['day'],r['point'])].append(r)
     d1=None
     for (day,pt),rs in sorted(pts.items()):
-        truth=rs[0]['truth']; imp=next((n for n,t in truth.items() if t['character']=='Imp'),None)
+        truth=rs[0]['truth']; imp=rs[0]['demon']
         if not imp: continue
         n=len(truth)
-        goods=[r for r in rs if r['team']=='good']
+        goods=[r for r in rs if r['team']=='good' and r.get('players')]
         for r in goods:
             P=r['players']; others=[k for k in P if k!=r['player']]
             dem={k:P[k].get('demon') for k in others if P[k].get('demon') is not None}

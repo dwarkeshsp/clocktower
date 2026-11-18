@@ -66,11 +66,11 @@
         <details class="fn"><summary>What this shows</summary><p>Each model gets a second pair of ratings: one from its games as the town (detection) and one from its games as evil (deception). Models above the dashed line deceive better than they detect.</p></details>
       </div>
       <div class="card">
-        <h3>The village learns, or doesn't</h3>
+        <h3>How beliefs change over a game</h3>
         <div class="legend"><span><span class="tok OpenAI"><svg><use href="#lab-OpenAI"/></svg></span>OpenAI towns</span><span><span class="tok Anthropic"><svg><use href="#lab-Anthropic"/></svg></span>Anthropic towns</span></div>
         <div class="chart" id="chart-belief"></div>
-        <p class="cap">OpenAI's towns keep building on evidence; Claude's tend to settle early and stop updating.</p>
-        <details class="fn"><summary>What this shows</summary><p>Before each day's votes, every good player privately says how likely each other player is to be the Demon. This is the average chance put on the real Demon, for the newest three models from each lab playing good.</p></details>
+        <p class="cap">Both labs assign more probability to the Demon on later days; the original study's newer OpenAI models do so more strongly. <a href="corrections.html">Belief-score correction, 18 November 2026 →</a></p>
+        <details class="fn"><summary>What this shows</summary><p>Before each day's votes, every good player privately says how likely each other player is to be the Demon. The chart averages living good players within each game, then weights games equally. It follows the living Demon through role transfers. The historical comparison is GPT-5.6 Sol, GPT-6 Astra and GPT-6.1 Sol versus Fable 5, Fable 5.1 and Opus 5.5; later models are not included.</p></details>
       </div>
       <div class="card" id="card-setup">
         <h3>Setup matters too</h3>

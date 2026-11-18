@@ -1,5 +1,10 @@
 # Why OpenAI beats Anthropic: lab-level metrics
 
+Probe metrics reprocessed 18 November 2026 for issues #3/#4. The corrected machine-readable values are in
+`metrics.json`; `byday-output.txt` and the survey-derived rows of `analyze-output.txt` were regenerated.
+Game outcomes and non-survey measures are unchanged. The chart on the website uses living good players and
+equal game weights; this report pools all available good-seat answers, so its percentages differ.
+
 All 386 rated games; no API calls (scripts in `scripts/`, outputs beside this file). "Adj." = value minus what the
 same opponent conceded to every other model; brackets are 90% bootstrap intervals over the 193 side-swapped pairs. The like-with-like comparison is the summer/autumn generation:
 **Claude** (Fable 5, Fable 5.1, Opus 5.5; 106 good games) against **OpenAI** (GPT-5.6 Sol, GPT-6 Astra, GPT-6.1 Sol;
@@ -8,7 +13,7 @@ same opponent conceded to every other model; brackets are 90% bootstrap interval
 
 ## The answer
 
-**Claude towns read day 1 as well as OpenAI towns, but then they stop learning.** On day 1 the two labs are level.
+**Claude towns start near OpenAI towns, but improve less on several later-game measures.** On day 1 the two labs are level.
 Claude's day-1 executions actually hit evil slightly more often (44% vs 39%). From day 2, OpenAI towns turn the
 evidence that piles up (deaths, execution results, night information, contradictions) into a correct consensus:
 - Their top suspect is evil 52% of the time on day 1, 70% on day 2 and 81% on day 3 and later.
@@ -31,9 +36,9 @@ essentially every game. Claude towns executed two or more in 61% of games; OpenA
 | Good wins | 65% | 89% | −23 pts [−32, −14] | −16 [−26, −5] |
 | Day-1 executions that hit evil | 44% | 39% | +12 [0, +23] | +20 [+6, +35] |
 | **Day-2+ executions that hit evil** | **46%** | **72%** | **−27 [−33, −20]** | **−19 [−27, −12]** |
-| Town's top suspect* is evil, day 2 | 45% | 70% | −26 [−36, −15] | −20 [−31, −7] |
-| Town's top suspect is evil, day 3+ | 53% | 81% | −29 [−37, −22] | −24 [−33, −15] |
-| Town P(Demon) on the real Imp, day 3 | 0.20 | 0.36 | −0.17 [−0.24, −0.11] | −0.13 [−0.22, −0.05] |
+| Town's top suspect* is evil, day 2 | 45% | 70% | −26 [−36, −16] | −20 [−31, −8] |
+| Town's top suspect is evil, day 3+ | 53% | 81% | −30 [−37, −22] | −24 [−33, −15] |
+| Town P(Demon) on the living Imp, day 3 | 0.23 | 0.42 | −0.20 [−0.27, −0.15] | −0.18 [−0.26, −0.11] |
 | Rise in a seat's P(evil) on a real evil player after a teammate names them to it | +0.09 | +0.16 | −0.06 [−0.08, −0.05] | −0.06 [−0.08, −0.04] |
 | Games with 2+ good players executed | 61% | 31% | +29 [+19, +39] | +14 [+2, +27] |
 | Good players executed per game | 2.02 | 1.19 | +0.80 [+0.52, +1.06] | +0.36 [+0.04, +0.70] |
@@ -51,13 +56,13 @@ Learning curve by model (top suspect is evil, day 1 / 2 / 3+):
 | Fable 5 | 25% | 25% | 51% |
 | Fable 5.1 | 54% | 43% | 56% |
 | Opus 5.5 | 45% | 54% | 52% |
-| Opus 4.6 / 4.7 / 4.8 | 52 / 29 / 52% | 39 / 35 / 30% | 46 / 50 / 42% |
-| GPT-5.4 / 5.5 | 36 / 47% | 39 / 47% | 61 / 67% |
+| Opus 4.6 / 4.7 / 4.8 | 52 / 29 / 45% | 39 / 35 / 28% | 46 / 51 / 33% |
+| GPT-5.4 / 5.5 | 36 / 47% | 42 / 47% | 61 / 67% |
 | **GPT-5.6 Sol** | 36% | **62%** | **75%** |
 | **GPT-6.1 Sol** | 53% | **77%** | **86%** |
 | **GPT-6 Astra** | **88%** | **84%** | **96%** |
 
-Claude models are flat; OpenAI models from July climb steeply. Only Astra is also sharp on day 1 (a GPT-6 trait
+The newer Claude models improve less on this measure; OpenAI models from July climb steeply. Only Astra is also sharp on day 1 (a GPT-6 trait
 on top of the shared curve).
 
 Older generation (Opus 4.6–4.8 vs GPT-5.4/5.5): good wins −8 points [−21, +4], good players executed +0.04 per
@@ -123,7 +128,7 @@ towns against 0.01 for OpenAI. Of 20 games lost to a Saint execution, 18 had a C
   not from the labs as such.
 - **Claude evil teams are louder, not more in charge:** public words 1.09× their seat share vs 0.87× (GPT-6
   ~0.6×, Opus 5.5 0.82×), yet fewer of the nominations (27% vs 34%), and the town puts more P(Demon) on their Imp
-  by day 2 (+0.09 adj. [+0.06, +0.13]).
+  by day 2 (+0.09 adj. [+0.06, +0.12]).
 
 ## Caveats
 

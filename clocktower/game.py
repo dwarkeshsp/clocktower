@@ -136,7 +136,7 @@ class Game:
             meta = {'day': self.day, 'point': point}
             record = {**meta, 'player': p.name, 'character': p.character, 'shown': p.shown,
                       'team': 'evil' if p.evil else 'good', 'alive': p.alive,
-                      'truth': {q.name: {'character': q.character, 'evil': q.evil} for q in self.g.players}}
+                      'truth': {q.name: {'character': q.character, 'evil': q.evil, 'alive': q.alive} for q in self.g.players}}
             self.probe_tasks.append(asyncio.create_task(self._probe(seat, text, meta, record)))
 
     async def _probe(self, seat, text, meta, record):

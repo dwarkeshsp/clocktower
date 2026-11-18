@@ -1,6 +1,6 @@
-A-old top suspect evil d1/d2/d3+: 0.43 (n=92) / 0.35 (n=89) / 0.47 (n=159) | Brier (living) d1/d2/d3+: 0.226 / 0.228 / 0.267
+A-old top suspect evil d1/d2/d3+: 0.41 (n=92) / 0.34 (n=91) / 0.44 (n=172) | Brier (living) d1/d2/d3+: 0.225 / 0.237 / 0.285
    good win by good players executed 0/1/2+: 1.00 (n=13) / 0.93 (n=15) / 0.23 (n=64)
-O-old top suspect evil d1/d2/d3+: 0.42 (n=67) / 0.43 (n=65) / 0.63 (n=133) | Brier (living) d1/d2/d3+: 0.205 / 0.213 / 0.208
+O-old top suspect evil d1/d2/d3+: 0.42 (n=67) / 0.45 (n=65) / 0.63 (n=133) | Brier (living) d1/d2/d3+: 0.205 / 0.214 / 0.207
    good win by good players executed 0/1/2+: 1.00 (n=8) / 1.00 (n=15) / 0.34 (n=44)
 A-new top suspect evil d1/d2/d3+: 0.44 (n=106) / 0.45 (n=103) / 0.53 (n=203) | Brier (living) d1/d2/d3+: 0.203 / 0.203 / 0.218
    good win by good players executed 0/1/2+: 1.00 (n=17) / 1.00 (n=24) / 0.43 (n=65)
@@ -12,13 +12,13 @@ claude-fable-5-1 top suspect evil d1/d2/d3+: 0.54 (n=37) / 0.43 (n=37) / 0.56 (n
    good win by good players executed 0/1/2+: 1.00 (n=8) / 1.00 (n=10) / 0.47 (n=19)
 claude-opus-4-6 top suspect evil d1/d2/d3+: 0.52 (n=29) / 0.39 (n=28) / 0.46 (n=41) | Brier (living) d1/d2/d3+: 0.219 / 0.213 / 0.261
    good win by good players executed 0/1/2+: 1.00 (n=6) / 1.00 (n=8) / 0.33 (n=15)
-claude-opus-4-7 top suspect evil d1/d2/d3+: 0.29 (n=34) / 0.35 (n=34) / 0.50 (n=70) | Brier (living) d1/d2/d3+: 0.233 / 0.235 / 0.249
+claude-opus-4-7 top suspect evil d1/d2/d3+: 0.29 (n=34) / 0.35 (n=34) / 0.51 (n=71) | Brier (living) d1/d2/d3+: 0.233 / 0.235 / 0.249
    good win by good players executed 0/1/2+: 1.00 (n=4) / 1.00 (n=4) / 0.23 (n=26)
-claude-opus-4-8 top suspect evil d1/d2/d3+: 0.52 (n=29) / 0.30 (n=27) / 0.42 (n=48) | Brier (living) d1/d2/d3+: 0.220 / 0.254 / 0.384
+claude-opus-4-8 top suspect evil d1/d2/d3+: 0.45 (n=29) / 0.28 (n=29) / 0.33 (n=60) | Brier (living) d1/d2/d3+: 0.219 / 0.260 / 0.355
    good win by good players executed 0/1/2+: 1.00 (n=3) / 0.67 (n=3) / 0.17 (n=23)
 claude-opus-5-5 top suspect evil d1/d2/d3+: 0.45 (n=49) / 0.54 (n=46) / 0.52 (n=93) | Brier (living) d1/d2/d3+: 0.201 / 0.192 / 0.219
    good win by good players executed 0/1/2+: 1.00 (n=7) / 1.00 (n=12) / 0.37 (n=30)
-gpt-5.4 top suspect evil d1/d2/d3+: 0.36 (n=33) / 0.39 (n=33) / 0.61 (n=76) | Brier (living) d1/d2/d3+: 0.215 / 0.234 / 0.219
+gpt-5.4 top suspect evil d1/d2/d3+: 0.36 (n=33) / 0.42 (n=33) / 0.61 (n=76) | Brier (living) d1/d2/d3+: 0.214 / 0.234 / 0.217
    good win by good players executed 0/1/2+: 1.00 (n=1) / 1.00 (n=8) / 0.25 (n=24)
 gpt-5.5 top suspect evil d1/d2/d3+: 0.47 (n=34) / 0.47 (n=32) / 0.67 (n=57) | Brier (living) d1/d2/d3+: 0.196 / 0.193 / 0.193
    good win by good players executed 0/1/2+: 1.00 (n=7) / 1.00 (n=7) / 0.45 (n=20)

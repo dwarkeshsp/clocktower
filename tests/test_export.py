@@ -97,6 +97,10 @@ class ExportGame(unittest.TestCase):
         self.assertEqual(b['v']['Alex'], 40)  # (60 + 20) / 2: the dead Ellis and the evil Casey don't count
         self.assertEqual(set(b['by']), {'Blair', 'Drew', 'Ellis'})
 
+    def test_library_uses_the_demon_at_the_last_survey(self):
+        self.g['belief'] = [{'d': 2, 'demon': 'Casey', 'v': {'Alex': 0, 'Casey': 87}}]
+        self.assertEqual(export.summary(self.g, set())['demonBelief'], 87)
+
     def test_find_quote(self):
         self.assertEqual(export.find_quote(self.g, 'i AM the  chef'), (1, 11, False))
         self.assertEqual(export.find_quote(self.g, 'Claim Chef'), (1, 11, True))

@@ -3,6 +3,8 @@ Run from the repo root: python docs/findings/why-openai-wins/scripts/extract.py 
 Games: v16 f2 (minus Opus 4.8's v16 games, as scripts/ratings2026.py) + v17 f3, f3b, f4, f5."""
 import json, glob, os, re, sys, collections
 
+from clocktower import probe
+
 OUT = sys.argv[1]
 SKEPTIC = re.compile(r"(doesn'?t|does not|didn'?t|isn'?t|is not|not) (prove|confirm|clear|mean)|not proof|"
                      r"\bspy\b|\bdrunk\b|poison|red herring|independent|misregister|could be lying|unverif|can'?t (be )?verif", re.I)
@@ -118,10 +120,9 @@ for d, res, cfg in games():
     # --- probes
     pr = []
     if os.path.exists(d + '/probes.jsonl'):
-        for l in open(d + '/probes.jsonl'):
-            p = json.loads(l)
+        for p in probe.load(d + '/probes.jsonl', events=ev):
             if not p.get('players'): continue
-            pr.append(dict(day=p['day'], pt=p['point'], who=p['player'], team=p['team'], alive=p['alive'],
+            pr.append(dict(day=p['day'], pt=p['point'], demon=p['demon'], who=p['player'], team=p['team'], alive=p['alive'],
                            claim=(p.get('claim') or ''), P={k: [v.get('evil'), v.get('demon'), v.get('character')]
                                                              for k, v in p['players'].items()},
                            truth={k: [t['character'], t['evil']] for k, t in p['truth'].items()}))

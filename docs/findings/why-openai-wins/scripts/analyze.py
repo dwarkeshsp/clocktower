@@ -132,7 +132,7 @@ def m_imp_d(day):
         s = c = 0
         for p in g['probes']:
             if p['team'] != 'good' or p['pt'] != 'nominations' or p['day'] != day: continue
-            imp = next((k for k, t in p['truth'].items() if t[0] == 'Imp'), None)
+            imp = p['demon']  # regenerate extracted records with the corrected probe loader
             if imp and imp != p['who'] and imp in p['P'] and p['P'][imp][1] is not None:
                 s += p['P'][imp][1]; c += 1
         return (s, c)

@@ -1,9 +1,39 @@
 {
- "demon_belief": {
-  "note": "Good players' average chance on the real Demon, by day, before votes. Newest three models from each lab playing good (docs/charts/demon-belief.html).",
-  "series": [
-   {"lab": "OpenAI", "models": "GPT-5.6 Sol, GPT-6 Astra, GPT-6.1 Sol", "by_day": [0.15, 0.30, 0.38, 0.46]},
-   {"lab": "Anthropic", "models": "Fable 5, Fable 5.1, Opus 5.5", "by_day": [0.14, 0.17, 0.21, 0.26]}
-  ]
- }
+  "demon_belief": {
+    "note": "Living good players averaged within each game at nominations, then equal weight per game. Days 1-4 separately; original six-model f2-f5 comparison, retaining unrated v16 games.",
+    "series": [
+      {
+        "lab": "OpenAI",
+        "models": "GPT-5.6 Sol, GPT-6 Astra, GPT-6.1 Sol",
+        "by_day": [
+          0.1496625316793384,
+          0.31405739271017047,
+          0.4462379106681432,
+          0.5357636363636363
+        ],
+        "games_by_day": [
+          119,
+          108,
+          86,
+          55
+        ]
+      },
+      {
+        "lab": "Anthropic",
+        "models": "Fable 5, Fable 5.1, Opus 5.5",
+        "by_day": [
+          0.14065785641473716,
+          0.19081655328798186,
+          0.23884981684981685,
+          0.3048355855855856
+        ],
+        "games_by_day": [
+          109,
+          105,
+          91,
+          74
+        ]
+      }
+    ]
+  }
 }

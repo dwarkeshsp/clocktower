@@ -27,7 +27,6 @@
   const changes = [];
   for (const d of days) for (const sec of d.secs) for (const it of sec.it) if (it.k === 'bec') changes.push({ d: d.d, night: sec.t === 'night', p: it.p, c: it.c });
   const roleOn = (n, day) => { let c = seat[n] ? seat[n].c : '?'; for (const x of changes) if (x.p === n && (x.d < day || (x.d === day && x.night))) c = x.c; return c; };
-  const demonOn = (day) => G.seats.map((s) => s.n).find((n) => roleOn(n, day) === 'Imp');
   // Public deaths: dead at the end of the previous day, plus this dawn's deaths.
   const deadAtDawn = (day) => {
     const prev = days.find((x) => x.d === day - 1), cur = days.find((x) => x.d === day);
@@ -225,12 +224,12 @@
       const accent = CT.css('--accent'), evil = CT.css('--evil');
       const cell = (b, n) => {
         const v = b.v[n]; if (v == null) return '<td class="num muted">–</td>';
-        const isDemon = S.secrets && demonOn(b.d) === n;
+        const isDemon = S.secrets && b.demon === n;
         const bg = `color-mix(in oklab, ${isDemon ? evil : accent} ${Math.round(8 + v * 0.8)}%, transparent)`;
         return `<td class="num" data-b="${b.d}" data-n="${esc(n)}" style="background:${bg};${b.d === cur.d ? 'outline:1px solid var(--line-2);' : ''}${isDemon ? 'font-weight:700;' : ''}">${v}</td>`;
       };
       belief = `<details class="panel" id="p-belief"${S.beliefOpen ? ' open' : ''}><summary><h3>Who does the town suspect?</h3>${S.beliefOpen ? '' : ` <span class="small muted sans">top on day ${cur.d}: ${esc(sorted[0])} ${cur.v[sorted[0]]}%</span>`}</summary>
-        <p class="small muted sans" style="margin:0 0 10px">Before each day's votes, every good player privately estimates the chance that each player is the Demon (out of game; nobody sees the answers). Average of the living good players, in %.${S.secrets ? ' <span style="color:var(--evil-ink)">Red: the real Demon that day.</span>' : ''}</p>
+        <p class="small muted sans" style="margin:0 0 10px">Before each day's votes, every good player privately estimates the chance that each player is the Demon (out of game; nobody sees the answers). Average of the living good players, in %.${S.secrets ? ' <span style="color:var(--evil-ink)">Red: the living Demon at the survey.</span>' : ''}</p>
         <div class="scroll-x"><table class="data" style="font-size:.78rem"><thead><tr><th></th>${cols.map((b) => `<th class="num" style="${b.d === cur.d ? 'color:var(--accent-2)' : ''}">D${b.d}</th>`).join('')}</tr></thead>
         <tbody>${sorted.map((n) => `<tr><td style="white-space:nowrap;padding:5px 6px${dead.has(n) ? ';color:var(--faint)' : ''}">${pn(n)}</td>${cols.map((b) => cell(b, n)).join('')}</tr>`).join('')}</tbody></table></div>
         <p class="small muted sans" style="margin:8px 0 0">Sorted by Day ${cur.d}. Tap a number for who believed it most.</p></details>`;
