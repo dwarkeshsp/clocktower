@@ -5,7 +5,7 @@ import unittest
 from clocktower.agents import RandomSeat, ScriptedStoryteller
 from clocktower.game import NAMES, Game
 from clocktower.llm import Reply
-from clocktower.state import POLICY, Grimoire, chef_choice, pair_choice, setup_error
+from clocktower.state import POLICY, Grimoire, chef_choice, info_text, pair_choice, setup_error
 
 A, B, C, D, E, F, G, H, I = NAMES
 BLANK = {'say': '', 'whispers': [], 'nominate': None, 'vote': None, 'targets': [], 'slayer_shot': None}
@@ -368,6 +368,16 @@ class InformationTests(unittest.TestCase):
         c = pair_choice(g, g[F], 'Washerwoman')
         self.assertTrue(c.legal({'players': [B, A], 'character': 'Mayor'}))
 
+    def test_washerwoman_with_no_other_townsfolk_learns_so(self):
+        g = Grimoire(NAMES[:5], ['Imp', 'Baron', 'Washerwoman', 'Saint', 'Butler'])  # 5 players, Baron: 1 Townsfolk
+        c = pair_choice(g, g[C], 'Washerwoman')
+        v = c.options(random.Random(0))
+        self.assertEqual(v['players'], [])
+        self.assertTrue(c.legal(v))
+        self.assertEqual(info_text('Washerwoman', v), 'You learn that there are no other Townsfolk in play.')
+        g = Grimoire(NAMES, BASE)
+        self.assertFalse(pair_choice(g, g[F], 'Washerwoman').legal({'players': [], 'character': None}))
+
 
 class ScriptedStorytellerTests(unittest.TestCase):
     def test_librarian_with_no_outsiders_can_learn_zero_or_see_the_spy(self):
@@ -389,19 +399,20 @@ class ScriptedStorytellerTests(unittest.TestCase):
                                       random_setup)
         for seed in range(300):
             r = random.Random(seed)
-            chars = random_setup(r)
+            names = NAMES[:(5, 7, 9)[seed % 3]]
+            chars = random_setup(r, players=len(names))
             r.shuffle(chars)
-            g = Grimoire(NAMES, chars, drunk_as=r.choice([c for c in TOWNSFOLK if c not in chars]))
+            g = Grimoire(names, chars, drunk_as=r.choice([c for c in TOWNSFOLK if c not in chars]))
             g.bluffs = r.sample([c for c in TOWNSFOLK if c not in chars], 3)
             g.red_herring = r.choice([q.name for q in g.players if not q.evil])
-            g.poisoned = r.choice(NAMES)
+            g.poisoned = r.choice(names + [None])
             choices = []
             for p in (q for q in g.players if not q.evil):
                 for ability in ('Washerwoman', 'Librarian', 'Investigator'):
                     choices.append(pair_choice(g, p, ability))
                 choices += [chef_choice(g, p), empath_choice(g, p),
-                            fortune_teller_choice(g, p, r.sample(NAMES, 2)),
-                            character_choice(g, p, 'Undertaker', r.choice(NAMES))]
+                            fortune_teller_choice(g, p, r.sample(names, 2)),
+                            character_choice(g, p, 'Undertaker', r.choice(names))]
             mayor = next(q for q in g.players if not q.evil and q.character != 'Soldier')
             choices.append(mayor_choice(g, mayor, g.demon()))
             for c in choices:

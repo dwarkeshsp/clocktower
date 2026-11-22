@@ -388,8 +388,8 @@ def pair_choice(g, p, ability):
     impaired = g.impaired(p)
     values = [{'players': [a, b], 'character': c} for a, b in combinations(others, 2) for c in group
               if impaired or any(c in g.registers_as(g[x]) for x in (a, b))]
-    if ability == 'Librarian' and (impaired or not any(g.registers_as(q) <= set(OUTSIDERS) for q in g.players)):
-        values.append({'players': [], 'character': None})  # "zero Outsiders in play"
+    if ability != 'Investigator' and (impaired or not any(g.registers_as(q) <= set(group) for q in g.players if q is not p)):
+        values.append({'players': [], 'character': None})  # "zero Outsiders" / "no other Townsfolk" in play
 
     def false_pair(r, first, pool):
         """A pair with `first` and a character from `pool` that neither player really is (nor believes
@@ -557,6 +557,8 @@ def info_text(ability, value, target=None):
     v = norm(value)
     if ability in ('Washerwoman', 'Librarian', 'Investigator'):
         if not v['players']:
+            if ability == 'Washerwoman':
+                return 'You learn that there are no other Townsfolk in play.'
             return 'You learn that there are zero Outsiders in play.'
         a, b = v['players']
         return f'You learn that either {a} or {b} is the {v["character"]}.'
