@@ -1,10 +1,22 @@
-# Gemini 4 Neon: rating plan (not run yet)
+# Gemini 4 Neon: rating plan (pilot done; stages 1-2 not run)
 
-Status, Nov 27: the adapter and plans are in place, but **no Neon game has been played**. The project behind
-`GEMINI_API_KEY` answers every model (Neon and Flash alike) with `402 Your prepayment credits are depleted`, so the
-$10K grant is not on that project yet. The model id is `gemini-4-neon` (from `python -m clocktower gemini-models`;
-1M input, 65K output). OpenAI and Anthropic keys both answer (`MY_ANTHROPIC_API_KEY` needs the
-`anthropic-workspace-id` header, which `make_client` already sends).
+Status, Nov 27: the pilot has run (one pair vs GPT-6.1 Sol, 1-1). The adapter works against the live API with no
+changes: schema honoured, thought parts and `thoughtSignature`s carried across turns, no errors. Model id
+`gemini-4-neon`. Neon does not accept `thinkingLevel: minimal`, so the ceiling retry stays at `low`. **Stages 1-2
+are not run: waiting for the go-ahead.**
+
+## Pilot: what a Neon game costs
+
+| Game | Neon plays | Result | Neon | GPT-6.1 Sol | Total | Time |
+|---|---|---|---|---|---|---|
+| game-01 | good (8 seats) | good, day 4 | $19.64 | $0.99 | $20.64 | 62 min |
+| game-01-swap | evil (3 seats) | evil, day 5 | $7.94 | $3.44 | $11.38 | 60 min |
+| **Pair** | | | **$27.58** | **$4.43** | **$32.02** | **~1 h (parallel)** |
+
+- Caching works: 87-92% of Neon's input was read from Gemini's implicit cache, so explicit caching isn't needed.
+- Passes: 3 of 586 Neon turns hit the 8,000-token ceiling, and all 3 recovered on the low-effort retry. **No turn
+  passed** (Carbon passed 2.4% of its turns in Google's games).
+- Time: about an hour a game, like the other frontier models, not the 3-7 hours of Google's Carbon games.
 
 ## Target
 
@@ -23,30 +35,26 @@ Neon games.** ±50 would need about twice the games and is not worth it for one 
 
 Stop after stage 0 to check the cost, time and pass rate (see Risks) before launching stage 1.
 
-## Cost (estimates until the pilot replaces them)
+## Cost (from the pilot)
 
-No Neon game exists, so these come from Google's 8 Gemini 4 Carbon games, re-priced at Neon's list price ($3 in,
-$15 out, cached input assumed $0.30) and split by seat share. That split is crude.
-
-- **Neon as good** (7-9 of 10-12 seats): about $17-98 a game, mean ~$50.
-- **Neon as evil** (3 seats): about $5-9 a game.
-- **A pair is about $60 of Gemini**, plus about $10-20 for the opponent's seats (from the f6/f7 games).
-- Time: the Carbon games took **3-7 hours each** (Fable and Astra games take 0.3-1.5 h). They run in parallel, so
-  stage 1 should finish within a day if Gemini's rate limits allow ~24 concurrent games.
+Neon is about $14 a game (average of the two sides). The opponents' seats are estimated from whole-game totals in
+f6/f7: about $2 a game for GPT-6.1 Sol (as measured), about $5 for Opus 5.5 or GPT-6.2 Astra. Stage 2's split
+across opponents is set by `allocate`, so its OpenAI/Anthropic share is assumed to be similar to stage 1's.
 
 | | Games | Gemini | OpenAI | Anthropic |
 |---|---|---|---|---|
-| Stage 0+1 | 26 | ~$800 | ~$150 | ~$50 |
-| Stage 2 | ~70 | ~$2,100 | ~$350 | ~$150 |
-| **Total** | **~96** | **~$2,900** (tail ~$4,500) | **~$500** | **~$200** |
+| Pilot (done) | 2 | $28 | $4 | — |
+| Stage 1 | 24 | ~$330 | ~$60 | ~$40 |
+| Stage 2 | ~70 | ~$970 | ~$170 | ~$110 |
+| **Total for ±70** | **~96** | **~$1,350** | **~$230** | **~$150** |
 
-The tail is for implicit caching: in one Carbon game 34M of 57M input tokens missed the cache. If the pilot shows
-the same, explicit context caching in the adapter would roughly halve Neon's cost and is worth adding before stage 1.
-Everything stays well under the $7,500 Gemini cap.
+With room for longer games (the pilot's two games ran 4-5 days; some games go to 8+), budget **up to ~$2,000
+Gemini, ~$350 OpenAI, ~$250 Anthropic**. For ±50 instead (~190 games), roughly double all of it: ~$2,700 Gemini
+(up to ~$4,000), still under the $7,500 cap.
 
 ## Risks to check in the pilot
 
-1. **Passes on the ceiling.** Carbon's low-effort retry often still spent all 8,000 tokens thinking: 2.4% of its
+1. **Passes on the ceiling.** (Pilot: 0 passes.) Carbon's low-effort retry often still spent all 8,000 tokens thinking: 2.4% of its
    turns (6.3% in one game) passed with no action. The adapter does the same (high, then low, then pass). If Neon
    passes on more than ~1% of turns, consider a lower retry level (if Neon accepts `minimal`) before stage 1, since
    passes cost Neon Elo for an API reason.

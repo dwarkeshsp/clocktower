@@ -3,7 +3,7 @@
  "out": "games/v17/g1b",
  "seed": 301000,
  "players": "10-12",
- "budget": 2500,
+ "budget": 800,
  "matchups": [
   {
    "name": "neon-v-sol61",

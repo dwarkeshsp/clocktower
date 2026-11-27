@@ -1,0 +1,60 @@
+{
+  "winner": "good",
+  "reason": "The Demon is dead.",
+  "stopped": null,
+  "days": 4,
+  "seed": 300000,
+  "starting": {
+    "Alex": "Empath",
+    "Blair": "Soldier",
+    "Casey": "Imp",
+    "Drew": "Librarian",
+    "Ellis": "Ravenkeeper",
+    "Frankie": "Baron",
+    "Gray": "Poisoner",
+    "Harper": "Drunk",
+    "Indigo": "Washerwoman",
+    "Jules": "Recluse"
+  },
+  "final": {
+    "Alex": "Empath",
+    "Blair": "Soldier",
+    "Casey": "Imp",
+    "Drew": "Librarian",
+    "Ellis": "Ravenkeeper",
+    "Frankie": "Baron",
+    "Gray": "Poisoner",
+    "Harper": "Drunk",
+    "Indigo": "Washerwoman",
+    "Jules": "Recluse"
+  },
+  "bluffs": [
+    "Fortune Teller",
+    "Saint",
+    "Slayer"
+  ],
+  "red_herring": null,
+  "drunk_as": "Investigator",
+  "cost": 20.6356,
+  "calls": 556,
+  "tokens": {
+    "input": 2212929,
+    "cache_read": 17825851,
+    "cache_write": 95659,
+    "output": 611612
+  },
+  "seconds": 3723.3,
+  "errors": [],
+  "models": {
+    "Alex": "gemini-4-neon",
+    "Blair": "gemini-4-neon",
+    "Casey": "gpt-6.1-sol",
+    "Drew": "gemini-4-neon",
+    "Ellis": "gemini-4-neon",
+    "Frankie": "gpt-6.1-sol",
+    "Gray": "gpt-6.1-sol",
+    "Harper": "gemini-4-neon",
+    "Indigo": "gemini-4-neon",
+    "Jules": "gemini-4-neon"
+  }
+}
