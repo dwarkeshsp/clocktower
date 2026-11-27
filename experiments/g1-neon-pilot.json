@@ -1,0 +1,15 @@
+{
+ "note": "Gemini 4 Neon pilot: one side-swapped pair against GPT-6.1 Sol (the cheapest rated model, rated nearest Google's own Gemini 4 Carbon games), to check the Gemini adapter end to end and measure Neon's real cost and time per game before the main run.",
+ "out": "games/v17/g1",
+ "seed": 300000,
+ "players": "10-12",
+ "budget": 200,
+ "matchups": [
+  {
+   "name": "neon-v-sol61",
+   "good": "gemini-4-neon",
+   "evil": "gpt-6.1-sol",
+   "pairs": 1
+  }
+ ]
+}

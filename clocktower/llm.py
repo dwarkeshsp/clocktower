@@ -1,4 +1,4 @@
-"""Model conversations for players and the Storyteller (Claude and OpenAI).
+"""Model conversations for players and the Storyteller (Claude, OpenAI and Gemini).
 
 Each seat is one append-only conversation: a frozen system prompt (shared by all
 seats, so it caches across them), then alternating user turns (what happened since
@@ -75,6 +75,11 @@ PRICES = {  # USD per million tokens, list prices as of Sept 2026; Flex is half 
     'openrouter:anthropic/claude-opus-4.1': _price(15, 75),
     'openrouter:anthropic/claude-sonnet-4': _price(3, 15),
     'o3': _openai(2, 8, explicit_cache=False),
+    # Gemini: implicit caching only (no write charge), thinking billed as output. Neon's $3/$15 is from Google's
+    # Nov 18 2026 launch coverage; the cached rate there ($0.15) isn't on the pricing page yet, so 10% is used
+    # here, which can only overstate spend. Check both against ai.google.dev/gemini-api/docs/pricing.
+    'gemini-4-neon': _price(3, 15, read=0.30, write_5m=3, write_1h=3),
+    'gemini-4-carbon': _price(4, 20, read=0.40, write_5m=4, write_1h=4),  # list price from Dec 1 ($2/$10 until Nov 30)
 }
 
 # How each model is driven, where it differs from the current default (adaptive thinking with an
@@ -101,6 +106,8 @@ MODELS = {
     'gpt-5': {'context': False, 'explicit_cache': False, 'memory': 'replies', 'window': 400_000},  # checked Oct 1: replies only
     'openrouter:anthropic/claude-opus-4.1': {'thinking': 'budget', 'memory': 'replies', 'window': 200_000},
     'openrouter:anthropic/claude-sonnet-4': {'thinking': 'budget', 'memory': 'replies', 'window': 200_000},
+    'gemini-4-neon': {'window': 1_000_000},
+    'gemini-4-carbon': {'window': 1_000_000},
     'gpt-4o': {'reasoning': False, 'context': False, 'explicit_cache': False, 'memory': 'replies',
                'window': 128_000, 'max_output': 16_384},  # no reasoning; its output limit is 16K
 }
@@ -582,8 +589,165 @@ class OpenRouterConversation(_Base):
         raise SeatFailed(f'{self.label} ({self.model}): no usable reply in 4 attempts')
 
 
+GEMINI_PREFIXES = ('gemini-',)
+
+
+class GeminiConversation(_Base):
+    """Google's Gemini API: generateContent, streamed as server-sent events. Each model turn is kept whole,
+    thought parts and their thoughtSignatures included, and sent back unchanged, so the model keeps its own
+    reasoning across the game (memory 'reasoning', as Google's own adapter did for the Gemini 4 Carbon games).
+    Repeated prefixes are cached by Gemini itself (implicit caching) and billed at the cached-input rate.
+    The game's effort sets thinkingLevel; the per-turn ceiling (maxOutputTokens) includes thinking.
+    The reply schema goes in responseJsonSchema; if the API rejects the schema, it is stated in the system
+    prompt instead and the JSON parsed, as for OpenRouter."""
+    URL = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse'
+    LEVELS = {'low': 'low', 'medium': 'medium', 'high': 'high', 'xhigh': 'xhigh', 'max': 'xhigh'}
+    REFUSALS = ('SAFETY', 'PROHIBITED_CONTENT', 'BLOCKLIST', 'SPII', 'RECITATION', 'IMAGE_SAFETY')
+
+    def __init__(self, system, schema, *, api_key=None, **kw):
+        super().__init__(system, schema, **kw)
+        self.key = api_key or os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+        if not self.key:
+            raise RuntimeError('GEMINI_API_KEY is not set')
+        self.schema_in_prompt = False  # set when the API rejects responseJsonSchema
+
+    def _system(self):
+        text = self.system
+        if self.schema_in_prompt:
+            text += ('\n\nReply with one JSON object and nothing else (no code fence), matching this JSON '
+                     'schema:\n' + json.dumps(self.schema))
+        return {'parts': [{'text': text}]}
+
+    def _post(self, body):
+        """One streamed request. Text chunks are joined into one part per run of thought or answer text; a
+        thoughtSignature closes the part it arrives on, so every signature goes back exactly where it came."""
+        req = urllib.request.Request(self.URL.format(model=self.model), data=json.dumps(body).encode(),
+                                     method='POST', headers={'x-goog-api-key': self.key,
+                                                             'Content-Type': 'application/json'})
+        parts, usage, finish, block = [], {}, None, None
+        with urllib.request.urlopen(req, timeout=900, context=TLS) as resp:  # per read, between events
+            for raw in resp:
+                line = raw.decode(errors='replace').strip()
+                if not line.startswith('data: '):
+                    continue
+                chunk = json.loads(line[6:])
+                if chunk.get('error'):
+                    raise ConnectionError(f"stream error: {json.dumps(chunk)[:500]}")
+                usage = chunk.get('usageMetadata') or usage
+                block = (chunk.get('promptFeedback') or {}).get('blockReason') or block
+                for cand in chunk.get('candidates') or []:
+                    finish = cand.get('finishReason') or finish
+                    for p in (cand.get('content') or {}).get('parts') or []:
+                        last = parts[-1] if parts else None
+                        if (last is not None and set(p) <= {'text', 'thought', 'thoughtSignature'} and 'text' in last
+                                and 'thoughtSignature' not in last and bool(p.get('thought')) == bool(last.get('thought'))):
+                            last['text'] += p.get('text', '')
+                            if 'thoughtSignature' in p:
+                                last['thoughtSignature'] = p['thoughtSignature']
+                        else:
+                            parts.append(dict(p))
+        return {'parts': parts, 'usage': usage, 'finish': block or finish}
+
+    async def _request(self, body):
+        attempt = 0
+        while attempt < 10:
+            try:
+                return await asyncio.get_running_loop().run_in_executor(HTTP_POOL, self._post, body)
+            except urllib.error.HTTPError as e:
+                detail = e.read().decode(errors='replace')[:2000]
+                if e.code == 400 and not self.schema_in_prompt and 'schema' in detail.lower():
+                    self.schema_in_prompt = True  # this model rejects the schema: state it in the prompt instead
+                    body.pop('systemInstruction', None)
+                    body['systemInstruction'] = self._system()
+                    body['generationConfig'].pop('responseJsonSchema', None)
+                    continue
+                retryable = e.code in (408, 409, 429) or e.code >= 500
+                if not retryable or attempt == 9:
+                    raise RuntimeError(f'Gemini HTTP {e.code}: {detail}') from e
+            except (TimeoutError, urllib.error.URLError, ConnectionError, http.client.HTTPException) as e:
+                if attempt == 9:
+                    raise RuntimeError(f'Gemini transport error: {e}') from e
+            await asyncio.sleep(min(2 ** attempt, 60) + random.random())
+            attempt += 1
+
+    async def send(self, text, meta=None, commit=True) -> Reply:
+        low = False  # True for the one retry of a turn that hit the ceiling (local: probes run alongside)
+        user = {'role': 'user', 'parts': [{'text': text}]}
+        if commit:
+            self.fit(text)
+            self.messages.append(user)
+        messages = self.messages if commit else [*self.messages, user]
+        refusals = truncations = 0
+        for attempt in range(4):
+            self.ledger.check()
+            config = {'maxOutputTokens': self.max_tokens, 'responseMimeType': 'application/json',
+                      'thinkingConfig': {'thinkingLevel': self.LEVELS.get(self.turn_effort(low), 'high'),
+                                         'includeThoughts': True}}
+            if not self.schema_in_prompt:
+                config['responseJsonSchema'] = self.schema
+            body = {'systemInstruction': self._system(), 'contents': messages, 'generationConfig': config}
+            start = time.monotonic()
+            async with (self.semaphore if commit else NO_LIMIT):
+                raw = await self._request(body)
+            u = raw['usage']
+            read = u.get('cachedContentTokenCount', 0)
+            thoughts = u.get('thoughtsTokenCount', 0)
+            usage = {'input_tokens': u.get('promptTokenCount', 0) - read, 'cache_read_input_tokens': read,
+                     'cache_creation_input_tokens': 0,
+                     'output_tokens': u.get('candidatesTokenCount', 0) + thoughts,
+                     'output_tokens_details': {'thinking_tokens': thoughts}}
+            spent = cost(self.model, usage)
+            self.ledger.add(spent, label=self.label)
+            parts = raw['parts']
+            thinking = '\n'.join(p.get('text', '') for p in parts if p.get('thought'))
+            out = ''.join(p.get('text', '') for p in parts if not p.get('thought')).strip()
+            finish = raw['finish']
+            stop = ('max_tokens' if finish == 'MAX_TOKENS' else 'refusal' if finish in self.REFUSALS
+                    else 'end_turn' if finish == 'STOP' else finish)
+            self.record(meta, attempt, stop, start, spent, usage, thinking, out, low=low)
+            if stop == 'refusal':
+                refusals += 1
+                if refusals >= 2:
+                    return Reply({}, thinking)
+                continue
+            if stop == 'max_tokens':
+                truncations += 1
+                low = True  # retry once at low thinking, then the seat passes
+                if truncations >= 2:
+                    return Reply({}, thinking)
+                continue
+            try:
+                action = json.loads(out if not self.schema_in_prompt else out[out.find('{'):out.rfind('}') + 1])
+            except json.JSONDecodeError:
+                continue
+            if commit:
+                self.messages.append({'role': 'model', 'parts': parts})
+            return Reply(action, thinking)
+        raise SeatFailed(f'{self.label} ({self.model}): no usable reply in 4 attempts')
+
+
+def list_gemini_models(key=None):
+    """The Gemini models this key can call: (name, display name, input and output token limits)."""
+    key = key or os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+    out, token = [], ''
+    while True:
+        url = 'https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000' + (f'&pageToken={token}' if token else '')
+        with urllib.request.urlopen(urllib.request.Request(url, headers={'x-goog-api-key': key}), timeout=60,
+                                    context=TLS) as resp:
+            page = json.load(resp)
+        out += [(m['name'].split('/', 1)[-1], m.get('displayName', ''), m.get('inputTokenLimit'), m.get('outputTokenLimit'))
+                for m in page.get('models', []) if 'generateContent' in m.get('supportedGenerationMethods', [])]
+        token = page.get('nextPageToken')
+        if not token:
+            return out
+
+
 def conversation(client, system, schema, *, model, **kw):
-    """A Claude, OpenAI or OpenRouter conversation, by model name."""
+    """A Claude, OpenAI, Gemini or OpenRouter conversation, by model name."""
+    if model.startswith(GEMINI_PREFIXES):
+        kw.pop('ttl', None)
+        kw.pop('flex', None)
+        return GeminiConversation(system, schema, model=model, **kw)
     if model.startswith('openrouter:'):
         kw.pop('ttl', None)
         kw.pop('flex', None)

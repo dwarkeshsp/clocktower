@@ -1,0 +1,27 @@
+{
+ "note": "Gemini 4 Neon, stage 1: four side-swapped pairs each against GPT-6.1 Sol, Opus 5.5 and GPT-6.2 Astra (rated 1745, 1540 and 1945, so they bracket wherever Neon lands). The rest of the budget is allocated after a refit, by information per dollar (g1c, from `allocate --only gemini-4-neon`).",
+ "out": "games/v17/g1b",
+ "seed": 301000,
+ "players": "10-12",
+ "budget": 2500,
+ "matchups": [
+  {
+   "name": "neon-v-sol61",
+   "good": "gemini-4-neon",
+   "evil": "gpt-6.1-sol",
+   "pairs": 4
+  },
+  {
+   "name": "neon-v-opus55",
+   "good": "gemini-4-neon",
+   "evil": "claude-opus-5-5",
+   "pairs": 4
+  },
+  {
+   "name": "neon-v-astra62",
+   "good": "gemini-4-neon",
+   "evil": "gpt-6.2-astra",
+   "pairs": 4
+  }
+ ]
+}

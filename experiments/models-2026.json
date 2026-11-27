@@ -91,5 +91,13 @@
   "released": "2026-11-17",
   "note": "added after the 2026 study; not part of the 1500 average",
   "centre": false
+ },
+ {
+  "id": "gemini-4-neon",
+  "short": "neon",
+  "lab": "Google",
+  "released": "2026-11-18",
+  "note": "added after the 2026 study; not part of the 1500 average",
+  "centre": false
  }
 ]

@@ -296,6 +296,7 @@ def main(argv=None):
                        ('mixed', 'mixed-team analysis (clocktower/mixed.py)'),
                        ('memory-check', 'does a model see its own earlier reasoning next turn? (for llm.MODELS)')):
         sub.add_parser(name, help=text)  # dispatched above, before parsing
+    sub.add_parser('gemini-models', help='list the Gemini models your GEMINI_API_KEY can call')
     fp = sub.add_parser('fetch', help='download game logs from the Hugging Face dataset (e.g. v9/e1-*)')
     fp.add_argument('patterns', nargs='+')
     rv = sub.add_parser('replay', help='re-read a game from one seat, the public view or omniscient')
@@ -358,6 +359,11 @@ def main(argv=None):
             # so a table's AI seats use the play server's own default (web.Settings.effort; PLAY_EFFORT)
             p.set_defaults(budget=100.0, effort=None)
     args = ap.parse_args(argv)
+    if args.command == 'gemini-models':
+        from .llm import list_gemini_models
+        for name, display, inp, out in list_gemini_models():
+            print(f'{name:40} {display:32} in {inp}  out {out}')
+        return
     if args.command == 'report':
         from .report import main as report
         report(args.paths)
