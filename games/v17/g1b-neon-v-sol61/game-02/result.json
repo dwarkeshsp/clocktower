@@ -1,0 +1,68 @@
+{
+  "winner": null,
+  "reason": "seat failed: Logan: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "stopped": "seat failed: Logan: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "days": 1,
+  "seed": 301001,
+  "starting": {
+    "Alex": "Monk",
+    "Blair": "Imp",
+    "Casey": "Undertaker",
+    "Drew": "Drunk",
+    "Ellis": "Baron",
+    "Frankie": "Investigator",
+    "Gray": "Soldier",
+    "Harper": "Butler",
+    "Indigo": "Recluse",
+    "Jules": "Spy",
+    "Kit": "Virgin",
+    "Logan": "Saint"
+  },
+  "final": {
+    "Alex": "Monk",
+    "Blair": "Imp",
+    "Casey": "Undertaker",
+    "Drew": "Drunk",
+    "Ellis": "Baron",
+    "Frankie": "Investigator",
+    "Gray": "Soldier",
+    "Harper": "Butler",
+    "Indigo": "Recluse",
+    "Jules": "Spy",
+    "Kit": "Virgin",
+    "Logan": "Saint"
+  },
+  "bluffs": [
+    "Empath",
+    "Librarian",
+    "Mayor"
+  ],
+  "red_herring": "Casey",
+  "drunk_as": "Fortune Teller",
+  "cost": 2.4419,
+  "calls": 116,
+  "tokens": {
+    "input": 276031,
+    "cache_read": 386886,
+    "cache_write": 20462,
+    "output": 100382
+  },
+  "seconds": 744.5,
+  "errors": [
+    "Logan: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')"
+  ],
+  "models": {
+    "Alex": "gemini-4-neon",
+    "Blair": "gpt-6.1-sol",
+    "Casey": "gemini-4-neon",
+    "Drew": "gemini-4-neon",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gemini-4-neon",
+    "Gray": "gemini-4-neon",
+    "Harper": "gemini-4-neon",
+    "Indigo": "gemini-4-neon",
+    "Jules": "gpt-6.1-sol",
+    "Kit": "gemini-4-neon",
+    "Logan": "gemini-4-neon"
+  }
+}

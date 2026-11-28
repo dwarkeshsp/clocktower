@@ -1,0 +1,62 @@
+{
+  "winner": null,
+  "reason": "seat failed: Harper: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "stopped": "seat failed: Harper: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "days": 2,
+  "seed": 301200,
+  "starting": {
+    "Alex": "Poisoner",
+    "Blair": "Fortune Teller",
+    "Casey": "Virgin",
+    "Drew": "Librarian",
+    "Ellis": "Ravenkeeper",
+    "Frankie": "Mayor",
+    "Gray": "Imp",
+    "Harper": "Scarlet Woman",
+    "Indigo": "Chef",
+    "Jules": "Slayer"
+  },
+  "final": {
+    "Alex": "Poisoner",
+    "Blair": "Fortune Teller",
+    "Casey": "Virgin",
+    "Drew": "Librarian",
+    "Ellis": "Ravenkeeper",
+    "Frankie": "Mayor",
+    "Gray": "Imp",
+    "Harper": "Scarlet Woman",
+    "Indigo": "Chef",
+    "Jules": "Slayer"
+  },
+  "bluffs": [
+    "Washerwoman",
+    "Investigator",
+    "Monk"
+  ],
+  "red_herring": "Indigo",
+  "drunk_as": null,
+  "cost": 2.3219,
+  "calls": 127,
+  "tokens": {
+    "input": 141102,
+    "cache_read": 534029,
+    "cache_write": 41234,
+    "output": 62116
+  },
+  "seconds": 736.8,
+  "errors": [
+    "Harper: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')"
+  ],
+  "models": {
+    "Alex": "gemini-4-neon",
+    "Blair": "gpt-6.2-astra",
+    "Casey": "gpt-6.2-astra",
+    "Drew": "gpt-6.2-astra",
+    "Ellis": "gpt-6.2-astra",
+    "Frankie": "gpt-6.2-astra",
+    "Gray": "gemini-4-neon",
+    "Harper": "gemini-4-neon",
+    "Indigo": "gpt-6.2-astra",
+    "Jules": "gpt-6.2-astra"
+  }
+}

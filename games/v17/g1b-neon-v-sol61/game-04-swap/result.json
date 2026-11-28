@@ -1,0 +1,65 @@
+{
+  "winner": null,
+  "reason": "seat failed: Frankie: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "stopped": "seat failed: Frankie: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "days": 2,
+  "seed": 301003,
+  "starting": {
+    "Alex": "Butler",
+    "Blair": "Recluse",
+    "Casey": "Virgin",
+    "Drew": "Librarian",
+    "Ellis": "Fortune Teller",
+    "Frankie": "Baron",
+    "Gray": "Poisoner",
+    "Harper": "Imp",
+    "Indigo": "Undertaker",
+    "Jules": "Slayer",
+    "Kit": "Saint"
+  },
+  "final": {
+    "Alex": "Butler",
+    "Blair": "Recluse",
+    "Casey": "Virgin",
+    "Drew": "Librarian",
+    "Ellis": "Fortune Teller",
+    "Frankie": "Baron",
+    "Gray": "Poisoner",
+    "Harper": "Imp",
+    "Indigo": "Undertaker",
+    "Jules": "Slayer",
+    "Kit": "Saint"
+  },
+  "bluffs": [
+    "Empath",
+    "Soldier",
+    "Ravenkeeper"
+  ],
+  "red_herring": "Drew",
+  "drunk_as": null,
+  "cost": 1.6857,
+  "calls": 168,
+  "tokens": {
+    "input": 131916,
+    "cache_read": 859531,
+    "cache_write": 60383,
+    "output": 74422
+  },
+  "seconds": 780.0,
+  "errors": [
+    "Frankie: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')"
+  ],
+  "models": {
+    "Alex": "gpt-6.1-sol",
+    "Blair": "gpt-6.1-sol",
+    "Casey": "gpt-6.1-sol",
+    "Drew": "gpt-6.1-sol",
+    "Ellis": "gpt-6.1-sol",
+    "Frankie": "gemini-4-neon",
+    "Gray": "gemini-4-neon",
+    "Harper": "gemini-4-neon",
+    "Indigo": "gpt-6.1-sol",
+    "Jules": "gpt-6.1-sol",
+    "Kit": "gpt-6.1-sol"
+  }
+}

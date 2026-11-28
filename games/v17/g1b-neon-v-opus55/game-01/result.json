@@ -1,0 +1,68 @@
+{
+  "winner": null,
+  "reason": "seat failed: Kit: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "stopped": "seat failed: Kit: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')",
+  "days": 1,
+  "seed": 301100,
+  "starting": {
+    "Alex": "Mayor",
+    "Blair": "Soldier",
+    "Casey": "Drunk",
+    "Drew": "Poisoner",
+    "Ellis": "Recluse",
+    "Frankie": "Chef",
+    "Gray": "Imp",
+    "Harper": "Slayer",
+    "Indigo": "Empath",
+    "Jules": "Washerwoman",
+    "Kit": "Librarian",
+    "Logan": "Spy"
+  },
+  "final": {
+    "Alex": "Mayor",
+    "Blair": "Soldier",
+    "Casey": "Drunk",
+    "Drew": "Poisoner",
+    "Ellis": "Recluse",
+    "Frankie": "Chef",
+    "Gray": "Imp",
+    "Harper": "Slayer",
+    "Indigo": "Empath",
+    "Jules": "Washerwoman",
+    "Kit": "Librarian",
+    "Logan": "Spy"
+  },
+  "bluffs": [
+    "Fortune Teller",
+    "Butler",
+    "Ravenkeeper"
+  ],
+  "red_herring": null,
+  "drunk_as": "Undertaker",
+  "cost": 2.2259,
+  "calls": 100,
+  "tokens": {
+    "input": 231336,
+    "cache_read": 363775,
+    "cache_write": 15502,
+    "output": 87646
+  },
+  "seconds": 720.4,
+  "errors": [
+    "Kit: RuntimeError('Gemini HTTP 429: {\\n  \"error\": {\\n    \"code\": 429,\\n    \"message\": \"Your project is temporarily rate-limited to prevent exceeding its monthly spending cap. Please raise your project spend cap or wait before retrying.\",\\n    \"status\": \"RESOURCE_EXHAUSTED\"\\n  }\\n}\\n')"
+  ],
+  "models": {
+    "Alex": "gemini-4-neon",
+    "Blair": "gemini-4-neon",
+    "Casey": "gemini-4-neon",
+    "Drew": "claude-opus-5-5",
+    "Ellis": "gemini-4-neon",
+    "Frankie": "gemini-4-neon",
+    "Gray": "claude-opus-5-5",
+    "Harper": "gemini-4-neon",
+    "Indigo": "gemini-4-neon",
+    "Jules": "gemini-4-neon",
+    "Kit": "gemini-4-neon",
+    "Logan": "claude-opus-5-5"
+  }
+}
