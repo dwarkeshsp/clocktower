@@ -28,7 +28,8 @@ TURN2 = ('Game over: now tell me the number and the animal you thought of on the
 
 
 def strip_reasoning(messages):
-    """The conversation with every reasoning block removed (Claude thinking blocks, OpenAI reasoning items)."""
+    """The conversation with every reasoning block removed (Claude thinking blocks, OpenAI reasoning items,
+    Gemini thought parts and thoughtSignatures)."""
     out = []
     for m in messages:
         if isinstance(m, dict) and m.get('type') == 'reasoning':
@@ -36,6 +37,9 @@ def strip_reasoning(messages):
         if isinstance(m, dict) and isinstance(m.get('content'), list):
             m = {**m, 'content': [b for b in m['content'] if not (isinstance(b, dict) and b.get('type') in
                                                                    ('thinking', 'redacted_thinking'))]}
+        if isinstance(m, dict) and isinstance(m.get('parts'), list):  # Gemini
+            m = {**m, 'parts': [{k: v for k, v in p.items() if k != 'thoughtSignature'} for p in m['parts']
+                                if not p.get('thought')]}
         out.append(m)
     return out
 

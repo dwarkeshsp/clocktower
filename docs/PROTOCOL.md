@@ -51,7 +51,7 @@ what it is. A change that affects play bumps `PROTOCOL` in `cli.py` and adds a s
 - Every seat is one model conversation. Each turn adds only what that seat saw since its last turn;
   the model's own replies (and, where the API allows, its reasoning) carry its memory. No notes,
   no state re-sent.
-- Models whose API cannot carry reasoning across turns ("replies only": Sonnet 4.5, o1, o3, GPT-5.1,
+- Models whose API cannot carry reasoning across turns ("replies only": Gemini 4 Neon, Sonnet 4.5, o1, o3, GPT-5.1,
   5.2, 5.4, GPT-4o) are told so in their system prompt.
 - Every seat's text reaches the others in one typography (straight quotes, plain dashes and hyphens,
   no bullets, arrows, emoji or markdown), so writing style can't mark a team.

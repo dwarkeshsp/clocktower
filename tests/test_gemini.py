@@ -85,6 +85,15 @@ class GeminiTest(unittest.TestCase):
         self.assertEqual(levels, ['high', 'low'])
         self.assertEqual(r.action, {})
 
+    def test_neon_is_replies_only_and_memory_check_strips_thoughts(self):
+        from clocktower.llm import spec
+        from clocktower.memory_check import strip_reasoning
+        self.assertEqual(spec('gemini-4-neon')['memory'], 'replies')
+        msgs = [{'role': 'user', 'parts': [{'text': 'q'}]},
+                {'role': 'model', 'parts': [{'text': 'secret 4827', 'thought': True},
+                                            {'text': '{"answer": "ok"}', 'thoughtSignature': 'SIG'}]}]
+        self.assertEqual(strip_reasoning(msgs)[1]['parts'], [{'text': '{"answer": "ok"}'}])
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,7 +11,7 @@ later models show how far ratings have risen).
     python -m clocktower ratings --lab-trends       # also per-lab gains -> docs/charts/lab-trends.json and .html
     python -m clocktower ratings --games /path/to/games --boot 100 --out /tmp/r.json --no-page
 
-Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/f7* v17/g1*`).
+Needs the games' events.jsonl (`python -m clocktower fetch v16/f2-* v17/f3* v17/f4-* v17/f5-* v17/f6* v17/f7* v17/g1[b-z]-*`).
 """
 from __future__ import annotations
 import collections
@@ -31,7 +31,7 @@ MINIONS = ['Spy', 'Scarlet Woman', 'Baron']  # setup terms, each vs a Poisoner g
 BATCHES = ['v16/f2-*', 'v17/f3*-*', 'v17/f4-*', 'v17/f5-*',  # the 2026 study
            'v17/f6*-*',  # Fable 5.2 (Nov 2026)
            'v17/f7*-*',  # GPT-6.2 Astra (Nov 2026)
-           'v17/g1*-*']  # Gemini 4 Neon (Nov 2026)
+           'v17/g1[b-z]-*']  # Gemini 4 Neon (Nov 2026; not the g1 pilot, played with the wrong memory prompt)
 DROPPED = ('/v16/', 'claude-opus-4-8')  # Opus 4.8's 20 v16 games (bugged retries; replayed under v17)
 
 

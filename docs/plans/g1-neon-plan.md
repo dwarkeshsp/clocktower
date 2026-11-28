@@ -5,6 +5,17 @@ changes: schema honoured, thought parts and `thoughtSignature`s carried across t
 `gemini-4-neon`. Neon does not accept `thinkingLevel: minimal`, so the ceiling retry stays at `low`. **Stages 1-2
 are not run: waiting for the go-ahead.**
 
+## Standardization (Nov 28)
+
+Neon is driven by the same rules as every other model (docs/PROTOCOL.md): its lab's "high" effort (Neon's ladder is
+low/medium/high/xhigh/max, like Anthropic's and OpenAI's), an 8,000-token ceiling per turn with thinking included,
+one retry with the least thinking it allows (low; it rejects `minimal`), the same typography normalization. The
+memory check (`python -m clocktower memory-check gemini-4-neon`) found it **replies only**: it cannot read its
+earlier thoughts even when they are sent back, so it is registered as memory 'replies' and told so in its system
+prompt, like o3 and GPT-5.1 to 5.4. The two pilot games were played before this, with the "your thinking carries
+over" line, so they measure cost and time but are **not rated**. Stage 1 was launched once for about a minute
+(~$7) before this check, stopped, and discarded; it is relaunched from the same seeds.
+
 ## Pilot: what a Neon game costs
 
 | Game | Neon plays | Result | Neon | GPT-6.1 Sol | Total | Time |

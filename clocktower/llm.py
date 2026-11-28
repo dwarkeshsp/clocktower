@@ -106,7 +106,7 @@ MODELS = {
     'gpt-5': {'context': False, 'explicit_cache': False, 'memory': 'replies', 'window': 400_000},  # checked Oct 1: replies only
     'openrouter:anthropic/claude-opus-4.1': {'thinking': 'budget', 'memory': 'replies', 'window': 200_000},
     'openrouter:anthropic/claude-sonnet-4': {'thinking': 'budget', 'memory': 'replies', 'window': 200_000},
-    'gemini-4-neon': {'window': 1_000_000},
+    'gemini-4-neon': {'memory': 'replies', 'window': 1_000_000},  # memory check Nov 28: NO ACCESS 3/3 even when carried
     'gemini-4-carbon': {'window': 1_000_000},
     'gpt-4o': {'reasoning': False, 'context': False, 'explicit_cache': False, 'memory': 'replies',
                'window': 128_000, 'max_output': 16_384},  # no reasoning; its output limit is 16K
@@ -594,8 +594,9 @@ GEMINI_PREFIXES = ('gemini-',)
 
 class GeminiConversation(_Base):
     """Google's Gemini API: generateContent, streamed as server-sent events. Each model turn is kept whole,
-    thought parts and their thoughtSignatures included, and sent back unchanged, so the model keeps its own
-    reasoning across the game (memory 'reasoning', as Google's own adapter did for the Gemini 4 Carbon games).
+    thought parts and their thoughtSignatures included, and sent back unchanged, as Google's API asks. That does not
+    let the model read its earlier thoughts: Gemini 4 Neon answers NO ACCESS on the memory check even when they are
+    carried, so it is registered as memory 'replies' and told so in its system prompt, like o3 and GPT-5.1-5.4.
     Repeated prefixes are cached by Gemini itself (implicit caching) and billed at the cached-input rate.
     The game's effort sets thinkingLevel; the per-turn ceiling (maxOutputTokens) includes thinking.
     The reply schema goes in responseJsonSchema; if the API rejects the schema, it is stated in the system

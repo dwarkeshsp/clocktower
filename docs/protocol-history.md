@@ -134,6 +134,11 @@ reasoning carried back (as the engine does) and 3 with it stripped (control).
   reasoning-extraction classifier).
 - Replies only (NO ACCESS even when carried): o3, GPT-5.1, GPT-5.2, GPT-5.4, Claude Sonnet 4.5.
 - Not testable: GPT-5 (requires a verified OpenAI organization).
+- Nov 28: Gemini 4 Neon is replies only: NO ACCESS 3/3 carried and 3/3 stripped. Its thought parts and
+  thoughtSignatures are still sent back, as Google's API asks, but the model cannot read them. Its effort ladder
+  (low, medium, high, xhigh, max) matches the other labs', so it plays at high like everyone else; it rejects
+  `minimal`, so its ceiling retry runs at low. The two g1 pilot games ran before this check, with the
+  "reasoning" prompt line, and are left out of the ratings.
 The engine records each team's memory mode in config.json (`good_memory`, `evil_memory`).
 
 Calibration c1 (Sept 28): Opus 5.5 vs Opus 5.5 and GPT-6 Sol vs Sol, at 9 and 12 players, 10 games

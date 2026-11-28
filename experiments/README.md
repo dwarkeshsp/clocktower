@@ -31,7 +31,7 @@ versions record what was run; replaying them exactly needs the code as it was at
 | [`f7-astra62.json`](f7-astra62.json) | Nov 17 | 44 | v17 | GPT-6.2 Astra, the day it came out: five pairs each against GPT-6.1 Sol, GPT-6 Astra, GPT-5.6 Sol and Opus 5.5, one each against Fable 5.2 and Fable 5.1 | 614 |
 | [`f7b-astra62.json`](f7b-astra62.json) | Nov 17 | 48 | v17 | GPT-6.2 Astra: by information per dollar after a refit on the first 30 games (at most 10 pairs per opponent) | 723 |
 | [`f7c-astra62.json`](f7c-astra62.json) | Nov 17 | 4 | v17 | GPT-6.2 Astra: the rest of its $1,500, two more pairs against Fable 5.2 | 109 |
-| [`g1-neon-pilot.json`](g1-neon-pilot.json) | Nov 27 | 2 | v17 | Gemini 4 Neon pilot: one pair against GPT-6.1 Sol, to check the Gemini adapter and measure cost per game | 32 |
+| [`g1-neon-pilot.json`](g1-neon-pilot.json) | Nov 27 | 2 | v17 | Gemini 4 Neon pilot: one pair against GPT-6.1 Sol, to check the Gemini adapter and measure cost per game (not rated: played before the memory check, with the wrong memory prompt) | 32 |
 | [`g1b-neon.json`](g1b-neon.json) | not run | 24 | v17 | Gemini 4 Neon, stage 1: four pairs each against GPT-6.1 Sol, Opus 5.5 and GPT-6.2 Astra; the rest allocated after a refit | — |
 
 Costs are summed from each game's `calls.jsonl` (resumed games replay from their last dusk, so these slightly
